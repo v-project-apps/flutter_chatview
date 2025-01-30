@@ -24,6 +24,7 @@ import 'dart:io' if (kIsWeb) 'dart:html';
 import 'package:chatview/chatview.dart';
 import 'package:chatview/src/extensions/extensions.dart';
 import 'package:chatview/src/utils/package_strings.dart';
+import 'package:chatview/src/values/attachment_source.dart';
 import 'package:chatview/src/widgets/chatui_textfield.dart';
 import 'package:chatview/src/widgets/reply_message_view.dart';
 import 'package:chatview/src/widgets/scroll_to_bottom_button.dart';
@@ -262,7 +263,7 @@ class SendMessageWidgetState extends State<SendMessageWidget> {
                                 onPressed: _onPressed,
                                 sendMessageConfig: widget.sendMessageConfig,
                                 onRecordingComplete: _onRecordingComplete,
-                                onImageSelected: _onImageSelected,
+                                onAttachmentSelected: _onAttachmentSelected,
                               )
                             ],
                           ),
@@ -278,15 +279,19 @@ class SendMessageWidgetState extends State<SendMessageWidget> {
 
   void _onRecordingComplete(String? path) {
     if (path != null) {
-      widget.onSendTap.call(path, replyMessage, MessageType.voice);
+      widget.onSendTap
+          .call(path, replyMessage, MessageType.voice, file: File(path));
       _assignRepliedMessage();
     }
   }
 
-  void _onImageSelected(String imagePath, String error) {
+  void _onAttachmentSelected(
+      String filePath, AttachmentSource source, String error) {
     debugPrint('Call in Send Message Widget');
-    if (imagePath.isNotEmpty) {
-      widget.onSendTap.call(imagePath, replyMessage, MessageType.image);
+    if (filePath.isNotEmpty) {
+      widget.onSendTap.call(
+          filePath, replyMessage, MessageType.fromAttachmentSource(source),
+          file: File(filePath));
       _assignRepliedMessage();
     }
   }

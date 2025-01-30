@@ -113,6 +113,10 @@ extension MessageTypes on MessageType {
 
   bool get isVoice => this == MessageType.voice;
 
+  bool get isVideo => this == MessageType.video;
+
+  bool get isFile => this == MessageType.file;
+
   bool get isCustom => this == MessageType.custom;
 }
 

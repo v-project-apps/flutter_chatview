@@ -22,10 +22,13 @@
 
 // Different types Message of ChatView
 
+import 'package:chatview/src/values/attachment_source.dart';
 import 'package:flutter/material.dart';
 
 enum MessageType {
   image,
+  video,
+  file,
   text,
 
   /// Only supported on android and ios
@@ -41,10 +44,27 @@ enum MessageType {
       return text;
     } else if (type == voice.name) {
       return voice;
+    } else if (type == video.name) {
+      return video;
+    } else if (type == file.name) {
+      return file;
     } else if (type == custom.name) {
       return custom;
     }
     return null;
+  }
+
+  static MessageType fromAttachmentSource(AttachmentSource source) {
+    switch (source) {
+      case AttachmentSource.camera:
+        return MessageType.image;
+      case AttachmentSource.gallery:
+        return MessageType.image;
+      case AttachmentSource.file:
+        return MessageType.file;
+      case AttachmentSource.video:
+        return MessageType.video;
+    }
   }
 }
 

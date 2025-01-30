@@ -77,6 +77,38 @@ class ReplyMessageView extends StatelessWidget {
             ),
           ],
         ),
+      MessageType.video => Row(
+          children: [
+            Icon(
+              Icons.video_file_outlined,
+              size: 20,
+              color:
+                  sendMessageConfig?.replyMessageColor ?? Colors.grey.shade700,
+            ),
+            Text(
+              PackageStrings.video,
+              style: TextStyle(
+                color: sendMessageConfig?.replyMessageColor ?? Colors.black,
+              ),
+            ),
+          ],
+        ),
+      MessageType.file => Row(
+          children: [
+            Icon(
+              Icons.insert_drive_file,
+              size: 20,
+              color:
+                  sendMessageConfig?.replyMessageColor ?? Colors.grey.shade700,
+            ),
+            Text(
+              PackageStrings.file,
+              style: TextStyle(
+                color: sendMessageConfig?.replyMessageColor ?? Colors.black,
+              ),
+            ),
+          ],
+        ),
       MessageType.custom when customMessageReplyViewBuilder != null =>
         customMessageReplyViewBuilder!(message),
       MessageType.custom || MessageType.text => Text(

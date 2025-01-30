@@ -284,15 +284,15 @@ class _ChatViewState extends State<ChatView>
                                 key: _sendMessageKey,
                                 sendMessageBuilder: widget.sendMessageBuilder,
                                 sendMessageConfig: widget.sendMessageConfig,
-                                onSendTap:
-                                    (message, replyMessage, messageType) {
+                                onSendTap: (message, replyMessage, messageType,
+                                    {file}) {
                                   if (context.suggestionsConfig
                                           ?.autoDismissOnSelection ??
                                       true) {
                                     chatController.removeReplySuggestions();
                                   }
-                                  _onSendTap(
-                                      message, replyMessage, messageType);
+                                  _onSendTap(message, replyMessage, messageType,
+                                      file: file);
                                 },
                                 onReplyCallback: (reply) =>
                                     replyMessage.value = reply,
@@ -336,13 +336,11 @@ class _ChatViewState extends State<ChatView>
   }
 
   void _onSendTap(
-    String message,
-    ReplyMessage replyMessage,
-    MessageType messageType,
-  ) {
+      String message, ReplyMessage replyMessage, MessageType messageType,
+      {File? file}) {
     if (widget.sendMessageBuilder == null) {
       if (widget.onSendTap != null) {
-        widget.onSendTap!(message, replyMessage, messageType);
+        widget.onSendTap!(message, replyMessage, messageType, file: file);
       }
       _assignReplyMessage();
     }

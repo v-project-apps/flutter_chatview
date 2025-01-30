@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:chatview/chatview.dart';
 import 'package:example/data.dart';
 import 'package:example/models/theme.dart';
@@ -327,6 +329,7 @@ class _ChatScreenState extends State<ChatScreen> {
     String message,
     ReplyMessage replyMessage,
     MessageType messageType,
+    {File? file}
   ) {
     _chatController.addMessage(
       Message(

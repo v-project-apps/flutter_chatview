@@ -19,22 +19,44 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-class PackageStrings {
-  static const String today = "Today";
-  static const String yesterday = "Yesterday";
-  static const String repliedToYou = "Replied to you";
-  static const String repliedBy = "Replied by";
-  static const String more = "More";
-  static const String unsend = "Unsend";
-  static const String reply = "Reply";
-  static const String replyTo = "Replying to";
-  static const String message = "Message";
-  static const String reactionPopupTitle =
-      "Tap and hold to multiply your reaction";
-  static const String photo = "Photo";
-  static const String video = "Video";
-  static const String file = "File";
-  static const String send = "Send";
-  static const String you = "You";
-  static const String report = "Report";
+import 'package:chatview/src/models/config_models/image_message_configuration.dart';
+import 'package:flutter/material.dart';
+
+import '../../values/typedefs.dart';
+
+class VideoMessageConfiguration {
+  /// Provides configuration of share button while video message is appeared.
+  final ShareIconConfiguration? shareIconConfig;
+
+  /// Hide share icon in video view.
+  final bool hideShareIcon;
+
+  /// Provides callback when user taps on image message.
+  final MessageCallBack? onTap;
+
+  /// Used for giving height of video preview.
+  final double? previewHeight;
+
+  /// Used for giving width of video preview.
+  final double? previewWidth;
+
+  /// Used for giving padding of video message.
+  final EdgeInsetsGeometry? padding;
+
+  /// Used for giving margin of video message.
+  final EdgeInsetsGeometry? margin;
+
+  /// Used for giving border radius of video message.
+  final BorderRadius? borderRadius;
+
+  const VideoMessageConfiguration({
+    this.hideShareIcon = false,
+    this.shareIconConfig,
+    this.onTap,
+    this.previewHeight,
+    this.previewWidth,
+    this.padding,
+    this.margin,
+    this.borderRadius,
+  });
 }

@@ -23,7 +23,11 @@ import 'dart:async';
 import 'dart:io' show File, Platform;
 
 import 'package:audio_waveforms/audio_waveforms.dart';
+import 'package:chatview/src/models/config_models/attchament_picker_bottom_sheet_configuration.dart';
 import 'package:chatview/src/utils/constants/constants.dart';
+import 'package:chatview/src/values/attachment_source.dart';
+import 'package:chatview/src/widgets/attchament_picker_bottom_sheet.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -40,7 +44,7 @@ class ChatUITextField extends StatefulWidget {
     required this.textEditingController,
     required this.onPressed,
     required this.onRecordingComplete,
-    required this.onImageSelected,
+    required this.onAttachmentSelected,
   }) : super(key: key);
 
   /// Provides configuration of default text field in chat.
@@ -59,7 +63,7 @@ class ChatUITextField extends StatefulWidget {
   final Function(String?) onRecordingComplete;
 
   /// Provides callback when user select images from camera/gallery.
-  final StringsCallBack onImageSelected;
+  final AttchmentCallBack onAttachmentSelected;
 
   @override
   State<ChatUITextField> createState() => _ChatUITextFieldState();
@@ -68,7 +72,7 @@ class ChatUITextField extends StatefulWidget {
 class _ChatUITextFieldState extends State<ChatUITextField> {
   final ValueNotifier<String> _inputText = ValueNotifier('');
 
-  final ImagePicker _imagePicker = ImagePicker();
+  final ImagePicker _picker = ImagePicker();
 
   RecorderController? controller;
 
@@ -82,11 +86,21 @@ class _ChatUITextFieldState extends State<ChatUITextField> {
   ImagePickerIconsConfiguration? get imagePickerIconsConfig =>
       sendMessageConfig?.imagePickerIconsConfig;
 
+  VideoPickerConfiguration? get videoPickerConfig =>
+      sendMessageConfig?.videoPickerConfiguration;
+
+  FilePickerConfiguration? get filePickerConfig =>
+      sendMessageConfig?.filePickerConfiguration;
+
   TextFieldConfiguration? get textFieldConfig =>
       sendMessageConfig?.textFieldConfig;
 
   CancelRecordConfiguration? get cancelRecordConfiguration =>
       sendMessageConfig?.cancelRecordConfiguration;
+
+  AttchamentPickerBottomSheetConfiguration?
+      get attchamentPickerBottomSheetConfiguration =>
+          sendMessageConfig?.attachmentPickerBottomSheetConfig;
 
   OutlineInputBorder get _outLineBorder => OutlineInputBorder(
         borderSide: const BorderSide(color: Colors.transparent),
@@ -227,40 +241,25 @@ class _ChatUITextFieldState extends State<ChatUITextField> {
                     return Row(
                       children: [
                         if (!isRecordingValue) ...[
-                          if (sendMessageConfig?.enableCameraImagePicker ??
-                              true)
-                            IconButton(
-                              constraints: const BoxConstraints(),
-                              onPressed: (textFieldConfig?.enabled ?? true)
-                                  ? () => _onIconPressed(
-                                        ImageSource.camera,
-                                        config: sendMessageConfig
-                                            ?.imagePickerConfiguration,
-                                      )
-                                  : null,
-                              icon: imagePickerIconsConfig
-                                      ?.cameraImagePickerIcon ??
-                                  Icon(
-                                    Icons.camera_alt_outlined,
-                                    color:
-                                        imagePickerIconsConfig?.cameraIconColor,
-                                  ),
-                            ),
                           if (sendMessageConfig?.enableGalleryImagePicker ??
                               true)
                             IconButton(
                               constraints: const BoxConstraints(),
                               onPressed: (textFieldConfig?.enabled ?? true)
-                                  ? () => _onIconPressed(
-                                        ImageSource.gallery,
-                                        config: sendMessageConfig
-                                            ?.imagePickerConfiguration,
-                                      )
+                                  ? () {
+                                      AttchamentPickerBottomSheet().show(
+                                        context: context,
+                                        attachmentSourceCallback:
+                                            _onAttachmentSourcePicked,
+                                        attchamentPickerBottomSheetConfig:
+                                            attchamentPickerBottomSheetConfiguration,
+                                      );
+                                    }
                                   : null,
                               icon: imagePickerIconsConfig
                                       ?.galleryImagePickerIcon ??
                                   Icon(
-                                    Icons.image,
+                                    Icons.attach_file_rounded,
                                     color: imagePickerIconsConfig
                                         ?.galleryIconColor,
                                   ),
@@ -349,12 +348,32 @@ class _ChatUITextFieldState extends State<ChatUITextField> {
     }
   }
 
-  void _onIconPressed(
+  void _onAttachmentSourcePicked(AttachmentSource source) {
+    switch (source) {
+      case AttachmentSource.camera:
+        _onImagePicked(ImageSource.camera,
+            config: sendMessageConfig?.imagePickerConfiguration);
+        break;
+      case AttachmentSource.gallery:
+        _onImagePicked(ImageSource.gallery,
+            config: sendMessageConfig?.imagePickerConfiguration);
+        break;
+      case AttachmentSource.video:
+        _onVideoPicked(ImageSource.gallery,
+            config: sendMessageConfig?.videoPickerConfiguration);
+        break;
+      case AttachmentSource.file:
+        _onFilePicked(config: sendMessageConfig?.filePickerConfiguration);
+        break;
+    }
+  }
+
+  void _onImagePicked(
     ImageSource imageSource, {
     ImagePickerConfiguration? config,
   }) async {
     try {
-      final XFile? image = await _imagePicker.pickImage(
+      final XFile? image = await _picker.pickImage(
         source: imageSource,
         maxHeight: config?.maxHeight,
         maxWidth: config?.maxWidth,
@@ -367,9 +386,60 @@ class _ChatUITextFieldState extends State<ChatUITextField> {
         String? updatedImagePath = await config?.onImagePicked!(imagePath);
         if (updatedImagePath != null) imagePath = updatedImagePath;
       }
-      widget.onImageSelected(imagePath ?? '', '');
+      widget.onAttachmentSelected(
+          imagePath ?? "",
+          imageSource == ImageSource.camera
+              ? AttachmentSource.camera
+              : AttachmentSource.gallery,
+          '');
     } catch (e) {
-      widget.onImageSelected('', e.toString());
+      widget.onAttachmentSelected(
+          '',
+          imageSource == ImageSource.camera
+              ? AttachmentSource.camera
+              : AttachmentSource.gallery,
+          e.toString());
+    }
+  }
+
+  void _onVideoPicked(
+    ImageSource imageSource, {
+    VideoPickerConfiguration? config,
+  }) async {
+    try {
+      final XFile? video = await _picker.pickVideo(
+        source: imageSource,
+        maxDuration: config?.maxDuration,
+        preferredCameraDevice:
+            config?.preferredCameraDevice ?? CameraDevice.rear,
+      );
+      String? videoPath = video?.path;
+      if (config?.onVideoPicked != null) {
+        String? updatedVideoPath = await config?.onVideoPicked!(videoPath);
+        if (updatedVideoPath != null) videoPath = updatedVideoPath;
+      }
+      widget.onAttachmentSelected(videoPath ?? '', AttachmentSource.video, '');
+    } catch (e) {
+      widget.onAttachmentSelected('', AttachmentSource.video, e.toString());
+    }
+  }
+
+  void _onFilePicked({
+    FilePickerConfiguration? config,
+  }) async {
+    try {
+      FilePickerResult? result = await FilePicker.platform.pickFiles(
+          allowedExtensions: config?.allowedExtensions,
+          allowCompression: config?.allowCompression ?? false,
+          dialogTitle: config?.dialogTitle);
+      String? filePath = result?.files.single.path;
+      if (config?.onFilePicked != null) {
+        String? updatedFilePath = await config?.onFilePicked!(filePath);
+        if (updatedFilePath != null) filePath = updatedFilePath;
+      }
+      widget.onAttachmentSelected(filePath ?? '', AttachmentSource.file, '');
+    } catch (e) {
+      widget.onAttachmentSelected('', AttachmentSource.file, e.toString());
     }
   }
 

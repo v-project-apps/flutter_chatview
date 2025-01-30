@@ -21,6 +21,7 @@
  */
 
 import 'package:audio_waveforms/audio_waveforms.dart';
+import 'package:chatview/src/models/config_models/attchament_picker_bottom_sheet_configuration.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
@@ -56,6 +57,12 @@ class SendMessageConfiguration {
   /// Provides configuration of image picker plugin.
   final ImagePickerConfiguration? imagePickerConfiguration;
 
+  /// Provides configuration of video picker plugin.
+  final VideoPickerConfiguration? videoPickerConfiguration;
+
+  /// Provides configuration of file picker plugin.
+  final FilePickerConfiguration? filePickerConfiguration;
+
   /// Provides configuration of text field.
   final TextFieldConfiguration? textFieldConfig;
 
@@ -68,6 +75,12 @@ class SendMessageConfiguration {
   /// Enable/disable send image from camera. Enabled by default.
   final bool enableCameraImagePicker;
 
+  /// Enable/disable send file. Enabled by default.
+  final bool enableFilePicker;
+
+  /// Enable/disable send video from gallery. Enabled by default.
+  final bool enableGalleryVideoPicker;
+
   /// Color of mic icon when replying to some voice message.
   final Color? micIconColor;
 
@@ -76,6 +89,9 @@ class SendMessageConfiguration {
 
   /// Configuration for cancel voice recording
   final CancelRecordConfiguration? cancelRecordConfiguration;
+
+  final AttchamentPickerBottomSheetConfiguration?
+      attachmentPickerBottomSheetConfig;
 
   const SendMessageConfiguration({
     this.textFieldConfig,
@@ -91,9 +107,14 @@ class SendMessageConfiguration {
     this.allowRecordingVoice = true,
     this.enableCameraImagePicker = true,
     this.enableGalleryImagePicker = true,
+    this.enableFilePicker = true,
+    this.enableGalleryVideoPicker = true,
     this.voiceRecordingConfiguration,
     this.micIconColor,
     this.cancelRecordConfiguration,
+    this.attachmentPickerBottomSheetConfig,
+    this.videoPickerConfiguration,
+    this.filePickerConfiguration,
   });
 }
 
@@ -210,6 +231,46 @@ class ImagePickerConfiguration {
     this.imageQuality,
     this.preferredCameraDevice,
     this.onImagePicked,
+  });
+}
+
+class VideoPickerConfiguration {
+  /// Used to give max duration of video.
+  final Duration? maxDuration;
+
+  /// Preferred camera device to pick image from.
+  final CameraDevice? preferredCameraDevice;
+
+  /// Callback when image is picked from camera or gallery,
+  ///  we can perform our task on image like adding crop options and return new image path
+  final Future<String?> Function(String? path)? onVideoPicked;
+
+  const VideoPickerConfiguration({
+    this.maxDuration,
+    this.preferredCameraDevice,
+    this.onVideoPicked,
+  });
+}
+
+class FilePickerConfiguration {
+  /// Used to give allowed extensions of file.
+  final List<String>? allowedExtensions;
+
+  /// Used to give allow compression of file.
+  final bool? allowCompression;
+
+  /// Used to give dialog title of file picker.
+  final String? dialogTitle;
+
+  /// Callback when file is picked from file picker,
+  /// we can perform our task on file and return new file path
+  final Future<String?> Function(String? path)? onFilePicked;
+
+  const FilePickerConfiguration({
+    this.allowedExtensions,
+    this.allowCompression,
+    this.dialogTitle,
+    this.onFilePicked,
   });
 }
 

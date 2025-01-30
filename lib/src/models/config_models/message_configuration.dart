@@ -19,6 +19,8 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+import 'package:chatview/src/models/config_models/file_message_configuration.dart';
+import 'package:chatview/src/models/config_models/video_message_configuration.dart';
 import 'package:chatview/src/models/models.dart';
 import 'package:flutter/material.dart';
 
@@ -40,6 +42,12 @@ class MessageConfiguration {
   /// Configurations for voice message bubble
   final VoiceMessageConfiguration? voiceMessageConfig;
 
+  /// Configurations for video message bubble
+  final VideoMessageConfiguration? videoMessageConfig;
+
+  /// Configurations for file message bubble
+  final FileMessageConfiguration? fileMessageConfig;
+
   /// To customize reply view for custom message type
   final CustomMessageReplyViewBuilder? customMessageReplyViewBuilder;
 
@@ -50,5 +58,7 @@ class MessageConfiguration {
     this.customMessageBuilder,
     this.voiceMessageConfig,
     this.customMessageReplyViewBuilder,
+    this.videoMessageConfig,
+    this.fileMessageConfig,
   });
 }

@@ -19,22 +19,44 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-class PackageStrings {
-  static const String today = "Today";
-  static const String yesterday = "Yesterday";
-  static const String repliedToYou = "Replied to you";
-  static const String repliedBy = "Replied by";
-  static const String more = "More";
-  static const String unsend = "Unsend";
-  static const String reply = "Reply";
-  static const String replyTo = "Replying to";
-  static const String message = "Message";
-  static const String reactionPopupTitle =
-      "Tap and hold to multiply your reaction";
-  static const String photo = "Photo";
-  static const String video = "Video";
-  static const String file = "File";
-  static const String send = "Send";
-  static const String you = "You";
-  static const String report = "Report";
+import 'package:chatview/src/models/config_models/image_message_configuration.dart';
+import 'package:flutter/material.dart';
+
+import '../../values/typedefs.dart';
+
+class FileMessageConfiguration {
+  /// Provides configuration of share button while file message is appeared.
+  final ShareIconConfiguration? shareIconConfig;
+
+  /// Hide share icon in file view.
+  final bool hideShareIcon;
+
+  /// Provides callback when user taps on file message.
+  final MessageCallBack? onTap;
+
+  /// Used for giving height of file preview.
+  final double? iconSize;
+
+  /// Used for giving color of file icon.
+  final Color? iconColor;
+
+  /// Used for giving padding of file message.
+  final EdgeInsetsGeometry? padding;
+
+  /// Used for giving margin of file message.
+  final EdgeInsetsGeometry? margin;
+
+  /// Used for giving border radius of file message.
+  final BorderRadius? borderRadius;
+
+  const FileMessageConfiguration({
+    this.hideShareIcon = false,
+    this.shareIconConfig,
+    this.onTap,
+    this.iconSize,
+    this.iconColor,
+    this.padding,
+    this.margin,
+    this.borderRadius,
+  });
 }
