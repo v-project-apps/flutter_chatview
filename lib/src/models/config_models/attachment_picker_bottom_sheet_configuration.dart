@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-class AttchamentPickerBottomSheetConfiguration {
-  const AttchamentPickerBottomSheetConfiguration({
+class AttachmentPickerBottomSheetConfiguration {
+  const AttachmentPickerBottomSheetConfiguration({
     this.bottomSheetPadding,
     this.backgroundColor,
     this.attachmentWidgetPadding,

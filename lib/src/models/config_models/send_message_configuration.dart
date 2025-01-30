@@ -21,7 +21,7 @@
  */
 
 import 'package:audio_waveforms/audio_waveforms.dart';
-import 'package:chatview/src/models/config_models/attchament_picker_bottom_sheet_configuration.dart';
+import 'package:chatview/src/models/config_models/attachment_picker_bottom_sheet_configuration.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
@@ -90,7 +90,7 @@ class SendMessageConfiguration {
   /// Configuration for cancel voice recording
   final CancelRecordConfiguration? cancelRecordConfiguration;
 
-  final AttchamentPickerBottomSheetConfiguration?
+  final AttachmentPickerBottomSheetConfiguration?
       attachmentPickerBottomSheetConfig;
 
   const SendMessageConfiguration({

@@ -23,10 +23,8 @@ import 'dart:async';
 import 'dart:io' show File, Platform;
 
 import 'package:audio_waveforms/audio_waveforms.dart';
-import 'package:chatview/src/models/config_models/attchament_picker_bottom_sheet_configuration.dart';
 import 'package:chatview/src/utils/constants/constants.dart';
 import 'package:chatview/src/values/attachment_source.dart';
-import 'package:chatview/src/widgets/attchament_picker_bottom_sheet.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -98,7 +96,7 @@ class _ChatUITextFieldState extends State<ChatUITextField> {
   CancelRecordConfiguration? get cancelRecordConfiguration =>
       sendMessageConfig?.cancelRecordConfiguration;
 
-  AttchamentPickerBottomSheetConfiguration?
+  AttachmentPickerBottomSheetConfiguration?
       get attchamentPickerBottomSheetConfiguration =>
           sendMessageConfig?.attachmentPickerBottomSheetConfig;
 

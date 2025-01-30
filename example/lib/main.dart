@@ -326,11 +326,8 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
   void _onSendTap(
-    String message,
-    ReplyMessage replyMessage,
-    MessageType messageType,
-    {File? file}
-  ) {
+      String message, ReplyMessage replyMessage, MessageType messageType,
+      {File? file}) {
     _chatController.addMessage(
       Message(
         id: DateTime.now().toString(),

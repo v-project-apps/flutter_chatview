@@ -20,8 +20,6 @@
  * SOFTWARE.
  */
 
-import 'dart:io';
-
 import 'package:chatview/src/models/config_models/file_message_configuration.dart';
 import 'package:chatview/src/models/models.dart';
 import 'package:dio/dio.dart';
