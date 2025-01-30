@@ -24,10 +24,10 @@ import 'dart:io';
 
 import 'package:chatview/src/models/config_models/file_message_configuration.dart';
 import 'package:chatview/src/models/models.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:open_filex/open_filex.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:http/http.dart' as http;
 import 'reaction_widget.dart';
 import 'share_icon.dart';
 
@@ -101,9 +101,8 @@ class FileMessageView extends StatelessWidget {
       final filePath = '${tempDir.path}/${url.split('/').last}';
 
       // Download the file
-      final response = await http.get(Uri.parse(url));
-      final file = File(filePath);
-      await file.writeAsBytes(response.bodyBytes);
+      final Dio dio = Dio();
+      await dio.download(url, filePath);
 
       // Open the file
       await OpenFilex.open(filePath);
