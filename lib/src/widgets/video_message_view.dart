@@ -119,11 +119,22 @@ class VideoMessageView extends StatelessWidget {
     if (filePath != null) {
       return Stack(
         children: [
-          Image.file(
-            File(filePath),
-            fit: BoxFit.cover,
-          ),
-          const Center(
+          Container(
+              height: videoMessageConfiguration?.previewHeight ?? 720,
+              width: videoMessageConfiguration?.previewWidth ?? 1080,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(8),
+                color: Colors.black,
+              ),
+              child: Image.file(
+                File(filePath),
+                fit: BoxFit.cover,
+              )),
+          const Positioned(
+            bottom: 0,
+            right: 0,
+            left: 0,
+            top: 0,
             child: Icon(
               Icons.play_circle_fill,
               color: Colors.white,
