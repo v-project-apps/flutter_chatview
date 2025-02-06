@@ -15,8 +15,8 @@ class Reaction {
           reactionsList[i]!.toString()
     ];
 
-    final reactedUserIdList = json['reactedUserIds'] is List<dynamic>
-        ? json['reactedUserIds'] as List<dynamic>
+    final reactedUserIdList = json['reacted_user_ids'] is List<dynamic>
+        ? json['reacted_user_ids'] as List<dynamic>
         : <dynamic>[];
 
     final reactedUserIds = <String>[
@@ -39,7 +39,7 @@ class Reaction {
 
   Map<String, dynamic> toJson() => {
         'reactions': reactions,
-        'reactedUserIds': reactedUserIds,
+        'reacted_user_ids': reactedUserIds,
       };
 
   Reaction copyWith({

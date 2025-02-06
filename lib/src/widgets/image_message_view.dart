@@ -58,7 +58,8 @@ class ImageMessageView extends StatelessWidget {
   /// Provides scale of highlighted image when user taps on replied image.
   final double highlightScale;
 
-  String get imageUrl => message.message;
+  String get imageUrl =>
+      message.attachment?.url ?? message.attachment?.file?.path ?? "";
 
   Widget get iconButton => ShareIcon(
         shareIconConfig: imageMessageConfig?.shareIconConfig,
@@ -79,7 +80,20 @@ class ImageMessageView extends StatelessWidget {
             GestureDetector(
               onTap: () => imageMessageConfig?.onTap != null
                   ? imageMessageConfig?.onTap!(message)
-                  : null,
+                  : Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => Scaffold(
+                          backgroundColor: Colors.black,
+                          body: Center(
+                            child: Hero(
+                              tag: 'imageHeroTag',
+                              child: Image.network(message.message),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
               child: Transform.scale(
                 scale: highlightImage ? highlightScale : 1.0,
                 alignment: isMessageBySender
@@ -101,21 +115,24 @@ class ImageMessageView extends StatelessWidget {
                         BorderRadius.circular(14),
                     child: (() {
                       if (imageUrl.isUrl) {
-                        return Image.network(
-                          imageUrl,
-                          fit: BoxFit.fitHeight,
-                          loadingBuilder: (context, child, loadingProgress) {
-                            if (loadingProgress == null) return child;
-                            return Center(
-                              child: CircularProgressIndicator(
-                                value: loadingProgress.expectedTotalBytes !=
-                                        null
-                                    ? loadingProgress.cumulativeBytesLoaded /
-                                        loadingProgress.expectedTotalBytes!
-                                    : null,
-                              ),
-                            );
-                          },
+                        return Hero(
+                          tag: 'imageHeroTag',
+                          child: Image.network(
+                            imageUrl,
+                            fit: BoxFit.fitHeight,
+                            loadingBuilder: (context, child, loadingProgress) {
+                              if (loadingProgress == null) return child;
+                              return Center(
+                                child: CircularProgressIndicator(
+                                  value: loadingProgress.expectedTotalBytes !=
+                                          null
+                                      ? loadingProgress.cumulativeBytesLoaded /
+                                          loadingProgress.expectedTotalBytes!
+                                      : null,
+                                ),
+                              );
+                            },
+                          ),
                         );
                       } else if (imageUrl.fromMemory) {
                         return Image.memory(

@@ -206,24 +206,24 @@ class _ChatGroupedListWidgetState extends State<ChatGroupedListWidget>
         chatListConfig.repliedMessageConfig?.repliedMsgAutoScrollConfig;
     final highlightDuration = repliedMsgAutoScrollConfig?.highlightDuration ??
         const Duration(milliseconds: 300);
-    // Scrolls to replied message and highlights
-    if (repliedMessages != null && repliedMessages.key.currentState != null) {
-      await Scrollable.ensureVisible(
-        repliedMessages.key.currentState!.context,
-        // This value will make widget to be in center when auto scrolled.
-        alignment: 0.5,
-        curve:
-            repliedMsgAutoScrollConfig?.highlightScrollCurve ?? Curves.easeIn,
-        duration: highlightDuration,
-      );
-      if (repliedMsgAutoScrollConfig?.enableHighlightRepliedMsg ?? false) {
-        _replyId.value = id;
+    // // Scrolls to replied message and highlights
+    // if (repliedMessages != null && repliedMessages.key.currentState != null) {
+    //   await Scrollable.ensureVisible(
+    //     repliedMessages.key.currentState!.context,
+    //     // This value will make widget to be in center when auto scrolled.
+    //     alignment: 0.5,
+    //     curve:
+    //         repliedMsgAutoScrollConfig?.highlightScrollCurve ?? Curves.easeIn,
+    //     duration: highlightDuration,
+    //   );
+    //   if (repliedMsgAutoScrollConfig?.enableHighlightRepliedMsg ?? false) {
+    //     _replyId.value = id;
 
-        Future.delayed(highlightDuration, () {
-          _replyId.value = null;
-        });
-      }
-    }
+    //     Future.delayed(highlightDuration, () {
+    //       _replyId.value = null;
+    //     });
+    //   }
+    // }
   }
 
   /// When user swipe at that time only animation is assigned with value.

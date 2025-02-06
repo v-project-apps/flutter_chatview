@@ -20,22 +20,24 @@
  * SOFTWARE.
  */
 
+import 'package:chatview/src/controller/file_controller.dart';
 import 'package:chatview/src/models/config_models/file_message_configuration.dart';
 import 'package:chatview/src/models/models.dart';
-import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:open_filex/open_filex.dart';
-import 'package:path_provider/path_provider.dart';
 import 'reaction_widget.dart';
 import 'share_icon.dart';
 
-class FileMessageView extends StatelessWidget {
+class FileMessageView extends StatefulWidget {
   const FileMessageView({
     Key? key,
     required this.message,
     required this.isMessageBySender,
     this.fileMessageConfiguration,
     this.messageReactionConfig,
+    this.highlightFile = false,
+    this.highlightScale = 1.2,
+    this.highlightColor,
   }) : super(key: key);
 
   /// Provides message instance of chat.
@@ -50,7 +52,16 @@ class FileMessageView extends StatelessWidget {
   /// Provides configuration of reaction appearance in chat bubble.
   final MessageReactionConfiguration? messageReactionConfig;
 
-  String get fileUrl => message.message;
+  /// Represents flag of highlighting file when user taps on replied file.
+  final bool highlightFile;
+
+  /// Provides scale of highlighted file when user taps on replied file.
+  final double highlightScale;
+
+  /// Allow user to set color of highlighted message.
+  final Color? highlightColor;
+
+  String get fileUrl => message.attachment?.url ?? "";
 
   Widget get iconButton => ShareIcon(
         shareIconConfig: fileMessageConfiguration?.shareIconConfig,
@@ -58,55 +69,119 @@ class FileMessageView extends StatelessWidget {
       );
 
   @override
+  State<FileMessageView> createState() => _FileMessageViewState();
+}
+
+class _FileMessageViewState extends State<FileMessageView> {
+  bool isDownloading = false;
+
+  @override
   Widget build(BuildContext context) {
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      mainAxisAlignment:
-          isMessageBySender ? MainAxisAlignment.end : MainAxisAlignment.start,
+    return Stack(
+      clipBehavior: Clip.none,
       children: [
-        if (isMessageBySender &&
-            !(fileMessageConfiguration?.hideShareIcon ?? false))
-          iconButton,
-        Stack(
-          children: [
-            GestureDetector(
-              onTap: () {
-                fileMessageConfiguration?.onTap != null
-                    ? fileMessageConfiguration?.onTap!(message)
-                    : _downloadAndOpenFile(fileUrl);
-              },
-              child: _getFileIcon(),
-            ),
-            if (message.reaction.reactions.isNotEmpty)
-              ReactionWidget(
-                isMessageBySender: isMessageBySender,
-                reaction: message.reaction,
-                messageReactionConfig: messageReactionConfig,
+        Container(
+          padding: widget.fileMessageConfiguration?.padding ??
+              const EdgeInsets.symmetric(
+                horizontal: 12,
+                vertical: 10,
               ),
-          ],
+          margin: widget.fileMessageConfiguration?.margin ??
+              EdgeInsets.fromLTRB(5, 0, 6,
+                  widget.message.reaction.reactions.isNotEmpty ? 15 : 2),
+          decoration: BoxDecoration(
+            color: widget.highlightFile
+                ? widget.highlightColor
+                : widget.fileMessageConfiguration?.messageColor,
+            borderRadius: widget.fileMessageConfiguration?.borderRadius,
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: widget.isMessageBySender
+                ? MainAxisAlignment.end
+                : MainAxisAlignment.start,
+            children: [
+              if (widget.isMessageBySender &&
+                  !(widget.fileMessageConfiguration?.hideShareIcon ?? false))
+                widget.iconButton,
+              Flexible(
+                child: GestureDetector(
+                  onTap: _downloadAndOpenFile,
+                  child: Transform.scale(
+                    scale: widget.highlightFile ? widget.highlightScale : 1.0,
+                    alignment: widget.isMessageBySender
+                        ? Alignment.centerRight
+                        : Alignment.centerLeft,
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        isDownloading
+                            ? CircularProgressIndicator(
+                                value: widget
+                                    .fileMessageConfiguration?.loadingSize,
+                              )
+                            : _getFileIcon(),
+                        const SizedBox(width: 8),
+                        Flexible(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                widget.message.attachment?.name ??
+                                    widget.message.message,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                              Text(
+                                widget.message.attachment?.sizeString ?? "",
+                                style: const TextStyle(
+                                  color: Colors.grey,
+                                  fontSize: 12,
+                                ),
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
-        if (!isMessageBySender &&
-            !(fileMessageConfiguration?.hideShareIcon ?? false))
-          iconButton,
+        if (widget.message.reaction.reactions.isNotEmpty)
+          ReactionWidget(
+            key: widget.key,
+            isMessageBySender: widget.isMessageBySender,
+            reaction: widget.message.reaction,
+            messageReactionConfig: widget.messageReactionConfig,
+          ),
       ],
     );
   }
 
-  Future<void> _downloadAndOpenFile(String url) async {
-    try {
-      // Get the temporary directory
-      final tempDir = await getTemporaryDirectory();
-      final filePath = '${tempDir.path}/${url.split('/').last}';
+  void _downloadAndOpenFile() async {
+    setState(() {
+      isDownloading = true;
+    });
 
-      // Download the file
-      final Dio dio = Dio();
-      await dio.download(url, filePath);
+    String filePath = await FileController.getLocalFilePath(
+      widget.message.attachment?.name ?? '',
+    );
 
-      // Open the file
+    if (await FileController.isFileDownloaded(filePath)) {
       await OpenFilex.open(filePath);
-    } catch (e) {
-      debugPrint('Error downloading or opening file: $e');
+    } else {
+      await FileController.downloadAndOpenFile(
+        widget.fileUrl,
+        widget.message.attachment?.name ?? "",
+      );
     }
+
+    setState(() {
+      isDownloading = false;
+    });
   }
 
   Widget _getFileIcon() {
@@ -124,15 +199,15 @@ class FileMessageView extends StatelessWidget {
     };
 
     for (var entry in fileIcons.entries) {
-      if (message.message.contains(entry.key)) {
+      if (widget.message.message.contains(entry.key)) {
         return Icon(entry.value,
-            size: fileMessageConfiguration?.iconSize,
-            color: fileMessageConfiguration?.iconColor);
+            size: widget.fileMessageConfiguration?.iconSize,
+            color: widget.fileMessageConfiguration?.iconColor);
       }
     }
 
     return Icon(Icons.insert_drive_file,
-        size: fileMessageConfiguration?.iconSize,
-        color: fileMessageConfiguration?.iconColor);
+        size: widget.fileMessageConfiguration?.iconSize,
+        color: widget.fileMessageConfiguration?.iconColor);
   }
 }

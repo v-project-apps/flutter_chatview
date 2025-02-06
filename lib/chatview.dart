@@ -45,3 +45,4 @@ export 'src/widgets/video_player.dart';
 export 'src/models/config_models/attachment_picker_bottom_sheet_configuration.dart';
 export 'src/models/config_models/file_message_configuration.dart';
 export 'src/models/config_models/video_message_configuration.dart';
+export 'src/models/data_models/attachment.dart';

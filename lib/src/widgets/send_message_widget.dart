@@ -289,8 +289,8 @@ class SendMessageWidgetState extends State<SendMessageWidget> {
       String filePath, AttachmentSource source, String error) {
     debugPrint('Call in Send Message Widget');
     if (filePath.isNotEmpty) {
-      widget.onSendTap.call(
-          filePath, replyMessage, MessageType.fromAttachmentSource(source),
+      widget.onSendTap.call(filePath.split('/').last, replyMessage,
+          MessageType.fromAttachmentSource(source),
           file: File(filePath));
       _assignRepliedMessage();
     }

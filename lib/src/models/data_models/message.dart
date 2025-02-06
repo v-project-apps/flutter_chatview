@@ -28,7 +28,7 @@ class Message {
   final String id;
 
   /// Used for accessing widget's render box.
-  final GlobalKey key;
+  final UniqueKey key;
 
   /// Provides actual message it will be text or image/audio file path.
   final String message;
@@ -48,6 +48,9 @@ class Message {
   /// Provides message type.
   final MessageType messageType;
 
+  /// Provides attachment of message.
+  final Attachment? attachment;
+
   /// Status of the message.
   final ValueNotifier<MessageStatus> _status;
 
@@ -62,10 +65,11 @@ class Message {
     this.replyMessage = const ReplyMessage(),
     Reaction? reaction,
     this.messageType = MessageType.text,
+    this.attachment,
     this.voiceMessageDuration,
     MessageStatus status = MessageStatus.pending,
-  })  : reaction = reaction ?? Reaction(reactions: [], reactedUserIds: []),
-        key = GlobalKey(),
+  })  : key = UniqueKey(),
+        reaction = reaction ?? Reaction(reactions: [], reactedUserIds: []),
         _status = ValueNotifier(status),
         assert(
           (messageType.isVoice
@@ -94,7 +98,7 @@ class Message {
         id: json['id']?.toString() ?? '',
         message: json['message']?.toString() ?? '',
         createdAt:
-            DateTime.tryParse(json['createdAt'].toString()) ?? DateTime.now(),
+            DateTime.tryParse(json['created_at'].toString()) ?? DateTime.now(),
         sentBy: json['sentBy']?.toString() ?? '',
         replyMessage: json['reply_message'] is Map<String, dynamic>
             ? ReplyMessage.fromJson(json['reply_message'])
@@ -104,6 +108,9 @@ class Message {
             : null,
         messageType: MessageType.tryParse(json['message_type']?.toString()) ??
             MessageType.text,
+        attachment: json['attachment'] is Map<String, dynamic>
+            ? Attachment.fromJson(json['attachment'])
+            : null,
         voiceMessageDuration: Duration(
           microseconds:
               int.tryParse(json['voice_message_duration'].toString()) ?? 0,
@@ -115,11 +122,12 @@ class Message {
   Map<String, dynamic> toJson() => {
         'id': id,
         'message': message,
-        'createdAt': createdAt.toIso8601String(),
+        'created_at': createdAt.toIso8601String(),
         'sentBy': sentBy,
         'reply_message': replyMessage.toJson(),
         'reaction': reaction.toJson(),
         'message_type': messageType.name,
+        'attachment': attachment?.toJson(),
         'voice_message_duration': voiceMessageDuration?.inMicroseconds,
         'status': status.name,
       };
@@ -133,6 +141,7 @@ class Message {
     ReplyMessage? replyMessage,
     Reaction? reaction,
     MessageType? messageType,
+    Attachment? attachment,
     Duration? voiceMessageDuration,
     MessageStatus? status,
     bool forceNullValue = false,
@@ -143,6 +152,7 @@ class Message {
       createdAt: createdAt ?? this.createdAt,
       sentBy: sentBy ?? this.sentBy,
       messageType: messageType ?? this.messageType,
+      attachment: attachment ?? this.attachment,
       voiceMessageDuration: forceNullValue
           ? voiceMessageDuration
           : voiceMessageDuration ?? this.voiceMessageDuration,

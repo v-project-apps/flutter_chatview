@@ -37,6 +37,8 @@ class VideoMessageView extends StatelessWidget {
       required this.message,
       required this.isMessageBySender,
       this.videoMessageConfiguration,
+      this.highlightVideo = false,
+      this.highlightScale = 1.2,
       this.messageReactionConfig})
       : super(key: key);
 
@@ -52,7 +54,14 @@ class VideoMessageView extends StatelessWidget {
   /// Provides configuration of reaction appearance in chat bubble.
   final MessageReactionConfiguration? messageReactionConfig;
 
-  String get videoPath => message.message;
+  /// Represents flag of highlighting video when user taps on replied video.
+  final bool highlightVideo;
+
+  /// Provides scale of highlighted video when user taps on replied video.
+  final double highlightScale;
+
+  String get videoPath =>
+      message.attachment?.url ?? message.attachment?.file?.path ?? "";
 
   Widget get iconButton => ShareIcon(
         shareIconConfig: videoMessageConfiguration?.shareIconConfig,
@@ -79,18 +88,43 @@ class VideoMessageView extends StatelessWidget {
                         builder: (context) => VideoPlayer(videoUrl: videoPath),
                       ));
               },
-              child: FutureBuilder(
-                  future: getVideoPreview(),
-                  builder: (context, snapshot) {
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return const CircularProgressIndicator();
-                    } else if (snapshot.connectionState ==
-                        ConnectionState.done) {
-                      return snapshot.data as Widget;
-                    } else {
-                      return Container();
-                    }
-                  }),
+              child: Transform.scale(
+                scale: highlightVideo ? highlightScale : 1.0,
+                alignment: isMessageBySender
+                    ? Alignment.centerRight
+                    : Alignment.centerLeft,
+                child: Container(
+                  padding:
+                      videoMessageConfiguration?.padding ?? EdgeInsets.zero,
+                  margin: videoMessageConfiguration?.margin ??
+                      EdgeInsets.only(
+                        top: 6,
+                        right: isMessageBySender ? 6 : 0,
+                        left: isMessageBySender ? 0 : 6,
+                        bottom: message.reaction.reactions.isNotEmpty ? 15 : 0,
+                      ),
+                  child: ClipRRect(
+                    borderRadius: videoMessageConfiguration?.borderRadius ??
+                        BorderRadius.circular(14),
+                    child: FutureBuilder(
+                        future: getVideoPreview(),
+                        builder: (context, snapshot) {
+                          if (snapshot.connectionState ==
+                              ConnectionState.waiting) {
+                            return _videoContainer(
+                                const CircularProgressIndicator(
+                              value: 48.0,
+                            ));
+                          } else if (snapshot.connectionState ==
+                              ConnectionState.done) {
+                            return snapshot.data as Widget;
+                          } else {
+                            return Container();
+                          }
+                        }),
+                  ),
+                ),
+              ),
             ),
             if (message.reaction.reactions.isNotEmpty)
               ReactionWidget(
@@ -107,6 +141,15 @@ class VideoMessageView extends StatelessWidget {
     );
   }
 
+  Widget _videoContainer(Widget child) => Container(
+      height: videoMessageConfiguration?.previewHeight ?? 720,
+      width: videoMessageConfiguration?.previewWidth ?? 1080,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(8),
+        color: Colors.black,
+      ),
+      child: Center(child: child));
+
   Future<Widget> getVideoPreview() async {
     final filePath = await VideoThumbnail.thumbnailFile(
       video: videoPath,
@@ -114,22 +157,15 @@ class VideoMessageView extends StatelessWidget {
       imageFormat: ImageFormat.JPEG,
       maxHeight: videoMessageConfiguration?.previewHeight?.toInt() ?? 720,
       maxWidth: videoMessageConfiguration?.previewWidth?.toInt() ?? 1080,
-      quality: 75,
+      quality: 100,
     );
     if (filePath != null) {
       return Stack(
         children: [
-          Container(
-              height: videoMessageConfiguration?.previewHeight ?? 720,
-              width: videoMessageConfiguration?.previewWidth ?? 1080,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(8),
-                color: Colors.black,
-              ),
-              child: Image.file(
-                File(filePath),
-                fit: BoxFit.cover,
-              )),
+          _videoContainer(Image.file(
+            File(filePath),
+            fit: BoxFit.cover,
+          )),
           const Positioned(
             bottom: 0,
             right: 0,
@@ -138,7 +174,7 @@ class VideoMessageView extends StatelessWidget {
             child: Icon(
               Icons.play_circle_fill,
               color: Colors.white,
-              size: 50,
+              size: 48,
             ),
           ),
         ],

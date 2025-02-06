@@ -66,18 +66,18 @@ class ChatUser {
   factory ChatUser.fromJson(Map<String, dynamic> json) => ChatUser(
         id: json["id"],
         name: json["name"],
-        profilePhoto: json["profilePhoto"],
-        imageType: ImageType.tryParse(json['imageType']?.toString()) ??
+        profilePhoto: json["profile_photo"],
+        imageType: ImageType.tryParse(json['image_type']?.toString()) ??
             ImageType.network,
-        defaultAvatarImage: json["defaultAvatarImage"],
+        defaultAvatarImage: json["default_avatar_image"] ?? profileImage,
       );
 
   Map<String, dynamic> toJson() => {
         'id': id,
         'name': name,
-        'profilePhoto': profilePhoto,
-        'imageType': imageType.name,
-        'defaultAvatarImage': defaultAvatarImage,
+        'profile_photo': profilePhoto,
+        'image_type': imageType.name,
+        'default_avatar_image': defaultAvatarImage,
       };
 
   ChatUser copyWith({

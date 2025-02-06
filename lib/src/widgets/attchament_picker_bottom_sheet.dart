@@ -10,11 +10,13 @@ class AttchamentPickerBottomSheet {
       required AttachmentSourceCallback attachmentSourceCallback}) {
     return showModalBottomSheet<void>(
       context: context,
+      useSafeArea: true,
       builder: (BuildContext context) {
         return Container(
           color: attchamentPickerBottomSheetConfig?.backgroundColor,
           child: SafeArea(
             child: ListView(
+              shrinkWrap: true,
               padding: attchamentPickerBottomSheetConfig?.bottomSheetPadding ??
                   const EdgeInsets.only(right: 12, left: 12, top: 18),
               children: [

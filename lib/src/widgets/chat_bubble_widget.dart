@@ -33,7 +33,7 @@ import 'swipe_to_reply.dart';
 
 class ChatBubbleWidget extends StatefulWidget {
   const ChatBubbleWidget({
-    required GlobalKey key,
+    required UniqueKey key,
     required this.message,
     required this.onLongPress,
     required this.slideAnimation,

@@ -49,24 +49,24 @@ class ReplyMessage {
 
   factory ReplyMessage.fromJson(Map<String, dynamic> json) => ReplyMessage(
         message: json['message']?.toString() ?? '',
-        replyBy: json['replyBy']?.toString() ?? '',
-        replyTo: json['replyTo']?.toString() ?? '',
+        replyBy: json['reply_by']?.toString() ?? '',
+        replyTo: json['reply_bo']?.toString() ?? '',
         messageType: MessageType.tryParse(json['message_type']?.toString()) ??
             MessageType.text,
         messageId: json['id']?.toString() ?? '',
         voiceMessageDuration: Duration(
           microseconds:
-              int.tryParse(json['voiceMessageDuration'].toString()) ?? 0,
+              int.tryParse(json['voice_message_duration'].toString()) ?? 0,
         ),
       );
 
   Map<String, dynamic> toJson() => {
         'message': message,
-        'replyBy': replyBy,
-        'replyTo': replyTo,
+        'reply_by': replyBy,
+        'reply_to': replyTo,
         'message_type': messageType.name,
         'id': messageId,
-        'voiceMessageDuration': voiceMessageDuration?.inMicroseconds,
+        'voice_message_duration': voiceMessageDuration?.inMicroseconds,
       };
 
   ReplyMessage copyWith({

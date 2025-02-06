@@ -34,11 +34,17 @@ class FileMessageConfiguration {
   /// Provides callback when user taps on file message.
   final MessageCallBack? onTap;
 
-  /// Used for giving height of file preview.
+  /// Used for giving size of file icon.
   final double? iconSize;
 
   /// Used for giving color of file icon.
   final Color? iconColor;
+
+  /// Used for giving size of loading widget.
+  final double? loadingSize;
+
+  /// Used for giving color of message.
+  final Color? messageColor;
 
   /// Used for giving padding of file message.
   final EdgeInsetsGeometry? padding;
@@ -50,11 +56,13 @@ class FileMessageConfiguration {
   final BorderRadius? borderRadius;
 
   const FileMessageConfiguration({
+    this.loadingSize,
     this.hideShareIcon = false,
     this.shareIconConfig,
     this.onTap,
     this.iconSize,
     this.iconColor,
+    this.messageColor,
     this.padding,
     this.margin,
     this.borderRadius,

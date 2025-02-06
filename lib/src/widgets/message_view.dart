@@ -214,6 +214,8 @@ class _MessageViewState extends State<MessageView>
                     isMessageBySender: widget.isMessageBySender,
                     fileMessageConfiguration: messageConfig?.fileMessageConfig,
                     messageReactionConfig: messageConfig?.messageReactionConfig,
+                    highlightColor: widget.highlightColor,
+                    highlightFile: widget.shouldHighlight,
                   );
                 } else if (widget.message.messageType.isVideo) {
                   return VideoMessageView(
@@ -222,6 +224,8 @@ class _MessageViewState extends State<MessageView>
                     videoMessageConfiguration:
                         messageConfig?.videoMessageConfig,
                     messageReactionConfig: messageConfig?.messageReactionConfig,
+                    highlightVideo: widget.shouldHighlight,
+                    highlightScale: widget.highlightScale,
                   );
                 } else if (widget.message.messageType.isText) {
                   return TextMessageView(

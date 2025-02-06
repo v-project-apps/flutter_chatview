@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:audio_waveforms/audio_waveforms.dart';
 import 'package:chatview/chatview.dart';
+import 'package:chatview/src/controller/file_controller.dart';
 import 'package:chatview/src/widgets/reaction_widget.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -56,18 +57,44 @@ class _VoiceMessageViewState extends State<VoiceMessageView> {
 
   PlayerWaveStyle playerWaveStyle = const PlayerWaveStyle(scaleFactor: 70);
 
+  bool isDownloading = false;
+
   @override
   void initState() {
     super.initState();
-    controller = PlayerController()
-      ..preparePlayer(
-        path: widget.message.message,
-        noOfSamples: widget.config?.playerWaveStyle
-                ?.getSamplesForWidth(widget.screenWidth * 0.5) ??
-            playerWaveStyle.getSamplesForWidth(widget.screenWidth * 0.5),
-      ).whenComplete(() => widget.onMaxDuration?.call(controller.maxDuration));
+    controller = PlayerController();
+    _initializePlayer();
     playerStateSubscription = controller.onPlayerStateChanged
         .listen((state) => _playerState.value = state);
+  }
+
+  Future<void> _initializePlayer() async {
+    String filePath = await FileController.getLocalFilePath(
+      widget.message.attachment?.name ?? '',
+    );
+
+    if (!await FileController.isFileDownloaded(filePath) &&
+        widget.message.attachment != null) {
+      setState(() {
+        isDownloading = true;
+      });
+      filePath = await FileController.downloadFile(
+        widget.message.attachment!.url,
+        widget.message.attachment!.name,
+      );
+      setState(() {
+        isDownloading = false;
+      });
+    }
+
+    controller
+        .preparePlayer(
+          path: filePath,
+          noOfSamples: widget.config?.playerWaveStyle
+                  ?.getSamplesForWidth(widget.screenWidth * 0.5) ??
+              playerWaveStyle.getSamplesForWidth(widget.screenWidth * 0.5),
+        )
+        .whenComplete(() => widget.onMaxDuration?.call(controller.maxDuration));
   }
 
   @override
@@ -105,8 +132,13 @@ class _VoiceMessageViewState extends State<VoiceMessageView> {
                 builder: (context, state, child) {
                   return IconButton(
                     onPressed: _playOrPause,
-                    icon:
-                        state.isStopped || state.isPaused || state.isInitialised
+                    icon: isDownloading
+                        ? const CircularProgressIndicator(
+                            color: Colors.white,
+                          )
+                        : state.isStopped ||
+                                state.isPaused ||
+                                state.isInitialised
                             ? widget.config?.playIcon ??
                                 const Icon(
                                   Icons.play_arrow,
