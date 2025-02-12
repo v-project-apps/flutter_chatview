@@ -103,6 +103,10 @@ class Data {
       createdAt: DateTime.now(),
       messageType: MessageType.image,
       sentBy: '1',
+      attachment: Attachment(
+          name: "image",
+          url: "https://miro.medium.com/max/1000/0*s7of7kWnf9fDg4XM.jpeg",
+          size: 0),
       reaction: Reaction(reactions: ['\u{2764}'], reactedUserIds: ['2']),
       status: MessageStatus.read,
     ),

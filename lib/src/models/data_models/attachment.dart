@@ -1,5 +1,7 @@
 import 'dart:io';
 
+import 'package:flutter/foundation.dart';
+
 class Attachment {
   /// Provides name of attachment.
   final String name;
@@ -11,6 +13,8 @@ class Attachment {
   final double size;
 
   final File? file;
+
+  final Uint8List? fileBytes;
 
   String get sizeString {
     if (size < 1024) {
@@ -28,13 +32,15 @@ class Attachment {
       : name = mFile.path.split('/').last,
         url = mFile.path,
         size = mFile.lengthSync().toDouble(),
-        file = mFile;
+        file = mFile,
+        fileBytes = mFile.readAsBytesSync();
 
   Attachment({
     required this.name,
     required this.url,
     required this.size,
     this.file,
+    this.fileBytes,
   });
 
   factory Attachment.fromJson(Map<String, dynamic> json) {
@@ -53,12 +59,18 @@ class Attachment {
     };
   }
 
-  Attachment copyWith({String? name, String? url, double? size, File? file}) {
+  Attachment copyWith(
+      {String? name,
+      String? url,
+      double? size,
+      File? file,
+      Uint8List? fileBytes}) {
     return Attachment(
       name: name ?? this.name,
       url: url ?? this.url,
       size: size ?? this.size,
       file: file ?? this.file,
+      fileBytes: fileBytes ?? this.fileBytes,
     );
   }
 }

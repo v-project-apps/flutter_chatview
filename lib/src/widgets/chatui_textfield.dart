@@ -29,6 +29,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:waveform_recorder/waveform_recorder.dart'; // new import for web recording
 
 import '../../chatview.dart';
 import '../utils/debounce.dart';
@@ -58,7 +59,7 @@ class ChatUITextField extends StatefulWidget {
   final VoidCallBack onPressed;
 
   /// Provides callback once voice is recorded.
-  final Function(String?) onRecordingComplete;
+  final Function(Attachment attachment) onRecordingComplete;
 
   /// Provides callback when user select images from camera/gallery.
   final AttchmentCallBack onAttachmentSelected;
@@ -72,7 +73,7 @@ class _ChatUITextFieldState extends State<ChatUITextField> {
 
   final ImagePicker _picker = ImagePicker();
 
-  RecorderController? controller;
+  RecorderController? controller; // for mobile only
 
   ValueNotifier<bool> isRecording = ValueNotifier(false);
 
@@ -109,6 +110,9 @@ class _ChatUITextFieldState extends State<ChatUITextField> {
   ValueNotifier<TypeWriterStatus> composingStatus =
       ValueNotifier(TypeWriterStatus.typed);
 
+  final WaveformRecorderController _waveformRecorderController =
+      WaveformRecorderController();
+
   late Debouncer debouncer;
 
   @override
@@ -122,6 +126,7 @@ class _ChatUITextFieldState extends State<ChatUITextField> {
     if (!kIsWeb && (Platform.isIOS || Platform.isAndroid)) {
       controller = RecorderController();
     }
+    // For web, no controller needed.
   }
 
   @override
@@ -157,6 +162,7 @@ class _ChatUITextFieldState extends State<ChatUITextField> {
         builder: (_, isRecordingValue, child) {
           return Row(
             children: [
+              // For mobile recording (iOS/Android)
               if (isRecordingValue && controller != null && !kIsWeb)
                 Expanded(
                   child: AudioWaveforms(
@@ -164,9 +170,7 @@ class _ChatUITextFieldState extends State<ChatUITextField> {
                     recorderController: controller!,
                     margin: voiceRecordingConfig?.margin,
                     padding: voiceRecordingConfig?.padding ??
-                        EdgeInsets.symmetric(
-                          horizontal: cancelRecordConfiguration == null ? 8 : 5,
-                        ),
+                        const EdgeInsets.symmetric(horizontal: 8),
                     decoration: voiceRecordingConfig?.decoration ??
                         BoxDecoration(
                           color: voiceRecordingConfig?.backgroundColor,
@@ -180,6 +184,19 @@ class _ChatUITextFieldState extends State<ChatUITextField> {
                               voiceRecordingConfig?.waveStyle?.waveColor ??
                                   Colors.black,
                         ),
+                  ),
+                )
+              // For web recording using waveform_recorder
+              else if (isRecordingValue && kIsWeb)
+                Expanded(
+                  child: WaveformRecorder(
+                    controller: _waveformRecorderController,
+                    height: 50,
+                    // Optionally configure margins/paddings as needed
+                    onRecordingStarted: () {
+                      // Called when recording starts
+                    },
+                    onRecordingStopped: _onWebRecordingStopped,
                   ),
                 )
               else
@@ -263,12 +280,18 @@ class _ChatUITextFieldState extends State<ChatUITextField> {
                                   ),
                             ),
                         ],
-                        if ((sendMessageConfig?.allowRecordingVoice ?? false) &&
-                            !kIsWeb &&
-                            (Platform.isIOS || Platform.isAndroid))
+                        if (sendMessageConfig?.allowRecordingVoice ?? false)
+                          // Mobile: use _recordOrStop; web: use _toggleWebRecording
                           IconButton(
                             onPressed: (textFieldConfig?.enabled ?? true)
-                                ? _recordOrStop
+                                ? () {
+                                    if (kIsWeb) {
+                                      _toggleWebRecording();
+                                    } else if (Platform.isIOS ||
+                                        Platform.isAndroid) {
+                                      _recordOrStop();
+                                    }
+                                  }
                                 : null,
                             icon: (isRecordingValue
                                     ? voiceRecordingConfig?.stopIcon
@@ -284,7 +307,11 @@ class _ChatUITextFieldState extends State<ChatUITextField> {
                           IconButton(
                             onPressed: () {
                               cancelRecordConfiguration?.onCancel?.call();
-                              _cancelRecording();
+                              if (kIsWeb) {
+                                _cancelWebRecording();
+                              } else {
+                                _cancelRecording();
+                              }
                             },
                             icon: cancelRecordConfiguration?.icon ??
                                 const Icon(Icons.cancel_outlined),
@@ -342,8 +369,53 @@ class _ChatUITextFieldState extends State<ChatUITextField> {
     } else {
       final path = await controller?.stop();
       isRecording.value = false;
-      widget.onRecordingComplete(path);
+      if (path != null) {
+        widget.onRecordingComplete(Attachment(
+            name: path,
+            url: path,
+            size: File(path).lengthSync().toDouble(),
+            file: File(path),
+            fileBytes: File(path).readAsBytesSync()));
+      }
     }
+  }
+
+  // New method for toggling web recording using waveform_recorder.
+  void _toggleWebRecording() {
+    if (_waveformRecorderController.isRecording) {
+      _waveformRecorderController.stopRecording();
+      isRecording.value = false;
+    } else {
+      _waveformRecorderController.startRecording();
+      isRecording.value = true;
+    }
+  }
+
+  // Callback invoked by WaveformRecorder when recording stops on web.
+  Future<void> _onWebRecordingStopped() async {
+    setState(() {
+      isRecording.value = false;
+    });
+    final file = _waveformRecorderController.file;
+    if (file != null) {
+      widget.onRecordingComplete(
+        Attachment(
+          name: file.name,
+          url: file.path,
+          size: (await file.readAsBytes()).length.toDouble(),
+          file: File(file.path),
+          fileBytes: await file.readAsBytes(),
+        ),
+      );
+    }
+  }
+
+  // Optionally, a method to cancel web recording.
+  void _cancelWebRecording() {
+    // Implement cancellation logic as needed. Here we simply set isRecording to false.
+    setState(() {
+      isRecording.value = false;
+    });
   }
 
   void _onAttachmentSourcePicked(AttachmentSource source) {
@@ -379,20 +451,30 @@ class _ChatUITextFieldState extends State<ChatUITextField> {
         preferredCameraDevice:
             config?.preferredCameraDevice ?? CameraDevice.rear,
       );
-      String? imagePath = image?.path;
-      if (config?.onImagePicked != null) {
-        String? updatedImagePath = await config?.onImagePicked!(imagePath);
-        if (updatedImagePath != null) imagePath = updatedImagePath;
+      if (image != null) {
+        String imagePath = image.path;
+        if (config?.onImagePicked != null) {
+          String? updatedImagePath = await config?.onImagePicked!(imagePath);
+          if (updatedImagePath != null) imagePath = updatedImagePath;
+        }
+
+        widget.onAttachmentSelected(
+            Attachment(
+                name: image.name,
+                url: imagePath,
+                size: (await image.length()).toDouble(),
+                file: File(imagePath),
+                fileBytes: await image.readAsBytes()),
+            imageSource == ImageSource.camera
+                ? AttachmentSource.camera
+                : AttachmentSource.gallery,
+            '');
+      } else {
+        throw Exception('Failed to select image');
       }
-      widget.onAttachmentSelected(
-          imagePath ?? "",
-          imageSource == ImageSource.camera
-              ? AttachmentSource.camera
-              : AttachmentSource.gallery,
-          '');
     } catch (e) {
       widget.onAttachmentSelected(
-          '',
+          null,
           imageSource == ImageSource.camera
               ? AttachmentSource.camera
               : AttachmentSource.gallery,
@@ -411,14 +493,26 @@ class _ChatUITextFieldState extends State<ChatUITextField> {
         preferredCameraDevice:
             config?.preferredCameraDevice ?? CameraDevice.rear,
       );
-      String? videoPath = video?.path;
-      if (config?.onVideoPicked != null) {
-        String? updatedVideoPath = await config?.onVideoPicked!(videoPath);
-        if (updatedVideoPath != null) videoPath = updatedVideoPath;
+      if (video != null) {
+        String videoPath = video.path;
+        if (config?.onVideoPicked != null) {
+          String? updatedVideoPath = await config?.onVideoPicked!(videoPath);
+          if (updatedVideoPath != null) videoPath = updatedVideoPath;
+        }
+        widget.onAttachmentSelected(
+            Attachment(
+                name: video.name,
+                url: videoPath,
+                size: (await video.length()).toDouble(),
+                file: File(videoPath),
+                fileBytes: await video.readAsBytes()),
+            AttachmentSource.video,
+            '');
+      } else {
+        throw Exception('Failed to select video');
       }
-      widget.onAttachmentSelected(videoPath ?? '', AttachmentSource.video, '');
     } catch (e) {
-      widget.onAttachmentSelected('', AttachmentSource.video, e.toString());
+      widget.onAttachmentSelected(null, AttachmentSource.video, e.toString());
     }
   }
 
@@ -428,16 +522,28 @@ class _ChatUITextFieldState extends State<ChatUITextField> {
     try {
       FilePickerResult? result = await FilePicker.platform.pickFiles(
           allowedExtensions: config?.allowedExtensions,
-          allowCompression: config?.allowCompression ?? false,
-          dialogTitle: config?.dialogTitle);
-      String? filePath = result?.files.single.path;
-      if (config?.onFilePicked != null) {
-        String? updatedFilePath = await config?.onFilePicked!(filePath);
-        if (updatedFilePath != null) filePath = updatedFilePath;
+          allowCompression: config?.allowCompression ?? false);
+
+      XFile? file = result?.files.single.xFile;
+      String? filePath = file?.path;
+      if (file != null && filePath != null) {
+        if (config?.onFilePicked != null) {
+          String? updatedFilePath = await config?.onFilePicked!(filePath);
+          if (updatedFilePath != null) filePath = updatedFilePath;
+        }
+        widget.onAttachmentSelected(
+            Attachment(
+                name: file.name,
+                url: filePath,
+                size: (await file.readAsBytes()).length.toDouble(),
+                file: File(filePath),
+                fileBytes: await file.readAsBytes()),
+            AttachmentSource.file,
+            '');
       }
-      widget.onAttachmentSelected(filePath ?? '', AttachmentSource.file, '');
     } catch (e) {
-      widget.onAttachmentSelected('', AttachmentSource.file, e.toString());
+      debugPrint(e.toString());
+      widget.onAttachmentSelected(null, AttachmentSource.file, e.toString());
     }
   }
 

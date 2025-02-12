@@ -19,7 +19,6 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import 'dart:io';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:chatview/chatview.dart';
@@ -29,7 +28,7 @@ import 'package:flutter/material.dart';
 typedef StringCallback = void Function(String);
 typedef StringMessageCallBack = void Function(
     String message, ReplyMessage replyMessage, MessageType messageType,
-    {File? file});
+    {Attachment? attachment});
 typedef ReplyMessageWithReturnWidget = Widget Function(
   ReplyMessage? replyMessage,
 );
@@ -40,7 +39,7 @@ typedef MessageCallBack = void Function(Message message);
 typedef VoidCallBackWithFuture = Future<void> Function();
 typedef StringsCallBack = void Function(String emoji, String messageId);
 typedef AttchmentCallBack = void Function(
-    String attachmentPath, AttachmentSource source, String message);
+    Attachment? attachment, AttachmentSource source, String message);
 typedef StringWithReturnWidget = Widget Function(String separator);
 typedef DragUpdateDetailsCallback = void Function(DragUpdateDetails);
 typedef MoreTapCallBack = void Function(

@@ -3,6 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'package:open_filex/open_filex.dart';
 import 'package:path_provider/path_provider.dart';
 import 'dart:io';
+import "package:universal_html/html.dart" as html;
 
 class FileController {
   static final Dio _dio = Dio();
@@ -21,6 +22,12 @@ class FileController {
     } catch (e) {
       debugPrint('Error downloading or opening file: $e');
     }
+  }
+
+  static void openFileForWeb(String url) {
+    html.AnchorElement(href: url)
+      ..setAttribute('download', '')
+      ..click();
   }
 
   static Future<String> getLocalFilePath(String fileName) async {

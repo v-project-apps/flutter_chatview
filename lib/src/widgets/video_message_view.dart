@@ -21,12 +21,15 @@
  */
 import 'dart:io';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:chatview/src/models/config_models/video_message_configuration.dart';
 import 'package:chatview/src/models/models.dart';
 import 'package:chatview/src/widgets/video_player.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:get_thumbnail_video/index.dart';
+import 'package:get_thumbnail_video/video_thumbnail.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:video_thumbnail/video_thumbnail.dart';
 
 import 'reaction_widget.dart';
 import 'share_icon.dart';
@@ -70,74 +73,76 @@ class VideoMessageView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      mainAxisAlignment:
-          isMessageBySender ? MainAxisAlignment.end : MainAxisAlignment.start,
-      children: [
-        if (isMessageBySender &&
-            !(videoMessageConfiguration?.hideShareIcon ?? false))
-          iconButton,
-        Stack(
-          children: [
-            GestureDetector(
-              onTap: () {
-                videoMessageConfiguration?.onTap != null
-                    ? videoMessageConfiguration?.onTap!(message)
-                    : Navigator.of(context).push(MaterialPageRoute(
-                        builder: (context) => VideoPlayer(videoUrl: videoPath),
-                      ));
-              },
-              child: Transform.scale(
-                scale: highlightVideo ? highlightScale : 1.0,
-                alignment: isMessageBySender
-                    ? Alignment.centerRight
-                    : Alignment.centerLeft,
-                child: Container(
-                  padding:
-                      videoMessageConfiguration?.padding ?? EdgeInsets.zero,
-                  margin: videoMessageConfiguration?.margin ??
-                      EdgeInsets.only(
-                        top: 6,
-                        right: isMessageBySender ? 6 : 0,
-                        left: isMessageBySender ? 0 : 6,
-                        bottom: message.reaction.reactions.isNotEmpty ? 15 : 0,
-                      ),
-                  child: ClipRRect(
-                    borderRadius: videoMessageConfiguration?.borderRadius ??
-                        BorderRadius.circular(14),
-                    child: FutureBuilder(
-                        future: getVideoPreview(),
-                        builder: (context, snapshot) {
-                          if (snapshot.connectionState ==
-                              ConnectionState.waiting) {
-                            return _videoContainer(
-                                const CircularProgressIndicator(
-                              value: 48.0,
-                            ));
-                          } else if (snapshot.connectionState ==
-                              ConnectionState.done) {
-                            return snapshot.data as Widget;
-                          } else {
-                            return Container();
-                          }
-                        }),
+    return Material(
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        mainAxisAlignment:
+            isMessageBySender ? MainAxisAlignment.end : MainAxisAlignment.start,
+        children: [
+          if (isMessageBySender &&
+              !(videoMessageConfiguration?.hideShareIcon ?? false))
+            iconButton,
+          Stack(
+            children: [
+              GestureDetector(
+                onTap: () {
+                  videoMessageConfiguration?.onTap != null
+                      ? videoMessageConfiguration?.onTap!(message)
+                      : Navigator.of(context).push(MaterialPageRoute(
+                          builder: (context) =>
+                              Material(child: VideoPlayer(videoUrl: videoPath)),
+                        ));
+                },
+                child: Transform.scale(
+                  scale: highlightVideo ? highlightScale : 1.0,
+                  alignment: isMessageBySender
+                      ? Alignment.centerRight
+                      : Alignment.centerLeft,
+                  child: Container(
+                    padding:
+                        videoMessageConfiguration?.padding ?? EdgeInsets.zero,
+                    margin: videoMessageConfiguration?.margin ??
+                        EdgeInsets.only(
+                          top: 6,
+                          right: isMessageBySender ? 6 : 0,
+                          left: isMessageBySender ? 0 : 6,
+                          bottom:
+                              message.reaction.reactions.isNotEmpty ? 15 : 0,
+                        ),
+                    child: ClipRRect(
+                      borderRadius: videoMessageConfiguration?.borderRadius ??
+                          BorderRadius.circular(14),
+                      child: FutureBuilder(
+                          future: getVideoPreview(),
+                          builder: (context, snapshot) {
+                            if (snapshot.connectionState ==
+                                ConnectionState.waiting) {
+                              return _videoContainer(
+                                  const CircularProgressIndicator());
+                            } else if (snapshot.connectionState ==
+                                ConnectionState.done) {
+                              return snapshot.data as Widget;
+                            } else {
+                              return Container();
+                            }
+                          }),
+                    ),
                   ),
                 ),
               ),
-            ),
-            if (message.reaction.reactions.isNotEmpty)
-              ReactionWidget(
-                isMessageBySender: isMessageBySender,
-                reaction: message.reaction,
-                messageReactionConfig: messageReactionConfig,
-              ),
-          ],
-        ),
-        if (!isMessageBySender &&
-            !(videoMessageConfiguration?.hideShareIcon ?? false))
-          iconButton,
-      ],
+              if (message.reaction.reactions.isNotEmpty)
+                ReactionWidget(
+                  isMessageBySender: isMessageBySender,
+                  reaction: message.reaction,
+                  messageReactionConfig: messageReactionConfig,
+                ),
+            ],
+          ),
+          if (!isMessageBySender &&
+              !(videoMessageConfiguration?.hideShareIcon ?? false))
+            iconButton,
+        ],
+      ),
     );
   }
 
@@ -151,36 +156,39 @@ class VideoMessageView extends StatelessWidget {
       child: Center(child: child));
 
   Future<Widget> getVideoPreview() async {
-    final filePath = await VideoThumbnail.thumbnailFile(
+    final file = await VideoThumbnail.thumbnailFile(
       video: videoPath,
-      thumbnailPath: (await getTemporaryDirectory()).path,
+      thumbnailPath: kIsWeb ? null : (await getTemporaryDirectory()).path,
       imageFormat: ImageFormat.JPEG,
       maxHeight: videoMessageConfiguration?.previewHeight?.toInt() ?? 720,
       maxWidth: videoMessageConfiguration?.previewWidth?.toInt() ?? 1080,
       quality: 100,
     );
-    if (filePath != null) {
-      return Stack(
-        children: [
-          _videoContainer(Image.file(
-            File(filePath),
-            fit: BoxFit.cover,
-          )),
-          const Positioned(
-            bottom: 0,
-            right: 0,
-            left: 0,
-            top: 0,
-            child: Icon(
-              Icons.play_circle_fill,
-              color: Colors.white,
-              size: 48,
-            ),
+    return Stack(
+      children: [
+        _videoContainer(kIsWeb
+            ? CachedNetworkImage(
+                imageUrl: file.path,
+                placeholder: (context, url) =>
+                    const CircularProgressIndicator(),
+                fit: BoxFit.cover,
+              )
+            : Image.file(
+                File(file.path),
+                fit: BoxFit.cover,
+              )),
+        const Positioned(
+          bottom: 0,
+          right: 0,
+          left: 0,
+          top: 0,
+          child: Icon(
+            Icons.play_circle_fill,
+            color: Colors.white,
+            size: 48,
           ),
-        ],
-      );
-    } else {
-      return Container();
-    }
+        ),
+      ],
+    );
   }
 }

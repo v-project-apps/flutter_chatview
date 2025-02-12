@@ -6,6 +6,7 @@ import 'package:chatview/src/controller/file_controller.dart';
 import 'package:chatview/src/widgets/reaction_widget.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'voice_message_web_view.dart';
 
 class VoiceMessageView extends StatefulWidget {
   const VoiceMessageView({
@@ -107,6 +108,17 @@ class _VoiceMessageViewState extends State<VoiceMessageView> {
 
   @override
   Widget build(BuildContext context) {
+    if (kIsWeb) {
+      return VoiceMessageWebView(
+        message: widget.message,
+        isMessageBySender: widget.isMessageBySender,
+        inComingChatBubbleConfig: widget.inComingChatBubbleConfig,
+        outgoingChatBubbleConfig: widget.outgoingChatBubbleConfig,
+        messageReactionConfig: widget.messageReactionConfig,
+        screenWidth: widget.screenWidth,
+        config: widget.config?.webConfiguration,
+      );
+    }
     return Stack(
       clipBehavior: Clip.none,
       children: [

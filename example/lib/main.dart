@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:chatview/chatview.dart';
 import 'package:example/data.dart';
 import 'package:example/models/theme.dart';
@@ -327,7 +325,7 @@ class _ChatScreenState extends State<ChatScreen> {
 
   void _onSendTap(
       String message, ReplyMessage replyMessage, MessageType messageType,
-      {File? file}) {
+      {Attachment? attachment}) {
     _chatController.addMessage(
       Message(
         id: DateTime.now().toString(),
@@ -336,6 +334,7 @@ class _ChatScreenState extends State<ChatScreen> {
         sentBy: _chatController.currentUser.id,
         replyMessage: replyMessage,
         messageType: messageType,
+        attachment: attachment,
       ),
     );
     Future.delayed(const Duration(milliseconds: 300), () {

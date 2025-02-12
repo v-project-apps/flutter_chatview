@@ -21,7 +21,6 @@
  */
 import 'package:chatview/chatview.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/foundation.dart';
 
 class Message {
   /// Provides id
@@ -70,14 +69,7 @@ class Message {
     MessageStatus status = MessageStatus.pending,
   })  : key = UniqueKey(),
         reaction = reaction ?? Reaction(reactions: [], reactedUserIds: []),
-        _status = ValueNotifier(status),
-        assert(
-          (messageType.isVoice
-              ? ((defaultTargetPlatform == TargetPlatform.iOS ||
-                  defaultTargetPlatform == TargetPlatform.android))
-              : true),
-          "Voice messages are only supported with android and ios platform",
-        );
+        _status = ValueNotifier(status);
 
   /// curret messageStatus
   MessageStatus get status => _status.value;

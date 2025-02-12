@@ -23,6 +23,7 @@
 import 'package:chatview/src/controller/file_controller.dart';
 import 'package:chatview/src/models/config_models/file_message_configuration.dart';
 import 'package:chatview/src/models/models.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:open_filex/open_filex.dart';
 import 'reaction_widget.dart';
@@ -116,9 +117,12 @@ class _FileMessageViewState extends State<FileMessageView> {
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         isDownloading
-                            ? CircularProgressIndicator(
-                                value: widget
+                            ? SizedBox(
+                                width: widget
                                     .fileMessageConfiguration?.loadingSize,
+                                height: widget
+                                    .fileMessageConfiguration?.loadingSize,
+                                child: const CircularProgressIndicator(),
                               )
                             : _getFileIcon(),
                         const SizedBox(width: 8),
@@ -162,6 +166,10 @@ class _FileMessageViewState extends State<FileMessageView> {
   }
 
   void _downloadAndOpenFile() async {
+    if (kIsWeb) {
+      FileController.openFileForWeb(widget.message.attachment?.url ?? "");
+      return;
+    }
     setState(() {
       isDownloading = true;
     });

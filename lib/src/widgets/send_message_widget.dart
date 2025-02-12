@@ -277,23 +277,22 @@ class SendMessageWidgetState extends State<SendMessageWidget> {
     );
   }
 
-  void _onRecordingComplete(String? path) {
-    if (path != null) {
-      widget.onSendTap
-          .call(path, replyMessage, MessageType.voice, file: File(path));
-      _assignRepliedMessage();
-    }
+  void _onRecordingComplete(Attachment attachment) {
+    widget.onSendTap.call(
+        attachment.file?.path ?? "", replyMessage, MessageType.voice,
+        attachment: attachment);
+    _assignRepliedMessage();
   }
 
   void _onAttachmentSelected(
-      String filePath, AttachmentSource source, String error) {
-    debugPrint('Call in Send Message Widget');
-    if (filePath.isNotEmpty) {
-      widget.onSendTap.call(filePath.split('/').last, replyMessage,
+      Attachment? attachment, AttachmentSource source, String error) {
+    debugPrint('Call onAttachmentSelected');
+    if (attachment != null) {
+      widget.onSendTap.call(attachment.name, replyMessage,
           MessageType.fromAttachmentSource(source),
-          file: File(filePath));
-      _assignRepliedMessage();
+          attachment: attachment);
     }
+    _assignRepliedMessage();
   }
 
   void _assignRepliedMessage() {
