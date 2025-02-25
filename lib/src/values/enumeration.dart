@@ -27,25 +27,48 @@ import 'package:flutter/material.dart';
 
 enum MessageType {
   image,
+  imageFromUrl,
   video,
+  videoFromUrl,
   file,
   text,
-
-  /// Only supported on android and ios
   voice,
   custom;
 
+  String get textName {
+    switch (this) {
+      case image:
+      case imageFromUrl:
+        return 'image';
+      case video:
+      case videoFromUrl:
+        return 'video';
+      case file:
+        return 'file';
+      case text:
+        return 'text';
+      case voice:
+        return 'voice';
+      case custom:
+        return 'message';
+    }
+  }
+
   static MessageType? tryParse(String? value) {
-    final type = value?.trim().toLowerCase();
+    final type = value?.trim();
     if (type?.isEmpty ?? true) return null;
     if (type == image.name) {
       return image;
+    } else if (type == imageFromUrl.name) {
+      return imageFromUrl;
     } else if (type == text.name) {
       return text;
     } else if (type == voice.name) {
       return voice;
     } else if (type == video.name) {
       return video;
+    } else if (type == videoFromUrl.name) {
+      return videoFromUrl;
     } else if (type == file.name) {
       return file;
     } else if (type == custom.name) {
@@ -60,10 +83,14 @@ enum MessageType {
         return MessageType.image;
       case AttachmentSource.gallery:
         return MessageType.image;
+      case AttachmentSource.imageFromUrl:
+        return MessageType.imageFromUrl;
       case AttachmentSource.file:
         return MessageType.file;
       case AttachmentSource.video:
         return MessageType.video;
+      case AttachmentSource.videoFromUrl:
+        return MessageType.videoFromUrl;
     }
   }
 }

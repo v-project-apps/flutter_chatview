@@ -61,7 +61,7 @@ class ReplyMessageView extends StatelessWidget {
               ),
           ],
         ),
-      MessageType.image => Row(
+      MessageType.imageFromUrl || MessageType.image => Row(
           children: [
             Icon(
               Icons.photo,
@@ -77,7 +77,7 @@ class ReplyMessageView extends StatelessWidget {
             ),
           ],
         ),
-      MessageType.video => Row(
+      MessageType.videoFromUrl || MessageType.video => Row(
           children: [
             Icon(
               Icons.video_file_outlined,

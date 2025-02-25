@@ -22,6 +22,7 @@
 import 'dart:io';
 
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:chatview/chatview.dart';
 import 'package:chatview/src/models/config_models/video_message_configuration.dart';
 import 'package:chatview/src/models/models.dart';
 import 'package:chatview/src/widgets/video_player.dart';
@@ -65,6 +66,8 @@ class VideoMessageView extends StatelessWidget {
 
   String get videoPath =>
       message.attachment?.url ?? message.attachment?.file?.path ?? "";
+
+  String get thumbnailUrl => message.attachment?.thumbnailUrl ?? "";
 
   Widget get iconButton => ShareIcon(
         shareIconConfig: videoMessageConfiguration?.shareIconConfig,
@@ -156,39 +159,69 @@ class VideoMessageView extends StatelessWidget {
       child: Center(child: child));
 
   Future<Widget> getVideoPreview() async {
-    final file = await VideoThumbnail.thumbnailFile(
-      video: videoPath,
-      thumbnailPath: kIsWeb ? null : (await getTemporaryDirectory()).path,
-      imageFormat: ImageFormat.JPEG,
-      maxHeight: videoMessageConfiguration?.previewHeight?.toInt() ?? 720,
-      maxWidth: videoMessageConfiguration?.previewWidth?.toInt() ?? 1080,
-      quality: 100,
-    );
-    return Stack(
-      children: [
-        _videoContainer(kIsWeb
-            ? CachedNetworkImage(
-                imageUrl: file.path,
-                placeholder: (context, url) =>
-                    const CircularProgressIndicator(),
-                fit: BoxFit.cover,
-              )
-            : Image.file(
-                File(file.path),
-                fit: BoxFit.cover,
-              )),
-        const Positioned(
-          bottom: 0,
-          right: 0,
-          left: 0,
-          top: 0,
-          child: Icon(
-            Icons.play_circle_fill,
-            color: Colors.white,
-            size: 48,
+    if (message.messageType == MessageType.videoFromUrl) {
+      if (thumbnailUrl.isNotEmpty) {
+        return Stack(
+          children: [
+            _videoContainer(CachedNetworkImage(
+              imageUrl: thumbnailUrl,
+              placeholder: (context, url) => const CircularProgressIndicator(),
+              fit: BoxFit.cover,
+            )),
+            const Positioned(
+              bottom: 0,
+              right: 0,
+              left: 0,
+              top: 0,
+              child: Icon(
+                Icons.play_circle_fill,
+                color: Colors.white,
+                size: 48,
+              ),
+            ),
+          ],
+        );
+      } else {
+        return _videoContainer(Container(
+          color: Colors.black,
+        ));
+      }
+    } else {
+      final file = await VideoThumbnail.thumbnailFile(
+        video: videoPath,
+        thumbnailPath: kIsWeb ? null : (await getTemporaryDirectory()).path,
+        imageFormat: ImageFormat.JPEG,
+        maxHeight: videoMessageConfiguration?.previewHeight?.toInt() ?? 720,
+        maxWidth: videoMessageConfiguration?.previewWidth?.toInt() ?? 1080,
+        quality: 100,
+      );
+
+      return Stack(
+        children: [
+          _videoContainer(kIsWeb
+              ? CachedNetworkImage(
+                  imageUrl: file.path,
+                  placeholder: (context, url) =>
+                      const CircularProgressIndicator(),
+                  fit: BoxFit.cover,
+                )
+              : Image.file(
+                  File(file.path),
+                  fit: BoxFit.cover,
+                )),
+          const Positioned(
+            bottom: 0,
+            right: 0,
+            left: 0,
+            top: 0,
+            child: Icon(
+              Icons.play_circle_fill,
+              color: Colors.white,
+              size: 48,
+            ),
           ),
-        ),
-      ],
-    );
+        ],
+      );
+    }
   }
 }

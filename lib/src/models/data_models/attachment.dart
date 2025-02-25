@@ -16,6 +16,8 @@ class Attachment {
 
   final Uint8List? fileBytes;
 
+  final String? thumbnailUrl;
+
   String get sizeString {
     if (size < 1024) {
       return "${size.toStringAsFixed(2)} B";
@@ -33,7 +35,8 @@ class Attachment {
         url = mFile.path,
         size = mFile.lengthSync().toDouble(),
         file = mFile,
-        fileBytes = mFile.readAsBytesSync();
+        fileBytes = mFile.readAsBytesSync(),
+        thumbnailUrl = null;
 
   Attachment({
     required this.name,
@@ -41,6 +44,7 @@ class Attachment {
     required this.size,
     this.file,
     this.fileBytes,
+    this.thumbnailUrl,
   });
 
   factory Attachment.fromJson(Map<String, dynamic> json) {
@@ -48,6 +52,7 @@ class Attachment {
       name: json['name'],
       url: json['url'],
       size: json['size'],
+      thumbnailUrl: json['thumbnailUrl'],
     );
   }
 
@@ -56,6 +61,7 @@ class Attachment {
       'name': name,
       'url': url,
       'size': size,
+      'thumbnailUrl': thumbnailUrl,
     };
   }
 
@@ -64,13 +70,15 @@ class Attachment {
       String? url,
       double? size,
       File? file,
-      Uint8List? fileBytes}) {
+      Uint8List? fileBytes,
+      String? thumbnailUrl}) {
     return Attachment(
       name: name ?? this.name,
       url: url ?? this.url,
       size: size ?? this.size,
       file: file ?? this.file,
       fileBytes: fileBytes ?? this.fileBytes,
+      thumbnailUrl: thumbnailUrl ?? this.thumbnailUrl,
     );
   }
 }

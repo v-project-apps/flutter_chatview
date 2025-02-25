@@ -39,6 +39,7 @@ export 'src/models/config_models/receipts_widget_config.dart';
 export 'src/extensions/extensions.dart' show MessageTypes;
 export 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
 export 'src/widgets/attchament_picker_bottom_sheet.dart';
+export 'src/widgets/message_view.dart';
 export 'src/widgets/file_message_view.dart';
 export 'src/widgets/video_message_view.dart';
 export 'src/widgets/video_player.dart';
@@ -46,3 +47,4 @@ export 'src/models/config_models/attachment_picker_bottom_sheet_configuration.da
 export 'src/models/config_models/file_message_configuration.dart';
 export 'src/models/config_models/video_message_configuration.dart';
 export 'src/models/data_models/attachment.dart';
+export 'src/widgets/chatui_textfield.dart';

@@ -25,6 +25,8 @@ import 'dart:io' show File, Platform;
 import 'package:audio_waveforms/audio_waveforms.dart';
 import 'package:chatview/src/utils/constants/constants.dart';
 import 'package:chatview/src/values/attachment_source.dart';
+import 'package:chatview/src/widgets/image_url_picker_dialog.dart';
+import 'package:chatview/src/widgets/video_url_picker_dialog.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -435,7 +437,48 @@ class _ChatUITextFieldState extends State<ChatUITextField> {
       case AttachmentSource.file:
         _onFilePicked(config: sendMessageConfig?.filePickerConfiguration);
         break;
+      case AttachmentSource.imageFromUrl:
+        _onImageFromUrlPicked();
+        break;
+      case AttachmentSource.videoFromUrl:
+        _onVideoFromUrlPicked();
+        break;
     }
+  }
+
+  void _onImageFromUrlPicked() {
+    showDialog(
+        context: context,
+        builder: (context) => ImageUrlPickerDialog(onPicked: (imageUrl) {
+              widget.onAttachmentSelected(
+                Attachment(
+                  name: imageUrl,
+                  url: imageUrl,
+                  size: 0,
+                ),
+                AttachmentSource.imageFromUrl,
+                '',
+              );
+            }));
+  }
+
+  void _onVideoFromUrlPicked() {
+    showDialog(
+        context: context,
+        builder: (context) =>
+            VideoUrlPickerDialog(onPicked: (videoUrl, thumbnailUrl) {
+              widget.onAttachmentSelected(
+                Attachment(
+                  name: videoUrl,
+                  url: videoUrl,
+                  size: 0,
+                  thumbnailUrl:
+                      thumbnailUrl?.isNotEmpty ?? false ? thumbnailUrl : null,
+                ),
+                AttachmentSource.videoFromUrl,
+                '',
+              );
+            }));
   }
 
   void _onImagePicked(

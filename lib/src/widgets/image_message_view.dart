@@ -88,8 +88,8 @@ class ImageMessageView extends StatelessWidget {
                           backgroundColor: Colors.black,
                           body: Center(
                             child: Hero(
-                              tag: 'imageHeroTag',
-                              child: Image.network(message.message),
+                              tag: imageUrl,
+                              child: _imageWidget(),
                             ),
                           ),
                         ),
@@ -114,36 +114,10 @@ class ImageMessageView extends StatelessWidget {
                   child: ClipRRect(
                     borderRadius: imageMessageConfig?.borderRadius ??
                         BorderRadius.circular(14),
-                    child: (() {
-                      if (imageUrl.isUrl) {
-                        return Hero(
-                          tag: 'imageHeroTag',
-                          child: CachedNetworkImage(
-                            imageUrl: imageUrl,
-                            fit: BoxFit.fitHeight,
-                            progressIndicatorBuilder:
-                                (context, child, downloadProgress) {
-                              return Center(
-                                child: CircularProgressIndicator(
-                                  value: downloadProgress.progress,
-                                ),
-                              );
-                            },
-                          ),
-                        );
-                      } else if (imageUrl.fromMemory) {
-                        return Image.memory(
-                          base64Decode(imageUrl
-                              .substring(imageUrl.indexOf('base64') + 7)),
-                          fit: BoxFit.fill,
-                        );
-                      } else {
-                        return Image.file(
-                          File(imageUrl),
-                          fit: BoxFit.fill,
-                        );
-                      }
-                    }()),
+                    child: Hero(
+                      tag: imageUrl,
+                      child: _imageWidget(),
+                    ),
                   ),
                 ),
               ),
@@ -160,5 +134,31 @@ class ImageMessageView extends StatelessWidget {
           iconButton,
       ],
     );
+  }
+
+  Widget _imageWidget() {
+    if (imageUrl.isUrl) {
+      return CachedNetworkImage(
+        imageUrl: imageUrl,
+        fit: BoxFit.fitHeight,
+        progressIndicatorBuilder: (context, child, downloadProgress) {
+          return Center(
+            child: CircularProgressIndicator(
+              value: downloadProgress.progress,
+            ),
+          );
+        },
+      );
+    } else if (imageUrl.fromMemory) {
+      return Image.memory(
+        base64Decode(imageUrl.substring(imageUrl.indexOf('base64') + 7)),
+        fit: BoxFit.fill,
+      );
+    } else {
+      return Image.file(
+        File(imageUrl),
+        fit: BoxFit.fill,
+      );
+    }
   }
 }

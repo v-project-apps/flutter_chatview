@@ -11,6 +11,8 @@ class AttachmentPickerBottomSheetConfiguration {
     this.enableCameraImagePicker = true,
     this.enableFilePicker = true,
     this.enableGalleryVideoPicker = true,
+    this.enableVideoFromUrlPicker = true,
+    this.enableImageFromUrlPicker = true,
   });
 
   /// Used for giving padding of bottom sheet.
@@ -35,6 +37,12 @@ class AttachmentPickerBottomSheetConfiguration {
 
   /// Enable/disable send video from gallery. Enabled by default.
   final bool enableGalleryVideoPicker;
+
+  /// Enable/disable send video from URL. Enabled by default.
+  final bool enableVideoFromUrlPicker;
+
+  /// Enable/disable send image from URL. Enabled by default.
+  final bool enableImageFromUrlPicker;
 
   /// Used for giving background color of bottom sheet.
   final Color? backgroundColor;

@@ -43,14 +43,36 @@ class AttchamentPickerBottomSheet {
                     },
                   ),
                 if (attchamentPickerBottomSheetConfig
+                        ?.enableImageFromUrlPicker ??
+                    true)
+                  ListTile(
+                    leading: const Icon(Icons.add_link),
+                    title: const Text('Image from URL'),
+                    onTap: () {
+                      Navigator.pop(context);
+                      attachmentSourceCallback(AttachmentSource.imageFromUrl);
+                    },
+                  ),
+                if (attchamentPickerBottomSheetConfig
                         ?.enableGalleryVideoPicker ??
                     true)
                   ListTile(
-                    leading: const Icon(Icons.video_library),
+                    leading: const Icon(Icons.video_file),
                     title: const Text('Gallery Video'),
                     onTap: () {
                       attachmentSourceCallback(AttachmentSource.video);
                       Navigator.pop(context);
+                    },
+                  ),
+                if (attchamentPickerBottomSheetConfig
+                        ?.enableVideoFromUrlPicker ??
+                    true)
+                  ListTile(
+                    leading: const Icon(Icons.missed_video_call),
+                    title: const Text('Video from URL'),
+                    onTap: () {
+                      Navigator.pop(context);
+                      attachmentSourceCallback(AttachmentSource.videoFromUrl);
                     },
                   ),
                 if (attchamentPickerBottomSheetConfig?.enableFilePicker ?? true)
