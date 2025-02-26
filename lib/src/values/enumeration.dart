@@ -91,6 +91,8 @@ enum MessageType {
         return MessageType.video;
       case AttachmentSource.videoFromUrl:
         return MessageType.videoFromUrl;
+      case AttachmentSource.audioFromFile:
+        return MessageType.voice;
     }
   }
 }

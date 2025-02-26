@@ -84,6 +84,17 @@ class AttchamentPickerBottomSheet {
                       Navigator.pop(context);
                     },
                   ),
+                if (attchamentPickerBottomSheetConfig
+                        ?.enableAudioFromFilePicker ??
+                    true)
+                  ListTile(
+                    leading: const Icon(Icons.audio_file),
+                    title: const Text('Audio from file'),
+                    onTap: () {
+                      Navigator.pop(context);
+                      attachmentSourceCallback(AttachmentSource.imageFromUrl);
+                    },
+                  ),
               ],
             ),
           ),

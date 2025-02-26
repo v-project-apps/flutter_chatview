@@ -4,5 +4,6 @@ enum AttachmentSource {
   imageFromUrl,
   file,
   video,
-  videoFromUrl
+  videoFromUrl,
+  audioFromFile
 }

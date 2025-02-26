@@ -23,9 +23,6 @@ import 'dart:io';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:chatview/chatview.dart';
-import 'package:chatview/src/models/config_models/video_message_configuration.dart';
-import 'package:chatview/src/models/models.dart';
-import 'package:chatview/src/widgets/video_player.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get_thumbnail_video/index.dart';

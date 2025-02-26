@@ -26,7 +26,6 @@ import 'package:flutter/material.dart';
 
 import '../../chatview.dart';
 import 'message_time_widget.dart';
-import 'message_view.dart';
 import 'profile_circle.dart';
 import 'reply_message_widget.dart';
 import 'swipe_to_reply.dart';

@@ -443,6 +443,35 @@ class _ChatUITextFieldState extends State<ChatUITextField> {
       case AttachmentSource.videoFromUrl:
         _onVideoFromUrlPicked();
         break;
+      case AttachmentSource.audioFromFile:
+        _onAudioFromFilePicker();
+        break;
+    }
+  }
+
+  void _onAudioFromFilePicker() async {
+    try {
+      FilePickerResult? result = await FilePicker.platform.pickFiles(
+        allowedExtensions: ["mp3", "wav", "aac", "m4a", "flac", "mp4"],
+      );
+
+      XFile? file = result?.files.single.xFile;
+      String? filePath = file?.path;
+      if (file != null && filePath != null) {
+        widget.onRecordingComplete(
+          Attachment(
+            name: file.name,
+            url: file.path,
+            size: (await file.readAsBytes()).length.toDouble(),
+            file: File(file.path),
+            fileBytes: await file.readAsBytes(),
+          ),
+        );
+      }
+    } catch (e) {
+      debugPrint(e.toString());
+      widget.onAttachmentSelected(
+          null, AttachmentSource.audioFromFile, e.toString());
     }
   }
 
