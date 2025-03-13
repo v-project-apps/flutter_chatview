@@ -64,6 +64,8 @@ class ChatView extends StatefulWidget {
     this.replySuggestionsConfig,
     this.scrollToBottomButtonConfig,
     this.pinnedMessageConfiguration = const PinnedMessageConfiguration(),
+    this.onPinTap,
+    this.onUnPinTap,
   })  : chatBackgroundConfig =
             chatBackgroundConfig ?? const ChatBackgroundConfiguration(),
         chatViewStateConfig =
@@ -100,6 +102,12 @@ class ChatView extends StatefulWidget {
 
   /// Provides configuration for pinned message appearance.
   final PinnedMessageConfiguration pinnedMessageConfiguration;
+
+  /// Provides callback when user tap on pinned message.
+  final PinTapCallBack? onPinTap;
+
+  /// Provides callback when user tap on unpin message.
+  final PinTapCallBack? onUnPinTap;
 
   /// Provides callback when user actions reaches to top and needs to load more
   /// chat
@@ -277,6 +285,8 @@ class _ChatViewState extends State<ChatView>
                                     isLastPage: widget.isLastPage,
                                     loadingWidget: widget.loadingWidget,
                                     onChatListTap: widget.onChatListTap,
+                                    onUnpinTap: widget.onUnPinTap,
+                                    onPinTap: widget.onPinTap,
                                     pinnedMessageConfiguration:
                                         widget.pinnedMessageConfiguration,
                                     assignReplyMessage: (message) =>
