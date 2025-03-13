@@ -91,8 +91,8 @@ class AttchamentPickerBottomSheet {
                     leading: const Icon(Icons.audio_file),
                     title: const Text('Audio from file'),
                     onTap: () {
+                      attachmentSourceCallback(AttachmentSource.audioFromFile);
                       Navigator.pop(context);
-                      attachmentSourceCallback(AttachmentSource.imageFromUrl);
                     },
                   ),
               ],

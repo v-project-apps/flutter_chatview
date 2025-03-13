@@ -33,7 +33,7 @@ dependencies:
   path_provider: ^2.1.5
   video_player: ^2.9.2
   chewie: ^1.10.0
-  open_filex: ^4.6.0
+  open_filex: ^4.7.0
   dio: ^5.8.0+1
   just_audio: ^0.9.46
   audioplayers: ^5.2.1

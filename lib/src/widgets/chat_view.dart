@@ -63,6 +63,7 @@ class ChatView extends StatefulWidget {
     this.replyMessageBuilder,
     this.replySuggestionsConfig,
     this.scrollToBottomButtonConfig,
+    this.pinnedMessageConfiguration = const PinnedMessageConfiguration(),
   })  : chatBackgroundConfig =
             chatBackgroundConfig ?? const ChatBackgroundConfiguration(),
         chatViewStateConfig =
@@ -96,6 +97,9 @@ class ChatView extends StatefulWidget {
 
   /// Allow user to give customisation to background of chat
   final ChatBackgroundConfiguration chatBackgroundConfig;
+
+  /// Provides configuration for pinned message appearance.
+  final PinnedMessageConfiguration pinnedMessageConfiguration;
 
   /// Provides callback when user actions reaches to top and needs to load more
   /// chat
@@ -273,6 +277,8 @@ class _ChatViewState extends State<ChatView>
                                     isLastPage: widget.isLastPage,
                                     loadingWidget: widget.loadingWidget,
                                     onChatListTap: widget.onChatListTap,
+                                    pinnedMessageConfiguration:
+                                        widget.pinnedMessageConfiguration,
                                     assignReplyMessage: (message) =>
                                         _sendMessageKey.currentState
                                             ?.assignReplyMessage(message),

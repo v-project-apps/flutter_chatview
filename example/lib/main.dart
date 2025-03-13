@@ -37,6 +37,7 @@ class _ChatScreenState extends State<ChatScreen> {
   bool isDarkTheme = false;
   final _chatController = ChatController(
     initialMessageList: Data.messageList,
+    pinnedMessageList: [],
     scrollController: ScrollController(),
     currentUser: ChatUser(
       id: '1',
@@ -237,10 +238,10 @@ class _ChatScreenState extends State<ChatScreen> {
           ),
         ),
         replyPopupConfig: ReplyPopupConfiguration(
-          backgroundColor: theme.replyPopupColor,
-          buttonTextStyle: TextStyle(color: theme.replyPopupButtonColor),
-          topBorderColor: theme.replyPopupTopBorderColor,
-        ),
+            backgroundColor: theme.replyPopupColor,
+            buttonTextStyle: TextStyle(color: theme.replyPopupButtonColor),
+            topBorderColor: theme.replyPopupTopBorderColor,
+            onPinTap: (message) {}),
         reactionPopupConfig: ReactionPopupConfiguration(
           shadow: BoxShadow(
             color: isDarkTheme ? Colors.black54 : Colors.grey.shade400,

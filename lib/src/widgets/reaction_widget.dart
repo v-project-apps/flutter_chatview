@@ -108,22 +108,26 @@ class _ReactionWidgetState extends State<ReactionWidget> {
                     fontSize: messageReactionConfig?.reactionSize ?? 13,
                   ),
                 ),
+                Container(
+                  width: 1,
+                  height: messageReactionConfig?.reactionSize ?? 13,
+                  margin: const EdgeInsets.only(left: 2),
+                  color: Colors.white,
+                ),
                 if (chatController?.otherUsers.isNotEmpty ?? false) ...[
-                  if (!(widget.reaction.reactedUserIds.length > 3) &&
-                      !(reactionsSet.length > 1))
-                    ...List.generate(
-                      widget.reaction.reactedUserIds.length,
-                      (reactedUserIndex) => widget
-                          .reaction.reactedUserIds[reactedUserIndex]
-                          .getUserProfilePicture(
-                        getChatUser: (userId) =>
-                            chatController?.getUserFromId(userId),
-                        profileCirclePadding:
-                            messageReactionConfig?.profileCirclePadding,
-                        profileCircleRadius:
-                            messageReactionConfig?.profileCircleRadius,
-                      ),
+                  ...List.generate(
+                    widget.reaction.reactedUserIds.length,
+                    (reactedUserIndex) => widget
+                        .reaction.reactedUserIds[reactedUserIndex]
+                        .getUserProfilePicture(
+                      getChatUser: (userId) =>
+                          chatController?.getUserFromId(userId),
+                      profileCirclePadding:
+                          messageReactionConfig?.profileCirclePadding,
+                      profileCircleRadius:
+                          messageReactionConfig?.profileCircleRadius,
                     ),
+                  ),
                   if (widget.reaction.reactedUserIds.length > 3 &&
                       !(reactionsSet.length > 1))
                     Padding(

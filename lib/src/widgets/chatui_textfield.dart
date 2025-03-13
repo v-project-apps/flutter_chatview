@@ -452,7 +452,7 @@ class _ChatUITextFieldState extends State<ChatUITextField> {
   void _onAudioFromFilePicker() async {
     try {
       FilePickerResult? result = await FilePicker.platform.pickFiles(
-        allowedExtensions: ["mp3", "wav", "aac", "m4a", "flac", "mp4"],
+        type: FileType.audio,
       );
 
       XFile? file = result?.files.single.xFile;

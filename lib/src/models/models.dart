@@ -34,6 +34,7 @@ export 'config_models/message_list_configuration.dart';
 export 'config_models/emoji_message_configuration.dart';
 export 'config_models/message_configuration.dart';
 export 'config_models/send_message_configuration.dart';
+export 'config_models/pinned_message_configuration.dart';
 export 'data_models/chat_user.dart';
 export 'config_models/link_preview_configuration.dart';
 export 'config_models/type_indicator_configuration.dart';

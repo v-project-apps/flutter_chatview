@@ -51,7 +51,7 @@ class Attachment {
     return Attachment(
       name: json['name'],
       url: json['url'],
-      size: json['size'],
+      size: double.parse(json['size'].toString()),
       thumbnailUrl: json['thumbnailUrl'],
     );
   }

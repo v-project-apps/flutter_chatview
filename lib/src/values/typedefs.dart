@@ -42,9 +42,8 @@ typedef AttchmentCallBack = void Function(
     Attachment? attachment, AttachmentSource source, String message);
 typedef StringWithReturnWidget = Widget Function(String separator);
 typedef DragUpdateDetailsCallback = void Function(DragUpdateDetails);
-typedef MoreTapCallBack = void Function(
-  Message message,
-  bool sentByCurrentUser,
+typedef PinTapCallBack = void Function(
+  Message message
 );
 typedef ReactionCallback = void Function(
   Message message,

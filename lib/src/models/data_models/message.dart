@@ -27,7 +27,7 @@ class Message {
   final String id;
 
   /// Used for accessing widget's render box.
-  final UniqueKey key;
+  final GlobalKey key;
 
   /// Provides actual message it will be text or image/audio file path.
   final String message;
@@ -56,6 +56,9 @@ class Message {
   /// Provides max duration for recorded voice message.
   Duration? voiceMessageDuration;
 
+  /// Indicates if message is pinned.
+  final bool isPinned;
+
   Message({
     this.id = '',
     required this.message,
@@ -67,7 +70,8 @@ class Message {
     this.attachment,
     this.voiceMessageDuration,
     MessageStatus status = MessageStatus.pending,
-  })  : key = UniqueKey(),
+    this.isPinned = false,
+  })  : key = GlobalKey(),
         reaction = reaction ?? Reaction(reactions: [], reactedUserIds: []),
         _status = ValueNotifier(status);
 
@@ -100,7 +104,8 @@ class Message {
             : null,
         messageType: MessageType.tryParse(json['message_type']?.toString()) ??
             MessageType.text,
-        attachment: json['attachment'] is Map<String, dynamic>
+        attachment: json['attachment'] != null &&
+                json['attachment'] is Map<String, dynamic>
             ? Attachment.fromJson(json['attachment'])
             : null,
         voiceMessageDuration: Duration(
@@ -109,6 +114,7 @@ class Message {
         ),
         status: MessageStatus.tryParse(json['status']?.toString()) ??
             MessageStatus.pending,
+        isPinned: json['isPinned'] ?? false,
       );
 
   Map<String, dynamic> toJson() => {
@@ -122,6 +128,7 @@ class Message {
         'attachment': attachment?.toJson(),
         'voice_message_duration': voiceMessageDuration?.inMicroseconds,
         'status': status.name,
+        'isPinned': isPinned,
       };
 
   Message copyWith({
@@ -136,6 +143,7 @@ class Message {
     Attachment? attachment,
     Duration? voiceMessageDuration,
     MessageStatus? status,
+    bool? isPinned,
     bool forceNullValue = false,
   }) {
     return Message(
@@ -151,6 +159,7 @@ class Message {
       reaction: reaction ?? this.reaction,
       replyMessage: replyMessage ?? this.replyMessage,
       status: status ?? this.status,
+      isPinned: isPinned ?? this.isPinned,
     );
   }
 }

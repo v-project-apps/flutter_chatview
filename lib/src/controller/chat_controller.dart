@@ -31,6 +31,8 @@ class ChatController {
   /// Represents initial message list in chat which can be add by user.
   List<Message> initialMessageList;
 
+  List<Message> pinnedMessageList;
+
   ScrollController scrollController;
 
   /// Allow user to show typing indicator defaults to false.
@@ -65,7 +67,7 @@ class ChatController {
   /// ```dart
   ///  chatContoller.setTypingIndicator = true; // for showing indicator
   ///  chatContoller.setTypingIndicator = false; // for hiding indicator
-  ///  ````
+  ///  ```` Collapse
   set setTypingIndicator(bool value) => _showTypingIndicator.value = value;
 
   /// Represents list of chat users
@@ -76,6 +78,7 @@ class ChatController {
 
   ChatController({
     required this.initialMessageList,
+    required this.pinnedMessageList,
     required this.scrollController,
     required this.otherUsers,
     required this.currentUser,
@@ -84,12 +87,17 @@ class ChatController {
   /// Represents message stream of chat
   StreamController<List<Message>> messageStreamController = StreamController();
 
+  /// Represents message stream of pinned messages
+  StreamController<List<Message>> pinnedMessageStreamController =
+      StreamController();
+
   /// Used to dispose ValueNotifiers and Streams.
   void dispose() {
     _showTypingIndicator.dispose();
     _replySuggestion.dispose();
     scrollController.dispose();
     messageStreamController.close();
+    pinnedMessageStreamController.close();
   }
 
   /// Used to add message in message list.
@@ -97,6 +105,20 @@ class ChatController {
     initialMessageList.add(message);
     if (!messageStreamController.isClosed) {
       messageStreamController.sink.add(initialMessageList);
+    }
+  }
+
+  void addPinnedMessage(Message message) {
+    pinnedMessageList.add(message);
+    if (!pinnedMessageStreamController.isClosed) {
+      pinnedMessageStreamController.sink.add(pinnedMessageList);
+    }
+  }
+
+  void removePinnedMessage(Message message) {
+    pinnedMessageList.remove(message);
+    if (!pinnedMessageStreamController.isClosed) {
+      pinnedMessageStreamController.sink.add(pinnedMessageList);
     }
   }
 

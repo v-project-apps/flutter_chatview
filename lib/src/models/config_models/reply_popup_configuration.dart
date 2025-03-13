@@ -42,7 +42,7 @@ class ReplyPopupConfiguration {
   final MessageCallBack? onReportTap;
 
   /// Provides callback on onMore button.
-  final MoreTapCallBack? onMoreTap;
+  final PinTapCallBack? onPinTap;
 
   /// Used to give text style of button text.
   final TextStyle? buttonTextStyle;
@@ -56,7 +56,7 @@ class ReplyPopupConfiguration {
     this.onUnsendTap,
     this.onReplyTap,
     this.onReportTap,
-    this.onMoreTap,
+    this.onPinTap,
     this.backgroundColor,
     this.replyPopupBuilder,
   });

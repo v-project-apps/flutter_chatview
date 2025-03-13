@@ -32,7 +32,7 @@ import 'swipe_to_reply.dart';
 
 class ChatBubbleWidget extends StatefulWidget {
   const ChatBubbleWidget({
-    required UniqueKey key,
+    required GlobalKey key,
     required this.message,
     required this.onLongPress,
     required this.slideAnimation,
@@ -197,7 +197,7 @@ class _ChatBubbleWidgetState extends State<ChatBubbleWidget> {
             ?.outgoingChatBubbleConfig?.receiptsWidgetConfig?.showReceiptsIn ??
         ShowReceiptsIn.lastMessage;
     if (showReceipts == ShowReceiptsIn.all) {
-      return ValueListenableBuilder(
+      return ValueListenableBuilder<MessageStatus>(
         valueListenable: widget.message.statusNotifier,
         builder: (context, value, child) {
           if (ChatViewInheritedWidget.of(context)
@@ -213,7 +213,7 @@ class _ChatBubbleWidgetState extends State<ChatBubbleWidget> {
         },
       );
     } else if (showReceipts == ShowReceiptsIn.lastMessage && isLastMessage) {
-      return ValueListenableBuilder(
+      return ValueListenableBuilder<MessageStatus>(
           valueListenable:
               chatController!.initialMessageList.last.statusNotifier,
           builder: (context, value, child) {

@@ -25,6 +25,7 @@ class PackageStrings {
   static const String repliedToYou = "Replied to you";
   static const String repliedBy = "Replied by";
   static const String more = "More";
+  static const String pin = "Pin";
   static const String unsend = "Unsend";
   static const String reply = "Reply";
   static const String replyTo = "Replying to";

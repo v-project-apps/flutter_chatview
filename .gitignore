@@ -8,7 +8,7 @@ build/
 pubspec.lock
 
 # Directory created by dartdoc
-# If you don't generate documentation locally you can remove this line.
+# If you don't generate documentation locally you can remove this lineś.
 doc/api/
 
 # Avoid committing generated Javascript files:
@@ -20,6 +20,7 @@ doc/api/
 *.js.deps
 *.js.map
 .idea/
+example/android/app/.cxx
 .flutter-plugins
 /.flutter-plugins-dependencies
 chat_ui.iml

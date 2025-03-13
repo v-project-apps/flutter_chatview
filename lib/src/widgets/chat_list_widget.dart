@@ -29,6 +29,7 @@ import 'package:flutter/material.dart';
 
 import '../../chatview.dart';
 import 'reply_popup_widget.dart';
+import 'pinned_message_widget.dart';
 
 class ChatListWidget extends StatefulWidget {
   const ChatListWidget({
@@ -40,6 +41,7 @@ class ChatListWidget extends StatefulWidget {
     this.loadMoreData,
     this.isLastPage,
     this.onChatListTap,
+    this.pinnedMessageConfiguration = const PinnedMessageConfiguration(),
   }) : super(key: key);
 
   /// Provides controller for accessing few function for running chat.
@@ -65,12 +67,14 @@ class ChatListWidget extends StatefulWidget {
   /// Provides callback when user tap anywhere on whole chat.
   final VoidCallBack? onChatListTap;
 
+  /// Pinned messages configuration.
+  final PinnedMessageConfiguration pinnedMessageConfiguration;
+
   @override
   State<ChatListWidget> createState() => _ChatListWidgetState();
 }
 
-class _ChatListWidgetState extends State<ChatListWidget>
-    with SingleTickerProviderStateMixin {
+class _ChatListWidgetState extends State<ChatListWidget> {
   final ValueNotifier<bool> _isNextPageLoading = ValueNotifier<bool>(false);
 
   ChatController get chatController => widget.chatController;
@@ -108,68 +112,111 @@ class _ChatListWidgetState extends State<ChatListWidget>
       chatController.messageStreamController.sink.add(messageList);
     }
     if (messageList.isNotEmpty) chatController.scrollToLastMessage();
+
+    chatController.pinnedMessageStreamController = StreamController.broadcast();
+    if (!chatController.pinnedMessageStreamController.isClosed) {
+      chatController.pinnedMessageStreamController.sink
+          .add(chatController.pinnedMessageList);
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
+        StreamBuilder<List<Message>>(
+            stream: widget.chatController.pinnedMessageStreamController.stream,
+            builder: (context, snapshot) {
+              if (snapshot.hasData) {
+                return Column(
+                  children: snapshot.data!
+                      .take(3)
+                      .map((message) => PinnedMessageWidget(
+                            message: message,
+                            onTap: () => _scrollToMessage(message),
+                            pinnedMessageConfiguration:
+                                widget.pinnedMessageConfiguration,
+                            onRemove: () => _removePinnedMessage(message),
+                          ))
+                      .toList(),
+                );
+              } else {
+                return const SizedBox.shrink();
+              }
+            }),
         ValueListenableBuilder<bool>(
-          valueListenable: _isNextPageLoading,
-          builder: (_, isNextPageLoading, child) {
-            if (isNextPageLoading &&
-                (featureActiveConfig?.enablePagination ?? false)) {
-              return SizedBox(
-                height: Scaffold.of(context).appBarMaxHeight,
-                child: Center(
-                  child:
-                      widget.loadingWidget ?? const CircularProgressIndicator(),
-                ),
-              );
-            } else {
-              return const SizedBox.shrink();
-            }
-          },
-        ),
+            valueListenable: _isNextPageLoading,
+            builder: (_, isNextPageLoading, child) {
+              if (isNextPageLoading &&
+                  (featureActiveConfig?.enablePagination ?? false)) {
+                return SizedBox(
+                  height: Scaffold.of(context).appBarMaxHeight,
+                  child: Center(
+                    child: widget.loadingWidget ??
+                        const CircularProgressIndicator(),
+                  ),
+                );
+              } else {
+                return const SizedBox.shrink();
+              }
+            }),
         Expanded(
           child: ValueListenableBuilder<bool>(
             valueListenable: chatViewIW!.showPopUp,
             builder: (_, showPopupValue, child) {
-              return Stack(
-                children: [
-                  ChatGroupedListWidget(
-                    showPopUp: showPopupValue,
-                    scrollController: scrollController,
-                    isEnableSwipeToSeeTime:
-                        featureActiveConfig?.enableSwipeToSeeTime ?? true,
-                    assignReplyMessage: widget.assignReplyMessage,
-                    replyMessage: widget.replyMessage,
-                    onChatBubbleLongPress: (yCoordinate, xCoordinate, message) {
-                      if (featureActiveConfig?.enableReactionPopup ?? false) {
-                        chatViewIW?.reactionPopupKey.currentState
-                            ?.refreshWidget(
-                          message: message,
-                          xCoordinate: xCoordinate,
-                          yCoordinate: yCoordinate,
-                        );
-                        chatViewIW?.showPopUp.value = true;
-                      }
-                      if (featureActiveConfig?.enableReplySnackBar ?? false) {
-                        _showReplyPopup(
-                          message: message,
-                          sentByCurrentUser: message.sentBy == currentUser?.id,
-                        );
-                      }
-                    },
-                    onChatListTap: _onChatListTap,
-                  ),
-                ],
-              );
+              return Stack(children: [
+                ChatGroupedListWidget(
+                  showPopUp: showPopupValue,
+                  scrollController: scrollController,
+                  isEnableSwipeToSeeTime:
+                      featureActiveConfig?.enableSwipeToSeeTime ?? true,
+                  assignReplyMessage: widget.assignReplyMessage,
+                  replyMessage: widget.replyMessage,
+                  onChatBubbleLongPress: (yCoordinate, xCoordinate, message) {
+                    if (featureActiveConfig?.enableReactionPopup ?? false) {
+                      chatViewIW?.reactionPopupKey.currentState?.refreshWidget(
+                        message: message,
+                        xCoordinate: xCoordinate,
+                        yCoordinate: yCoordinate,
+                      );
+                      chatViewIW?.showPopUp.value = true;
+                    }
+
+                    if (featureActiveConfig?.enableReplySnackBar ?? false) {
+                      _showReplyPopup(
+                        message: message,
+                        sentByCurrentUser: message.sentBy == currentUser?.id,
+                      );
+                    }
+                  },
+                  onChatListTap: _onChatListTap,
+                )
+              ]);
             },
           ),
         ),
       ],
     );
+  }
+
+  void _scrollToMessage(Message message) {
+    final index = widget.chatController.initialMessageList.indexOf(message);
+    if (index != -1) {
+      final key = message.key;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        final context = key.currentContext;
+        if (context != null) {
+          Scrollable.ensureVisible(context,
+              duration: const Duration(milliseconds: 500),
+              curve: Curves.easeInOut,
+              alignment: 0.5);
+        }
+      });
+    }
+  }
+
+  void _removePinnedMessage(Message message) {
+    widget.chatController.removePinnedMessage(message);
   }
 
   void _pagination() {
@@ -199,12 +246,10 @@ class _ChatListWidgetState extends State<ChatListWidget>
               : ReplyPopupWidget(
                   buttonTextStyle: replyPopup?.buttonTextStyle,
                   topBorderColor: replyPopup?.topBorderColor,
-                  onMoreTap: () {
+                  onPinTap: () {
                     _onChatListTap();
-                    replyPopup?.onMoreTap?.call(
-                      message,
-                      sentByCurrentUser,
-                    );
+                    widget.chatController.addPinnedMessage(message);
+                    replyPopup?.onPinTap?.call(message);
                   },
                   onReportTap: () {
                     _onChatListTap();
@@ -247,6 +292,7 @@ class _ChatListWidgetState extends State<ChatListWidget>
   @override
   void dispose() {
     chatController.messageStreamController.close();
+    chatController.pinnedMessageStreamController.close();
     scrollController.dispose();
     _isNextPageLoading.dispose();
     super.dispose();
