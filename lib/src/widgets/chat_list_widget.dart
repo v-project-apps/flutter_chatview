@@ -42,6 +42,7 @@ class ChatListWidget extends StatefulWidget {
     this.isLastPage,
     this.onChatListTap,
     this.pinnedMessageConfiguration = const PinnedMessageConfiguration(),
+    this.onUnpinTap,
   }) : super(key: key);
 
   /// Provides controller for accessing few function for running chat.
@@ -69,6 +70,8 @@ class ChatListWidget extends StatefulWidget {
 
   /// Pinned messages configuration.
   final PinnedMessageConfiguration pinnedMessageConfiguration;
+
+  final PinTapCallBack? onUnpinTap;
 
   @override
   State<ChatListWidget> createState() => _ChatListWidgetState();
@@ -217,6 +220,7 @@ class _ChatListWidgetState extends State<ChatListWidget> {
 
   void _removePinnedMessage(Message message) {
     widget.chatController.removePinnedMessage(message);
+    widget.onUnpinTap?.call(message);
   }
 
   void _pagination() {

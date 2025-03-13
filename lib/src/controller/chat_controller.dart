@@ -108,8 +108,23 @@ class ChatController {
     }
   }
 
+  /// Used to add message in message list.
+  void addAllMessages(List<Message> messages) {
+    initialMessageList.addAll(messages);
+    if (!messageStreamController.isClosed) {
+      messageStreamController.sink.add(initialMessageList);
+    }
+  }
+
   void addPinnedMessage(Message message) {
     pinnedMessageList.add(message);
+    if (!pinnedMessageStreamController.isClosed) {
+      pinnedMessageStreamController.sink.add(pinnedMessageList);
+    }
+  }
+
+  void addAllPinnedMessages(List<Message> messages) {
+    pinnedMessageList.addAll(messages);
     if (!pinnedMessageStreamController.isClosed) {
       pinnedMessageStreamController.sink.add(pinnedMessageList);
     }
