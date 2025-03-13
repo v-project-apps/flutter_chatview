@@ -9,10 +9,14 @@ class PinnedMessageConfiguration {
   final TextStyle titleTextStyle;
   final TextStyle messageTextStyle;
   final Color iconColor;
+  final bool allowRemoveMessage;
+  final bool allowPinMessage;
 
   const PinnedMessageConfiguration({
     this.backgroundColor = Colors.deepPurple,
     this.borderRadius = const BorderRadius.all(Radius.circular(8.0)),
+    this.allowRemoveMessage = false,
+    this.allowPinMessage = false,
     this.boxShadow = const [
       BoxShadow(
         color: Colors.black26,

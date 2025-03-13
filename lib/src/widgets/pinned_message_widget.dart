@@ -83,11 +83,12 @@ class PinnedMessageWidget extends StatelessWidget {
                 ],
               ),
             ),
-            IconButton(
-              icon: Icon(Icons.close,
-                  color: pinnedMessageConfiguration.iconColor),
-              onPressed: onRemove,
-            ),
+            if (pinnedMessageConfiguration.allowRemoveMessage)
+              IconButton(
+                icon: Icon(Icons.close,
+                    color: pinnedMessageConfiguration.iconColor),
+                onPressed: onRemove,
+              ),
           ],
         ),
       ),

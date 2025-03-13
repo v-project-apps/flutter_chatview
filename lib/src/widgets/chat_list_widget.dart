@@ -246,11 +246,13 @@ class _ChatListWidgetState extends State<ChatListWidget> {
               : ReplyPopupWidget(
                   buttonTextStyle: replyPopup?.buttonTextStyle,
                   topBorderColor: replyPopup?.topBorderColor,
-                  onPinTap: () {
-                    _onChatListTap();
-                    widget.chatController.addPinnedMessage(message);
-                    replyPopup?.onPinTap?.call(message);
-                  },
+                  onPinTap: widget.pinnedMessageConfiguration.allowPinMessage
+                      ? () {
+                          _onChatListTap();
+                          widget.chatController.addPinnedMessage(message);
+                          replyPopup?.onPinTap?.call(message);
+                        }
+                      : null,
                   onReportTap: () {
                     _onChatListTap();
                     replyPopup?.onReportTap?.call(
