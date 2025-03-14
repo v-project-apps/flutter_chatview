@@ -53,6 +53,9 @@ class Message {
   /// Status of the message.
   final ValueNotifier<MessageStatus> _status;
 
+  /// Provides list of user who has seen the message.
+  final List<String>? seenBy;
+
   /// Provides max duration for recorded voice message.
   Duration? voiceMessageDuration;
 
@@ -69,6 +72,7 @@ class Message {
     this.messageType = MessageType.text,
     this.attachment,
     this.voiceMessageDuration,
+    this.seenBy,
     MessageStatus status = MessageStatus.pending,
     this.isPinned = false,
   })  : key = GlobalKey(),
@@ -112,6 +116,9 @@ class Message {
           microseconds:
               int.tryParse(json['voice_message_duration'].toString()) ?? 0,
         ),
+        seenBy: json['seen_by'] is List<String>
+            ? List<String>.from(json['seen_by'])
+            : null,
         status: MessageStatus.tryParse(json['status']?.toString()) ??
             MessageStatus.pending,
         isPinned: json['isPinned'] ?? false,
@@ -127,6 +134,7 @@ class Message {
         'message_type': messageType.name,
         'attachment': attachment?.toJson(),
         'voice_message_duration': voiceMessageDuration?.inMicroseconds,
+        'seen_by': seenBy,
         'status': status.name,
         'isPinned': isPinned,
       };
@@ -142,6 +150,7 @@ class Message {
     MessageType? messageType,
     Attachment? attachment,
     Duration? voiceMessageDuration,
+    List<String>? seenBy,
     MessageStatus? status,
     bool? isPinned,
     bool forceNullValue = false,
@@ -156,6 +165,7 @@ class Message {
       voiceMessageDuration: forceNullValue
           ? voiceMessageDuration
           : voiceMessageDuration ?? this.voiceMessageDuration,
+      seenBy: seenBy ?? this.seenBy,
       reaction: reaction ?? this.reaction,
       replyMessage: replyMessage ?? this.replyMessage,
       status: status ?? this.status,

@@ -66,10 +66,11 @@ class _ReactionWidgetState extends State<ReactionWidget> {
   @override
   Widget build(BuildContext context) {
     //// Convert into set to remove reduntant values
-    final reactionsSet = widget.reaction.reactions.toSet();
+    final reactionsMap = widget.reaction.reactionsWithCountMap;
     return Positioned(
       bottom: 0,
-      right: widget.isMessageBySender && needToExtend ? 0 : null,
+      left: widget.isMessageBySender ? 0 : null,
+      right: widget.isMessageBySender ? null : 0,
       child: InkWell(
         onTap: () => chatController != null
             ? ReactionsBottomSheet().show(
@@ -103,52 +104,15 @@ class _ReactionWidgetState extends State<ReactionWidget> {
             child: Row(
               children: [
                 Text(
-                  reactionsSet.join(' '),
+                  reactionsMap.entries
+                      .map((entry) =>
+                          "${entry.value > 1 ? entry.value : ""}${entry.key}")
+                      .toList()
+                      .join(''),
                   style: TextStyle(
                     fontSize: messageReactionConfig?.reactionSize ?? 13,
                   ),
                 ),
-                Container(
-                  width: 1,
-                  height: messageReactionConfig?.reactionSize ?? 13,
-                  margin: const EdgeInsets.only(left: 2),
-                  color: Colors.white,
-                ),
-                if (chatController?.otherUsers.isNotEmpty ?? false) ...[
-                  ...List.generate(
-                    widget.reaction.reactedUserIds.length,
-                    (reactedUserIndex) => widget
-                        .reaction.reactedUserIds[reactedUserIndex]
-                        .getUserProfilePicture(
-                      getChatUser: (userId) =>
-                          chatController?.getUserFromId(userId),
-                      profileCirclePadding:
-                          messageReactionConfig?.profileCirclePadding,
-                      profileCircleRadius:
-                          messageReactionConfig?.profileCircleRadius,
-                    ),
-                  ),
-                  if (widget.reaction.reactedUserIds.length > 3 &&
-                      !(reactionsSet.length > 1))
-                    Padding(
-                      padding: const EdgeInsets.only(left: 2),
-                      child: Text(
-                        '+${widget.reaction.reactedUserIds.length}',
-                        style:
-                            messageReactionConfig?.reactedUserCountTextStyle ??
-                                _reactionTextStyle,
-                      ),
-                    ),
-                  if (reactionsSet.length > 1)
-                    Padding(
-                      padding: const EdgeInsets.only(left: 2),
-                      child: Text(
-                        widget.reaction.reactedUserIds.length.toString(),
-                        style: messageReactionConfig?.reactionCountTextStyle ??
-                            _reactionTextStyle,
-                      ),
-                    ),
-                ],
               ],
             ),
           ),

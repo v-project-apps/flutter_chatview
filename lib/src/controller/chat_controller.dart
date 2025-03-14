@@ -91,6 +91,14 @@ class ChatController {
   StreamController<List<Message>> pinnedMessageStreamController =
       StreamController();
 
+  List<ChatUser> getUsersByIds(List<String> userIds) {
+    List<ChatUser> users = [];
+    for (var userId in userIds) {
+      users.add(getUserFromId(userId));
+    }
+    return users;
+  }
+
   /// Used to dispose ValueNotifiers and Streams.
   void dispose() {
     _showTypingIndicator.dispose();
@@ -178,6 +186,7 @@ class ChatController {
       reaction: message.reaction,
       messageType: message.messageType,
       status: message.status,
+      seenBy: message.seenBy,
     );
     if (!messageStreamController.isClosed) {
       messageStreamController.sink.add(initialMessageList);

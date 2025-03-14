@@ -19,6 +19,8 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+import 'package:chatview/src/widgets/chat_view_inherited_widget.dart';
+import 'package:chatview/src/widgets/horizontal_user_avatars.dart';
 import 'package:flutter/material.dart';
 
 import 'package:chatview/src/extensions/extensions.dart';
@@ -69,6 +71,7 @@ class TextMessageView extends StatelessWidget {
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
     final textMessage = message.message;
+
     return Stack(
       clipBehavior: Clip.none,
       children: [
@@ -83,7 +86,13 @@ class TextMessageView extends StatelessWidget {
               ),
           margin: _margin ??
               EdgeInsets.fromLTRB(
-                  5, 0, 6, message.reaction.reactions.isNotEmpty ? 15 : 2),
+                  5,
+                  0,
+                  6,
+                  message.reaction.reactions.isNotEmpty ||
+                          message.sentBy.isNotEmpty
+                      ? 15
+                      : 2),
           decoration: BoxDecoration(
             color: highlightMessage ? highlightColor : _color,
             borderRadius: _borderRadius(textMessage),
@@ -102,13 +111,29 @@ class TextMessageView extends StatelessWidget {
                       ),
                 ),
         ),
+        if (message.seenBy?.isNotEmpty ?? false)
+          Positioned(
+            bottom: 0,
+            right: isMessageBySender ? 0 : null,
+            left: isMessageBySender ? null : 0,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 1.7, horizontal: 6),
+              child: HorizontalUserAvatars(
+                users: ChatViewInheritedWidget.of(context)
+                        ?.chatController
+                        .getUsersByIds(message.seenBy!) ??
+                    [],
+                circleRadius: 8,
+              ),
+            ),
+          ),
         if (message.reaction.reactions.isNotEmpty)
           ReactionWidget(
             key: key,
             isMessageBySender: isMessageBySender,
             reaction: message.reaction,
             messageReactionConfig: messageReactionConfig,
-          ),
+          )
       ],
     );
   }

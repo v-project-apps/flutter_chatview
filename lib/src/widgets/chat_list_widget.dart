@@ -208,19 +208,19 @@ class _ChatListWidgetState extends State<ChatListWidget> {
   }
 
   void _scrollToMessage(Message message) {
-    final index = widget.chatController.initialMessageList.indexOf(message);
-    if (index != -1) {
-      final key = message.key;
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        final context = key.currentContext;
-        if (context != null) {
-          Scrollable.ensureVisible(context,
-              duration: const Duration(milliseconds: 500),
-              curve: Curves.easeInOut,
-              alignment: 0.5);
-        }
-      });
-    }
+    final chatMessage = widget.chatController.initialMessageList
+        .firstWhere((m) => m.id == message.id);
+
+    final key = chatMessage.key;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final context = key.currentContext;
+      if (context != null) {
+        Scrollable.ensureVisible(context,
+            duration: const Duration(milliseconds: 500),
+            curve: Curves.easeInOut,
+            alignment: 0.5);
+      }
+    });
   }
 
   void _removePinnedMessage(Message message) {

@@ -34,6 +34,11 @@ class Reaction {
   /// Provides list of reaction in single message.
   final List<String> reactions;
 
+  Map<String, int> get reactionsWithCountMap => {
+        for (var reaction in reactions)
+          reaction: reactions.where((element) => element == reaction).length
+      };
+
   /// Provides list of user who reacted on message.
   final List<String> reactedUserIds;
 

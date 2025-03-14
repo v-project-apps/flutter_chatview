@@ -23,6 +23,8 @@
 import 'package:chatview/src/controller/file_controller.dart';
 import 'package:chatview/src/models/config_models/file_message_configuration.dart';
 import 'package:chatview/src/models/models.dart';
+import 'package:chatview/src/widgets/chat_view_inherited_widget.dart';
+import 'package:chatview/src/widgets/horizontal_user_avatars.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:open_filex/open_filex.dart';
@@ -154,6 +156,22 @@ class _FileMessageViewState extends State<FileMessageView> {
             ],
           ),
         ),
+        if (widget.message.seenBy?.isNotEmpty ?? false)
+          Positioned(
+            bottom: 0,
+            right: widget.isMessageBySender ? 0 : null,
+            left: widget.isMessageBySender ? null : 0,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 1.7, horizontal: 6),
+              child: HorizontalUserAvatars(
+                users: ChatViewInheritedWidget.of(context)
+                        ?.chatController
+                        .getUsersByIds(widget.message.seenBy!) ??
+                    [],
+                circleRadius: 8,
+              ),
+            ),
+          ),
         if (widget.message.reaction.reactions.isNotEmpty)
           ReactionWidget(
             key: widget.key,

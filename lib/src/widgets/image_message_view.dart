@@ -25,6 +25,8 @@ import 'dart:io';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:chatview/src/extensions/extensions.dart';
 import 'package:chatview/src/models/models.dart';
+import 'package:chatview/src/widgets/chat_view_inherited_widget.dart';
+import 'package:chatview/src/widgets/horizontal_user_avatars.dart';
 import 'package:flutter/material.dart';
 
 import 'reaction_widget.dart';
@@ -122,6 +124,23 @@ class ImageMessageView extends StatelessWidget {
                 ),
               ),
             ),
+            if (message.seenBy?.isNotEmpty ?? false)
+              Positioned(
+                bottom: 0,
+                right: isMessageBySender ? 0 : null,
+                left: isMessageBySender ? null : 0,
+                child: Padding(
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 1.7, horizontal: 6),
+                  child: HorizontalUserAvatars(
+                    users: ChatViewInheritedWidget.of(context)
+                            ?.chatController
+                            .getUsersByIds(message.seenBy!) ??
+                        [],
+                    circleRadius: 8,
+                  ),
+                ),
+              ),
             if (message.reaction.reactions.isNotEmpty)
               ReactionWidget(
                 isMessageBySender: isMessageBySender,

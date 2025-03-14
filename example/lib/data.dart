@@ -10,6 +10,7 @@ class Data {
       createdAt: DateTime.now(),
       sentBy: '1', // userId of who sends the message
       status: MessageStatus.read,
+      seenBy: ['2', '3'],
     ),
     Message(
       id: '2',
@@ -17,6 +18,7 @@ class Data {
       createdAt: DateTime.now(),
       sentBy: '2',
       status: MessageStatus.read,
+      seenBy: ['2', '3'],
     ),
     Message(
       id: '3',
@@ -24,6 +26,7 @@ class Data {
       createdAt: DateTime.now(),
       sentBy: '1',
       status: MessageStatus.read,
+      seenBy: ['2', '3'],
     ),
     Message(
       id: '4',
@@ -31,6 +34,7 @@ class Data {
       createdAt: DateTime.now(),
       sentBy: '1',
       status: MessageStatus.read,
+      seenBy: ['2', '3'],
     ),
     Message(
       id: '5',
@@ -39,6 +43,7 @@ class Data {
       sentBy: '2',
       reaction: Reaction(reactions: ['\u{2764}'], reactedUserIds: ['1']),
       status: MessageStatus.read,
+      seenBy: ['2', '3'],
     ),
     Message(
       id: '6',
@@ -46,6 +51,7 @@ class Data {
       createdAt: DateTime.now(),
       sentBy: '3',
       status: MessageStatus.read,
+      seenBy: ['2', '3'],
     ),
     Message(
       id: '7',
@@ -53,6 +59,7 @@ class Data {
       createdAt: DateTime.now(),
       sentBy: '4',
       status: MessageStatus.read,
+      seenBy: ['2', '3'],
     ),
     Message(
       id: '8',
@@ -70,6 +77,7 @@ class Data {
         replyBy: '2',
         messageId: '4',
       ),
+      seenBy: ['2', '3'],
     ),
     Message(
       id: '9',
@@ -85,6 +93,7 @@ class Data {
         ],
         reactedUserIds: ['2', '3', '4'],
       ),
+      seenBy: ['2', '3'],
     ),
     Message(
       id: '10',
@@ -96,6 +105,7 @@ class Data {
         reactions: ['\u{2764}', '\u{2764}', '\u{2764}', '\u{2764}'],
         reactedUserIds: ['2', '4', '3', '1'],
       ),
+      seenBy: ['2', '3', '4'],
     ),
     Message(
       id: '11',
@@ -109,6 +119,7 @@ class Data {
           size: 0),
       reaction: Reaction(reactions: ['\u{2764}'], reactedUserIds: ['2']),
       status: MessageStatus.read,
+      seenBy: ['2', '3', '4', '5', '6'],
     ),
     Message(
       id: '12',
@@ -116,6 +127,7 @@ class Data {
       createdAt: DateTime.now(),
       sentBy: '2',
       status: MessageStatus.read,
+      seenBy: ['2', '3'],
     ),
   ];
 }
