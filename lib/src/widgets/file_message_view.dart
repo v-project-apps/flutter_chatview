@@ -90,8 +90,14 @@ class _FileMessageViewState extends State<FileMessageView> {
                 vertical: 10,
               ),
           margin: widget.fileMessageConfiguration?.margin ??
-              EdgeInsets.fromLTRB(5, 0, 6,
-                  widget.message.reaction.reactions.isNotEmpty ? 15 : 2),
+              EdgeInsets.fromLTRB(
+                  5,
+                  0,
+                  6,
+                  widget.message.reaction.reactions.isNotEmpty ||
+                          (widget.message.seenBy?.isNotEmpty ?? false)
+                      ? 15
+                      : 2),
           decoration: BoxDecoration(
             color: widget.highlightFile
                 ? widget.highlightColor

@@ -102,7 +102,10 @@ class _VoiceMessageWebViewState extends State<VoiceMessageWebView> {
           margin: widget.config?.margin ??
               EdgeInsets.symmetric(
                 horizontal: 8,
-                vertical: widget.message.reaction.reactions.isNotEmpty ? 15 : 0,
+                vertical: widget.message.reaction.reactions.isNotEmpty ||
+                        (widget.message.seenBy?.isNotEmpty ?? false)
+                    ? 15
+                    : 0,
               ),
           child: Row(
             mainAxisSize: MainAxisSize.min,

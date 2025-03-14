@@ -90,7 +90,7 @@ class TextMessageView extends StatelessWidget {
                   0,
                   6,
                   message.reaction.reactions.isNotEmpty ||
-                          message.sentBy.isNotEmpty
+                          (message.seenBy?.isNotEmpty ?? false)
                       ? 15
                       : 2),
           decoration: BoxDecoration(

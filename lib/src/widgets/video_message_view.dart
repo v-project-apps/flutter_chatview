@@ -108,8 +108,10 @@ class VideoMessageView extends StatelessWidget {
                           top: 6,
                           right: isMessageBySender ? 6 : 0,
                           left: isMessageBySender ? 0 : 6,
-                          bottom:
-                              message.reaction.reactions.isNotEmpty ? 15 : 0,
+                          bottom: message.reaction.reactions.isNotEmpty ||
+                                  (message.seenBy?.isNotEmpty ?? false)
+                              ? 15
+                              : 0,
                         ),
                     child: ClipRRect(
                       borderRadius: videoMessageConfiguration?.borderRadius ??
