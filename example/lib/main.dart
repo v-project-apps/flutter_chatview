@@ -53,7 +53,6 @@ class _ChatScreenState extends State<ChatScreen> {
       ChatUser(
         id: '3',
         name: 'Jhon',
-        profilePhoto: Data.profileImage,
       ),
       ChatUser(
         id: '4',
@@ -63,7 +62,6 @@ class _ChatScreenState extends State<ChatScreen> {
       ChatUser(
         id: '5',
         name: 'Rich',
-        profilePhoto: Data.profileImage,
       ),
       ChatUser(
         id: '6',

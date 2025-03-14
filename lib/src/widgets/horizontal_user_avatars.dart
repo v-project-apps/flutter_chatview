@@ -20,7 +20,7 @@ class HorizontalUserAvatars extends StatelessWidget {
         users.isNotEmpty ? users.take(maxVisibleUsers).toList() : [];
 
     double widgetWidth =
-        (circleRadius * 2) + (displayUsers.length - 1) * (circleRadius * 1.7);
+        (circleRadius * 2) + (displayUsers.length) * (circleRadius * 1.3);
 
     return SizedBox(
       height: circleRadius * 2 + 4,
@@ -39,7 +39,7 @@ class HorizontalUserAvatars extends StatelessWidget {
                         shape: BoxShape.circle,
                         border: Border.all(
                           color: Colors.grey,
-                          width: 2,
+                          width: 1,
                         ),
                       ),
                       child: CircleAvatar(
@@ -51,9 +51,14 @@ class HorizontalUserAvatars extends StatelessWidget {
                             ? Colors.primaries[i % Colors.primaries.length]
                             : null,
                         child: displayUsers[i].profilePhoto == null
-                            ? Text(
-                                displayUsers[i].name[0],
-                                style: TextStyle(color: Colors.white),
+                            ? Center(
+                                child: FittedBox(
+                                  fit: BoxFit.fitHeight,
+                                  child: Text(
+                                    displayUsers[i].name[0],
+                                    style: const TextStyle(color: Colors.white),
+                                  ),
+                                ),
                               )
                             : null,
                       ),
@@ -67,9 +72,12 @@ class HorizontalUserAvatars extends StatelessWidget {
                             shape: BoxShape.circle,
                           ),
                           child: Center(
-                            child: Text(
-                              '+$extraUsers',
-                              style: TextStyle(color: Colors.white),
+                            child: FittedBox(
+                              fit: BoxFit.fitHeight,
+                              child: Text(
+                                '+$extraUsers',
+                                style: const TextStyle(color: Colors.white),
+                              ),
                             ),
                           ),
                         ),

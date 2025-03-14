@@ -176,7 +176,8 @@ class _MessageViewState extends State<MessageView>
                               leftPadding2,
                               4,
                               leftPadding2,
-                              widget.message.reaction.reactions.isNotEmpty
+                              widget.message.reaction.reactions.isNotEmpty ||
+                                      widget.message.sentBy.isNotEmpty
                                   ? 14
                                   : 0,
                             ),

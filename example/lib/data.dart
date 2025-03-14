@@ -105,7 +105,9 @@ class Data {
         reactions: ['\u{2764}', '\u{2764}', '\u{2764}', '\u{2764}'],
         reactedUserIds: ['2', '4', '3', '1'],
       ),
-      seenBy: ['2', '3', '4'],
+      seenBy: [
+        '2',
+      ],
     ),
     Message(
       id: '11',
