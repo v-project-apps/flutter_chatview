@@ -37,7 +37,16 @@ class _ChatScreenState extends State<ChatScreen> {
   bool isDarkTheme = false;
   final _chatController = ChatController(
     initialMessageList: Data.messageList,
-    pinnedMessageList: [],
+    pinnedMessageList: [
+      Message(
+        id: '6',
+        message: "When to go ?",
+        createdAt: DateTime.now(),
+        sentBy: '3',
+        status: MessageStatus.read,
+        seenBy: ['2', '3'],
+      ),
+    ],
     scrollController: ScrollController(),
     currentUser: ChatUser(
       id: '1',
@@ -208,6 +217,10 @@ class _ChatScreenState extends State<ChatScreen> {
               extendWaveform: true,
             ),
           ),
+        ),
+        pinnedMessageConfiguration: const PinnedMessageConfiguration(
+          allowPinMessage: true,
+          allowRemoveMessage: true,
         ),
         chatBubbleConfig: ChatBubbleConfiguration(
           outgoingChatBubbleConfig: ChatBubble(

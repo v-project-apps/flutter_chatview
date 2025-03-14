@@ -82,7 +82,14 @@ class ChatController {
     required this.scrollController,
     required this.otherUsers,
     required this.currentUser,
-  });
+  }) {
+    if (!messageStreamController.isClosed) {
+      messageStreamController.sink.add(initialMessageList);
+    }
+    if (!pinnedMessageStreamController.isClosed) {
+      pinnedMessageStreamController.sink.add(pinnedMessageList);
+    }
+  }
 
   /// Represents message stream of chat
   StreamController<List<Message>> messageStreamController = StreamController();
@@ -205,6 +212,22 @@ class ChatController {
           );
         },
       );
+
+  void scrollToMessage(Message message) {
+    final chatMessage =
+        initialMessageList.firstWhere((m) => m.id == message.id);
+
+    final key = chatMessage.key;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final context = key.currentContext;
+      if (context != null) {
+        Scrollable.ensureVisible(context,
+            duration: const Duration(milliseconds: 500),
+            curve: Curves.easeInOut,
+            alignment: 0.5);
+      }
+    });
+  }
 
   /// Function for loading data while pagination.
   void loadMoreData(List<Message> messageList) {

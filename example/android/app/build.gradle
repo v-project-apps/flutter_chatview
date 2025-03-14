@@ -23,7 +23,7 @@ if (flutterVersionName == null) {
 }
 
 android {
-    compileSdkVersion 34
+    compileSdkVersion 35
     namespace 'com.simform.example'
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_11

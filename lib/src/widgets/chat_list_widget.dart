@@ -121,7 +121,6 @@ class _ChatListWidgetState extends State<ChatListWidget> {
     }
     if (messageList.isNotEmpty) chatController.scrollToLastMessage();
 
-    chatController.pinnedMessageStreamController = StreamController.broadcast();
     if (!chatController.pinnedMessageStreamController.isClosed) {
       chatController.pinnedMessageStreamController.sink
           .add(chatController.pinnedMessageList);
@@ -135,13 +134,15 @@ class _ChatListWidgetState extends State<ChatListWidget> {
         StreamBuilder<List<Message>>(
             stream: widget.chatController.pinnedMessageStreamController.stream,
             builder: (context, snapshot) {
+              debugPrint('snapshot.data: ${snapshot.data}');
               if (snapshot.hasData) {
                 return Column(
                   children: snapshot.data!
                       .take(3)
                       .map((message) => PinnedMessageWidget(
                             message: message,
-                            onTap: () => _scrollToMessage(message),
+                            onTap: () =>
+                                chatController.scrollToMessage(message),
                             pinnedMessageConfiguration:
                                 widget.pinnedMessageConfiguration,
                             onRemove: () => _removePinnedMessage(message),
@@ -205,22 +206,6 @@ class _ChatListWidgetState extends State<ChatListWidget> {
         ),
       ],
     );
-  }
-
-  void _scrollToMessage(Message message) {
-    final chatMessage = widget.chatController.initialMessageList
-        .firstWhere((m) => m.id == message.id);
-
-    final key = chatMessage.key;
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      final context = key.currentContext;
-      if (context != null) {
-        Scrollable.ensureVisible(context,
-            duration: const Duration(milliseconds: 500),
-            curve: Curves.easeInOut,
-            alignment: 0.5);
-      }
-    });
   }
 
   void _removePinnedMessage(Message message) {
