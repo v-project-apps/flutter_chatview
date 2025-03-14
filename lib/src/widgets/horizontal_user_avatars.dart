@@ -19,8 +19,8 @@ class HorizontalUserAvatars extends StatelessWidget {
     List<ChatUser> displayUsers =
         users.isNotEmpty ? users.take(maxVisibleUsers).toList() : [];
 
-    double widgetWidth =
-        (circleRadius * 2) + (displayUsers.length) * (circleRadius * 1.3);
+    double widgetWidth = ((circleRadius + 1) * 2) +
+        (displayUsers.length - 1) * (circleRadius * 1.3);
 
     return SizedBox(
       height: circleRadius * 2 + 4,
