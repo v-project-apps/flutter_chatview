@@ -116,7 +116,7 @@ class Message {
           microseconds:
               int.tryParse(json['voice_message_duration'].toString()) ?? 0,
         ),
-        seenBy: json['seen_by'] is List<String>
+        seenBy: json['seen_by'] is List<dynamic>
             ? List<String>.from(json['seen_by'])
             : null,
         status: MessageStatus.tryParse(json['status']?.toString()) ??
