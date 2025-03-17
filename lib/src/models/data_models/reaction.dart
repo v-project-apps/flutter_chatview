@@ -1,6 +1,6 @@
 class Reaction {
   Reaction({
-    required this.name,
+    required this.emoji,
     required this.reactedUserId,
   });
 
@@ -9,19 +9,19 @@ class Reaction {
     final reactedUserId = json['reacted_user_id'] ?? "";
 
     return Reaction(
-      name: name,
+      emoji: name,
       reactedUserId: reactedUserId,
     );
   }
 
   /// Provides list of reaction in single message.
-  final String name;
+  final String emoji;
 
   /// Provides list of user who reacted on message.
   final String reactedUserId;
 
   Map<String, dynamic> toJson() => {
-        'name': name,
+        'name': emoji,
         'reacted_user_id': reactedUserId,
       };
 
@@ -30,7 +30,7 @@ class Reaction {
     String? reactedUserId,
   }) {
     return Reaction(
-      name: name ?? this.name,
+      emoji: name ?? this.emoji,
       reactedUserId: reactedUserId ?? this.reactedUserId,
     );
   }
@@ -41,10 +41,10 @@ extension ReactionsExtension on List<Reaction> {
     final Map<String, int> reactionMap = {};
 
     for (final reaction in this) {
-      if (reactionMap.containsKey(reaction.name)) {
-        reactionMap[reaction.name] = reactionMap[reaction.name]! + 1;
+      if (reactionMap.containsKey(reaction.emoji)) {
+        reactionMap[reaction.emoji] = reactionMap[reaction.emoji]! + 1;
       } else {
-        reactionMap[reaction.name] = 1;
+        reactionMap[reaction.emoji] = 1;
       }
     }
 

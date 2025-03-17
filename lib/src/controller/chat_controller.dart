@@ -172,11 +172,11 @@ class ChatController {
         initialMessageList.firstWhere((element) => element.id == messageId);
     final indexOfMessage = initialMessageList.indexOf(message);
     if (message.reactions.any((reaction) =>
-        reaction.name == emoji && reaction.reactedUserId == userId)) {
+        reaction.emoji == emoji && reaction.reactedUserId == userId)) {
       message.reactions.removeWhere((reaction) =>
-          reaction.name == emoji && reaction.reactedUserId == userId);
+          reaction.emoji == emoji && reaction.reactedUserId == userId);
     } else {
-      message.reactions.add(Reaction(name: emoji, reactedUserId: userId));
+      message.reactions.add(Reaction(emoji: emoji, reactedUserId: userId));
     }
     initialMessageList[indexOfMessage] = Message(
       id: messageId,

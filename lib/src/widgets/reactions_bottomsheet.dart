@@ -38,7 +38,7 @@ class ReactionsBottomSheet {
                 onTap: () {
                   reactionsBottomSheetConfig?.reactedUserCallback?.call(
                     reactedUser,
-                    reactions[index].name,
+                    reactions[index].emoji,
                   );
                 },
                 child: Container(
@@ -90,7 +90,7 @@ class ReactionsBottomSheet {
                         ),
                       ),
                       Text(
-                        reactions[index].name,
+                        reactions[index].emoji,
                         style: TextStyle(
                           fontSize:
                               reactionsBottomSheetConfig?.reactionSize ?? 14,
