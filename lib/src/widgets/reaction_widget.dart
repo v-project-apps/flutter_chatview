@@ -29,13 +29,13 @@ import '../../chatview.dart';
 class ReactionWidget extends StatefulWidget {
   const ReactionWidget({
     Key? key,
-    required this.reaction,
+    required this.reactions,
     this.messageReactionConfig,
     required this.isMessageBySender,
   }) : super(key: key);
 
-  /// Provides reaction instance of message.
-  final Reaction reaction;
+  /// Provides a list of reactions instance of message.
+  final List<Reaction> reactions;
 
   /// Provides configuration of reaction appearance in chat bubble.
   final MessageReactionConfiguration? messageReactionConfig;
@@ -65,8 +65,7 @@ class _ReactionWidgetState extends State<ReactionWidget> {
 
   @override
   Widget build(BuildContext context) {
-    //// Convert into set to remove reduntant values
-    final reactionsMap = widget.reaction.reactionsWithCountMap;
+    final reactionsMap = widget.reactions.getReactionWithCountMap();
     return Positioned(
       bottom: 0,
       left: widget.isMessageBySender ? 0 : null,
@@ -75,7 +74,7 @@ class _ReactionWidgetState extends State<ReactionWidget> {
         onTap: () => chatController != null
             ? ReactionsBottomSheet().show(
                 context: context,
-                reaction: widget.reaction,
+                reactions: widget.reactions,
                 chatController: chatController!,
                 reactionsBottomSheetConfig:
                     messageReactionConfig?.reactionsBottomSheetConfig,

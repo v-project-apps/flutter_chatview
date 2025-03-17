@@ -94,7 +94,7 @@ class _FileMessageViewState extends State<FileMessageView> {
                   5,
                   0,
                   6,
-                  widget.message.reaction.reactions.isNotEmpty ||
+                  widget.message.reactions.isNotEmpty ||
                           (widget.message.seenBy?.isNotEmpty ?? false)
                       ? 15
                       : 2),
@@ -178,11 +178,11 @@ class _FileMessageViewState extends State<FileMessageView> {
               ),
             ),
           ),
-        if (widget.message.reaction.reactions.isNotEmpty)
+        if (widget.message.reactions.isNotEmpty)
           ReactionWidget(
             key: widget.key,
             isMessageBySender: widget.isMessageBySender,
-            reaction: widget.message.reaction,
+            reactions: widget.message.reactions,
             messageReactionConfig: widget.messageReactionConfig,
           ),
       ],

@@ -89,7 +89,7 @@ class TextMessageView extends StatelessWidget {
                   5,
                   0,
                   6,
-                  message.reaction.reactions.isNotEmpty ||
+                  message.reactions.isNotEmpty ||
                           (message.seenBy?.isNotEmpty ?? false)
                       ? 15
                       : 2),
@@ -127,11 +127,11 @@ class TextMessageView extends StatelessWidget {
               ),
             ),
           ),
-        if (message.reaction.reactions.isNotEmpty)
+        if (message.reactions.isNotEmpty)
           ReactionWidget(
             key: key,
             isMessageBySender: isMessageBySender,
-            reaction: message.reaction,
+            reactions: message.reactions,
             messageReactionConfig: messageReactionConfig,
           )
       ],

@@ -1,59 +1,54 @@
 class Reaction {
   Reaction({
-    required this.reactions,
-    required this.reactedUserIds,
+    required this.name,
+    required this.reactedUserId,
   });
 
   factory Reaction.fromJson(Map<String, dynamic> json) {
-    final reactionsList = json['reactions'] is List<dynamic>
-        ? json['reactions'] as List<dynamic>
-        : <dynamic>[];
-
-    final reactions = <String>[
-      for (var i = 0; i < reactionsList.length; i++)
-        if (reactionsList[i]?.toString().isNotEmpty ?? false)
-          reactionsList[i]!.toString()
-    ];
-
-    final reactedUserIdList = json['reacted_user_ids'] is List<dynamic>
-        ? json['reacted_user_ids'] as List<dynamic>
-        : <dynamic>[];
-
-    final reactedUserIds = <String>[
-      for (var i = 0; i < reactedUserIdList.length; i++)
-        if (reactedUserIdList[i]?.toString().isNotEmpty ?? false)
-          reactedUserIdList[i]!.toString()
-    ];
+    final name = json['name'] ?? "";
+    final reactedUserId = json['reacted_user_id'] ?? "";
 
     return Reaction(
-      reactions: reactions,
-      reactedUserIds: reactedUserIds,
+      name: name,
+      reactedUserId: reactedUserId,
     );
   }
 
   /// Provides list of reaction in single message.
-  final List<String> reactions;
-
-  Map<String, int> get reactionsWithCountMap => {
-        for (var reaction in reactions)
-          reaction: reactions.where((element) => element == reaction).length
-      };
+  final String name;
 
   /// Provides list of user who reacted on message.
-  final List<String> reactedUserIds;
+  final String reactedUserId;
 
   Map<String, dynamic> toJson() => {
-        'reactions': reactions,
-        'reacted_user_ids': reactedUserIds,
+        'name': name,
+        'reacted_user_id': reactedUserId,
       };
 
   Reaction copyWith({
-    List<String>? reactions,
-    List<String>? reactedUserIds,
+    String? name,
+    String? reactedUserId,
   }) {
     return Reaction(
-      reactions: reactions ?? this.reactions,
-      reactedUserIds: reactedUserIds ?? this.reactedUserIds,
+      name: name ?? this.name,
+      reactedUserId: reactedUserId ?? this.reactedUserId,
     );
+  }
+}
+
+extension ReactionsExtension on List<Reaction> {
+  Map<String, int> getReactionWithCountMap() {
+    final Map<String, int> reactionMap = {};
+
+    for (final reaction in this) {
+      if (reactionMap.containsKey(reaction.name)) {
+        reactionMap[reaction.name] = reactionMap[reaction.name]! + 1;
+      } else {
+        reactionMap[reaction.name] = 1;
+      }
+    }
+
+    return Map.fromEntries(reactionMap.entries.toList()
+      ..sort((e1, e2) => e2.value.compareTo(e1.value)));
   }
 }

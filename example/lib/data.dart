@@ -41,7 +41,7 @@ class Data {
       message: "That's fine",
       createdAt: DateTime.now(),
       sentBy: '2',
-      reaction: Reaction(reactions: ['\u{2764}'], reactedUserIds: ['1']),
+      reactions: [Reaction(name: '\u{2764}', reactedUserId: '1')],
       status: MessageStatus.read,
       seenBy: ['2', '3'],
     ),
@@ -66,10 +66,11 @@ class Data {
       message: "https://bit.ly/3JHS2Wl",
       createdAt: DateTime.now(),
       sentBy: '2',
-      reaction: Reaction(
-        reactions: ['\u{2764}', '\u{1F44D}', '\u{1F44D}'],
-        reactedUserIds: ['2', '3', '4'],
-      ),
+      reactions: [
+        Reaction(name: '\u{2764}', reactedUserId: '2'),
+        Reaction(name: '\u{1F44D}', reactedUserId: '3'),
+        Reaction(name: '\u{1F44D}', reactedUserId: '4'),
+      ],
       status: MessageStatus.read,
       replyMessage: const ReplyMessage(
         message: "Can you write the time and place of the meeting?",
@@ -85,14 +86,11 @@ class Data {
       createdAt: DateTime.now(),
       sentBy: '1',
       status: MessageStatus.read,
-      reaction: Reaction(
-        reactions: [
-          '\u{2764}',
-          '\u{2764}',
-          '\u{2764}',
-        ],
-        reactedUserIds: ['2', '3', '4'],
-      ),
+      reactions: [
+        Reaction(name: '\u{2764}', reactedUserId: '2'),
+        Reaction(name: '\u{2764}', reactedUserId: '3'),
+        Reaction(name: '\u{2764}', reactedUserId: '4'),
+      ],
       seenBy: ['2', '3'],
     ),
     Message(
@@ -101,10 +99,12 @@ class Data {
       status: MessageStatus.read,
       createdAt: DateTime.now(),
       sentBy: '1',
-      reaction: Reaction(
-        reactions: ['\u{2764}', '\u{2764}', '\u{2764}', '\u{2764}'],
-        reactedUserIds: ['2', '4', '3', '1'],
-      ),
+      reactions: [
+        Reaction(name: '\u{2764}', reactedUserId: '2'),
+        Reaction(name: '\u{2764}', reactedUserId: '4'),
+        Reaction(name: '\u{2764}', reactedUserId: '3'),
+        Reaction(name: '\u{2764}', reactedUserId: '1'),
+      ],
       seenBy: [
         '2',
       ],
@@ -119,7 +119,7 @@ class Data {
           name: "image",
           url: "https://miro.medium.com/max/1000/0*s7of7kWnf9fDg4XM.jpeg",
           size: 0),
-      reaction: Reaction(reactions: ['\u{2764}'], reactedUserIds: ['2']),
+      reactions: [Reaction(name: '\u{2764}', reactedUserId: '2')],
       status: MessageStatus.read,
       seenBy: ['2', '3', '4', '5', '6'],
     ),
@@ -130,6 +130,10 @@ class Data {
       sentBy: '2',
       status: MessageStatus.read,
       seenBy: ['2', '3'],
+      reactions: [
+        Reaction(name: '\u{1F60D}', reactedUserId: '2'),
+        Reaction(name: '\u{1F60D}', reactedUserId: '3'),
+      ],
     ),
   ];
 }

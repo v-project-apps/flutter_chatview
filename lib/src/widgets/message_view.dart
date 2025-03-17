@@ -160,7 +160,7 @@ class _MessageViewState extends State<MessageView>
     final emojiMessageConfiguration = messageConfig?.emojiMessageConfig;
     return Padding(
       padding: EdgeInsets.only(
-        bottom: widget.message.reaction.reactions.isNotEmpty ? 6 : 0,
+        bottom: widget.message.reactions.isNotEmpty ? 6 : 0,
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.end,
@@ -176,7 +176,7 @@ class _MessageViewState extends State<MessageView>
                               leftPadding2,
                               4,
                               leftPadding2,
-                              widget.message.reaction.reactions.isNotEmpty ||
+                              widget.message.reactions.isNotEmpty ||
                                       widget.message.sentBy.isNotEmpty
                                   ? 14
                                   : 0,
@@ -209,9 +209,9 @@ class _MessageViewState extends State<MessageView>
                             ),
                           ),
                         ),
-                      if (widget.message.reaction.reactions.isNotEmpty)
+                      if (widget.message.reactions.isNotEmpty)
                         ReactionWidget(
-                          reaction: widget.message.reaction,
+                          reactions: widget.message.reactions,
                           messageReactionConfig:
                               messageConfig?.messageReactionConfig,
                           isMessageBySender: widget.isMessageBySender,

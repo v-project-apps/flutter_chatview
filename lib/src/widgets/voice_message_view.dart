@@ -137,7 +137,7 @@ class _VoiceMessageViewState extends State<VoiceMessageView> {
           margin: widget.config?.margin ??
               EdgeInsets.symmetric(
                 horizontal: 8,
-                vertical: widget.message.reaction.reactions.isNotEmpty ||
+                vertical: widget.message.reactions.isNotEmpty ||
                         (widget.message.seenBy?.isNotEmpty ?? false)
                     ? 15
                     : 0,
@@ -203,10 +203,10 @@ class _VoiceMessageViewState extends State<VoiceMessageView> {
               ),
             ),
           ),
-        if (widget.message.reaction.reactions.isNotEmpty)
+        if (widget.message.reactions.isNotEmpty)
           ReactionWidget(
             isMessageBySender: widget.isMessageBySender,
-            reaction: widget.message.reaction,
+            reactions: widget.message.reactions,
             messageReactionConfig: widget.messageReactionConfig,
           ),
       ],

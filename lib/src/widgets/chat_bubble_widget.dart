@@ -144,7 +144,7 @@ class _ChatBubbleWidgetState extends State<ChatBubbleWidget> {
   ProfileCircle profileCircle(ChatUser? messagedUser) {
     final profileCircleConfig = chatListConfig.profileCircleConfig;
     return ProfileCircle(
-      bottomPadding: widget.message.reaction.reactions.isNotEmpty
+      bottomPadding: widget.message.reactions.isNotEmpty
           ? profileCircleConfig?.bottomPadding ?? 15
           : profileCircleConfig?.bottomPadding ?? 2,
       profileCirclePadding: profileCircleConfig?.padding,

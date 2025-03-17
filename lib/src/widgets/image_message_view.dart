@@ -109,7 +109,7 @@ class ImageMessageView extends StatelessWidget {
                         top: 6,
                         right: isMessageBySender ? 6 : 0,
                         left: isMessageBySender ? 0 : 6,
-                        bottom: message.reaction.reactions.isNotEmpty ||
+                        bottom: message.reactions.isNotEmpty ||
                                 (message.seenBy?.isNotEmpty ?? false)
                             ? 15
                             : 0,
@@ -144,10 +144,10 @@ class ImageMessageView extends StatelessWidget {
                   ),
                 ),
               ),
-            if (message.reaction.reactions.isNotEmpty)
+            if (message.reactions.isNotEmpty)
               ReactionWidget(
                 isMessageBySender: isMessageBySender,
-                reaction: message.reaction,
+                reactions: message.reactions,
                 messageReactionConfig: messageReactionConfig,
               ),
           ],

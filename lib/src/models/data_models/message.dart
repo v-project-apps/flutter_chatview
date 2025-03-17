@@ -42,7 +42,7 @@ class Message {
   final ReplyMessage replyMessage;
 
   /// Represents reaction on message.
-  final Reaction reaction;
+  final List<Reaction> reactions;
 
   /// Provides message type.
   final MessageType messageType;
@@ -68,7 +68,7 @@ class Message {
     required this.createdAt,
     required this.sentBy,
     this.replyMessage = const ReplyMessage(),
-    Reaction? reaction,
+    List<Reaction>? reactions,
     this.messageType = MessageType.text,
     this.attachment,
     this.voiceMessageDuration,
@@ -76,7 +76,7 @@ class Message {
     MessageStatus status = MessageStatus.pending,
     this.isPinned = false,
   })  : key = GlobalKey(),
-        reaction = reaction ?? Reaction(reactions: [], reactedUserIds: []),
+        reactions = reactions ?? [],
         _status = ValueNotifier(status);
 
   /// curret messageStatus
@@ -103,9 +103,10 @@ class Message {
         replyMessage: json['reply_message'] is Map<String, dynamic>
             ? ReplyMessage.fromJson(json['reply_message'])
             : const ReplyMessage(),
-        reaction: json['reaction'] is Map<String, dynamic>
-            ? Reaction.fromJson(json['reaction'])
-            : null,
+        reactions: json['reactions'] is List<dynamic>
+            ? List<Reaction>.from(json['reactions']
+                .map((reaction) => Reaction.fromJson(reaction)))
+            : [],
         messageType: MessageType.tryParse(json['message_type']?.toString()) ??
             MessageType.text,
         attachment: json['attachment'] != null &&
@@ -130,7 +131,7 @@ class Message {
         'created_at': createdAt.toIso8601String(),
         'sentBy': sentBy,
         'reply_message': replyMessage.toJson(),
-        'reaction': reaction.toJson(),
+        'reactions': reactions.map((reaction) => reaction.toJson()).toList(),
         'message_type': messageType.name,
         'attachment': attachment?.toJson(),
         'voice_message_duration': voiceMessageDuration?.inMicroseconds,
@@ -146,7 +147,7 @@ class Message {
     DateTime? createdAt,
     String? sentBy,
     ReplyMessage? replyMessage,
-    Reaction? reaction,
+    List<Reaction>? reactions,
     MessageType? messageType,
     Attachment? attachment,
     Duration? voiceMessageDuration,
@@ -166,7 +167,7 @@ class Message {
           ? voiceMessageDuration
           : voiceMessageDuration ?? this.voiceMessageDuration,
       seenBy: seenBy ?? this.seenBy,
-      reaction: reaction ?? this.reaction,
+      reactions: reactions ?? this.reactions,
       replyMessage: replyMessage ?? this.replyMessage,
       status: status ?? this.status,
       isPinned: isPinned ?? this.isPinned,

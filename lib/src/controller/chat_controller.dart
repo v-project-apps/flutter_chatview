@@ -170,19 +170,13 @@ class ChatController {
   }) {
     final message =
         initialMessageList.firstWhere((element) => element.id == messageId);
-    final reactedUserIds = message.reaction.reactedUserIds;
     final indexOfMessage = initialMessageList.indexOf(message);
-    final userIndex = reactedUserIds.indexOf(userId);
-    if (userIndex != -1) {
-      if (message.reaction.reactions[userIndex] == emoji) {
-        message.reaction.reactions.removeAt(userIndex);
-        message.reaction.reactedUserIds.removeAt(userIndex);
-      } else {
-        message.reaction.reactions[userIndex] = emoji;
-      }
+    if (message.reactions.any((reaction) =>
+        reaction.name == emoji && reaction.reactedUserId == userId)) {
+      message.reactions.removeWhere((reaction) =>
+          reaction.name == emoji && reaction.reactedUserId == userId);
     } else {
-      message.reaction.reactions.add(emoji);
-      message.reaction.reactedUserIds.add(userId);
+      message.reactions.add(Reaction(name: emoji, reactedUserId: userId));
     }
     initialMessageList[indexOfMessage] = Message(
       id: messageId,
@@ -190,7 +184,7 @@ class ChatController {
       createdAt: message.createdAt,
       sentBy: message.sentBy,
       replyMessage: message.replyMessage,
-      reaction: message.reaction,
+      reactions: message.reactions,
       messageType: message.messageType,
       status: message.status,
       seenBy: message.seenBy,

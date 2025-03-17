@@ -8,8 +8,8 @@ class ReactionsBottomSheet {
   Future<void> show({
     required BuildContext context,
 
-    /// Provides reaction instance of message.
-    required Reaction reaction,
+    /// Provides reaction instances of message.
+    required List<Reaction> reactions, // Fixed the bracket here.
 
     /// Provides controller for accessing few function for running chat.
     required ChatController chatController,
@@ -30,15 +30,15 @@ class ReactionsBottomSheet {
                   left: 12,
                   top: 18,
                 ),
-            itemCount: reaction.reactedUserIds.length,
+            itemCount: reactions.length,
             itemBuilder: (_, index) {
               final reactedUser =
-                  chatController.getUserFromId(reaction.reactedUserIds[index]);
+                  chatController.getUserFromId(reactions[index].reactedUserId);
               return GestureDetector(
                 onTap: () {
                   reactionsBottomSheetConfig?.reactedUserCallback?.call(
                     reactedUser,
-                    reaction.reactions[index],
+                    reactions[index].name,
                   );
                 },
                 child: Container(
@@ -90,7 +90,7 @@ class ReactionsBottomSheet {
                         ),
                       ),
                       Text(
-                        reaction.reactions[index],
+                        reactions[index].name,
                         style: TextStyle(
                           fontSize:
                               reactionsBottomSheetConfig?.reactionSize ?? 14,
