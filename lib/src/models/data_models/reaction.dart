@@ -5,7 +5,7 @@ class Reaction {
   });
 
   factory Reaction.fromJson(Map<String, dynamic> json) {
-    final name = json['name'] ?? "";
+    final name = json['emoji'] ?? "";
     final reactedUserId = json['reacted_user_id'] ?? "";
 
     return Reaction(
@@ -21,16 +21,16 @@ class Reaction {
   final String reactedUserId;
 
   Map<String, dynamic> toJson() => {
-        'name': emoji,
+        'emoji': emoji,
         'reacted_user_id': reactedUserId,
       };
 
   Reaction copyWith({
-    String? name,
+    String? emoji,
     String? reactedUserId,
   }) {
     return Reaction(
-      emoji: name ?? this.emoji,
+      emoji: emoji ?? this.emoji,
       reactedUserId: reactedUserId ?? this.reactedUserId,
     );
   }
