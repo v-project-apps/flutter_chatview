@@ -20,6 +20,7 @@
  * SOFTWARE.
  */
 import 'package:chatview/chatview.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 
 class Message {
@@ -97,8 +98,7 @@ class Message {
   factory Message.fromJson(Map<String, dynamic> json) => Message(
         id: json['id']?.toString() ?? '',
         message: json['message']?.toString() ?? '',
-        createdAt:
-            DateTime.tryParse(json['created_at'].toString()) ?? DateTime.now(),
+        createdAt: (json['created_at'] as Timestamp).toDate().toLocal(),
         sentBy: json['sentBy']?.toString() ?? '',
         replyMessage: json['reply_message'] is Map<String, dynamic>
             ? ReplyMessage.fromJson(json['reply_message'])
@@ -128,7 +128,7 @@ class Message {
   Map<String, dynamic> toJson() => {
         'id': id,
         'message': message,
-        'created_at': createdAt.toIso8601String(),
+        'created_at': Timestamp.fromDate(createdAt),
         'sentBy': sentBy,
         'reply_message': replyMessage.toJson(),
         'reactions': reactions.map((reaction) => reaction.toJson()).toList(),
