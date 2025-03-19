@@ -43,7 +43,7 @@ class MessageTimeWidget extends StatelessWidget {
     return Align(
       alignment: Alignment.centerRight,
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+        padding: const EdgeInsets.symmetric(horizontal: 4),
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -57,7 +57,7 @@ class MessageTimeWidget extends StatelessWidget {
               ),
               child: Icon(
                 isCurrentUser ? Icons.arrow_forward : Icons.arrow_back,
-                size: 10,
+                size: 8,
                 color: messageTimeIconColor,
               ),
             ),
