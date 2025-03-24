@@ -31,6 +31,9 @@ class ChatUser {
   /// Provides name of user.
   final String name;
 
+  /// Provides role of user.
+  final String role;
+
   /// Provides profile picture as network URL or asset of user.
   /// Or
   /// Provides profile picture's data in base64 string.
@@ -55,6 +58,7 @@ class ChatUser {
   ChatUser({
     required this.id,
     required this.name,
+    this.role = "User",
     this.profilePhoto,
     this.defaultAvatarImage = profileImage,
     this.imageType = ImageType.network,
@@ -66,6 +70,7 @@ class ChatUser {
   factory ChatUser.fromJson(Map<String, dynamic> json) => ChatUser(
         id: json["id"],
         name: json["name"],
+        role: json["role"] ?? "User",
         profilePhoto: json["profile_photo"],
         imageType: ImageType.tryParse(json['image_type']?.toString()) ??
             ImageType.network,
@@ -75,6 +80,7 @@ class ChatUser {
   Map<String, dynamic> toJson() => {
         'id': id,
         'name': name,
+        'role': role,
         'profile_photo': profilePhoto,
         'image_type': imageType.name,
         'default_avatar_image': defaultAvatarImage,
@@ -83,6 +89,7 @@ class ChatUser {
   ChatUser copyWith({
     String? id,
     String? name,
+    String? role,
     String? profilePhoto,
     ImageType? imageType,
     String? defaultAvatarImage,
@@ -91,6 +98,7 @@ class ChatUser {
     return ChatUser(
       id: id ?? this.id,
       name: name ?? this.name,
+      role: role ?? this.role,
       imageType: imageType ?? this.imageType,
       profilePhoto:
           forceNullValue ? profilePhoto : profilePhoto ?? this.profilePhoto,
