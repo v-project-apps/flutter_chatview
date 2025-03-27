@@ -48,3 +48,4 @@ export 'src/models/config_models/file_message_configuration.dart';
 export 'src/models/config_models/video_message_configuration.dart';
 export 'src/models/data_models/attachment.dart';
 export 'src/widgets/chatui_textfield.dart';
+export 'package:mention_tag_text_field/mention_tag_text_field.dart';
