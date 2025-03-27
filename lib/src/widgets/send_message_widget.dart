@@ -29,6 +29,7 @@ import 'package:chatview/src/widgets/reply_message_view.dart';
 import 'package:chatview/src/widgets/scroll_to_bottom_button.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
+import 'package:mention_tag_text_field/mention_tag_text_field.dart';
 
 import '../utils/constants/constants.dart';
 
@@ -70,7 +71,7 @@ class SendMessageWidget extends StatefulWidget {
 }
 
 class SendMessageWidgetState extends State<SendMessageWidget> {
-  final _textEditingController = TextEditingController();
+  final _textEditingController = MentionTagTextEditingController();
   final ValueNotifier<ReplyMessage> _replyMessage =
       ValueNotifier(const ReplyMessage());
 
@@ -258,9 +259,10 @@ class SendMessageWidgetState extends State<SendMessageWidget> {
                               ),
                               ChatUITextField(
                                 focusNode: _focusNode,
-                                textEditingController: _textEditingController,
+                                controller: _textEditingController,
                                 onPressed: _onPressed,
-                                sendMessageConfig: widget.sendMessageConfig,
+                                sendMessageConfiguration:
+                                    widget.sendMessageConfig,
                                 onRecordingComplete: _onRecordingComplete,
                                 onAttachmentSelected: _onAttachmentSelected,
                               )
@@ -301,14 +303,15 @@ class SendMessageWidgetState extends State<SendMessageWidget> {
   }
 
   void _onPressed() {
-    final messageText = _textEditingController.text.trim();
+    final messageText = _textEditingController.getText.trim();
     _textEditingController.clear();
     if (messageText.isEmpty) return;
 
     widget.onSendTap.call(
-      messageText.trim(),
+      messageText,
       replyMessage,
       MessageType.text,
+      mentions: _textEditingController.mentions,
     );
     _assignRepliedMessage();
   }

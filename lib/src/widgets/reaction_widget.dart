@@ -52,7 +52,6 @@ class _ReactionWidgetState extends State<ReactionWidget> {
 
   MessageReactionConfiguration? get messageReactionConfig =>
       widget.messageReactionConfig;
-  final _reactionTextStyle = const TextStyle(fontSize: 13);
   ChatController? chatController;
 
   @override

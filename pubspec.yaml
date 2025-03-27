@@ -40,6 +40,7 @@ dependencies:
   flutter_sound: ^9.2.13
   flutter_audio_waveforms: ^1.2.1+8
   universal_html: ^2.2.4
+  mention_tag_text_field: ^0.0.7
 
 
 dependency_overrides:

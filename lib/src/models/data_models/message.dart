@@ -63,6 +63,9 @@ class Message {
   /// Indicates if message is pinned.
   final bool isPinned;
 
+  /// Provides list of mentions in message.
+  final List<dynamic>? mentions;
+
   Message({
     this.id = '',
     required this.message,
@@ -76,6 +79,7 @@ class Message {
     this.seenBy,
     MessageStatus status = MessageStatus.pending,
     this.isPinned = false,
+    this.mentions,
   })  : key = GlobalKey(),
         reactions = reactions ?? [],
         _status = ValueNotifier(status);
@@ -123,6 +127,9 @@ class Message {
         status: MessageStatus.tryParse(json['status']?.toString()) ??
             MessageStatus.pending,
         isPinned: json['isPinned'] ?? false,
+        mentions: json['mentions'] is List<dynamic>
+            ? List<Map<String, String>>.from(json['mentions'])
+            : null,
       );
 
   Map<String, dynamic> toJson() => {
@@ -138,6 +145,7 @@ class Message {
         'seen_by': seenBy,
         'status': status.name,
         'isPinned': isPinned,
+        'mentions': mentions,
       };
 
   Message copyWith({
@@ -155,6 +163,7 @@ class Message {
     MessageStatus? status,
     bool? isPinned,
     bool forceNullValue = false,
+    List<Map<String, String>>? mentions,
   }) {
     return Message(
       id: id ?? this.id,
@@ -171,6 +180,7 @@ class Message {
       replyMessage: replyMessage ?? this.replyMessage,
       status: status ?? this.status,
       isPinned: isPinned ?? this.isPinned,
+      mentions: mentions ?? this.mentions,
     );
   }
 }

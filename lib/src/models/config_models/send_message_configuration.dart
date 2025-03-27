@@ -22,6 +22,7 @@
 
 import 'package:audio_waveforms/audio_waveforms.dart';
 import 'package:chatview/src/models/config_models/attachment_picker_bottom_sheet_configuration.dart';
+import 'package:chatview/src/values/mention_configuration.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
@@ -93,6 +94,9 @@ class SendMessageConfiguration {
   final AttachmentPickerBottomSheetConfiguration?
       attachmentPickerBottomSheetConfig;
 
+  /// Configuration for mention styling and behavior
+  final MentionConfiguration? mentionConfiguration;
+
   const SendMessageConfiguration({
     this.textFieldConfig,
     this.textFieldBackgroundColor,
@@ -115,6 +119,7 @@ class SendMessageConfiguration {
     this.attachmentPickerBottomSheetConfig,
     this.videoPickerConfiguration,
     this.filePickerConfiguration,
+    this.mentionConfiguration,
   });
 }
 

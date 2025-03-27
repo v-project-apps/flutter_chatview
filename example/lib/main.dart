@@ -342,7 +342,7 @@ class _ChatScreenState extends State<ChatScreen> {
 
   void _onSendTap(
       String message, ReplyMessage replyMessage, MessageType messageType,
-      {Attachment? attachment}) {
+      {Attachment? attachment, List<dynamic>? mentions}) {
     _chatController.addMessage(
       Message(
         id: DateTime.now().toString(),
@@ -352,6 +352,7 @@ class _ChatScreenState extends State<ChatScreen> {
         replyMessage: replyMessage,
         messageType: messageType,
         attachment: attachment,
+        mentions: mentions,
       ),
     );
     Future.delayed(const Duration(milliseconds: 300), () {

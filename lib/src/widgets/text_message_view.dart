@@ -102,14 +102,7 @@ class TextMessageView extends StatelessWidget {
                   linkPreviewConfig: _linkPreviewConfig,
                   url: textMessage,
                 )
-              : Text(
-                  textMessage,
-                  style: _textStyle ??
-                      textTheme.bodyMedium!.copyWith(
-                        color: Colors.white,
-                        fontSize: 16,
-                      ),
-                ),
+              : _buildMessageText(textTheme),
         ),
         if (message.seenBy?.isNotEmpty ?? false)
           Positioned(
@@ -135,6 +128,88 @@ class TextMessageView extends StatelessWidget {
             messageReactionConfig: messageReactionConfig,
           )
       ],
+    );
+  }
+
+  Widget _buildMessageText(TextTheme textTheme) {
+    if (message.mentions == null || message.mentions!.isEmpty) {
+      return Text(
+        message.message,
+        style: _textStyle ??
+            textTheme.bodyMedium!.copyWith(
+              color: Colors.white,
+              fontSize: 16,
+            ),
+      );
+    }
+
+    final List<TextSpan> textSpans = [];
+    String remainingText = message.message;
+    int currentIndex = 0;
+
+    while (remainingText.isNotEmpty) {
+      final mentionIndex = remainingText.indexOf('@');
+      if (mentionIndex == -1) {
+        // No more mentions, add remaining text
+        textSpans.add(TextSpan(
+          text: remainingText,
+          style: _textStyle ??
+              textTheme.bodyMedium!.copyWith(
+                color: Colors.white,
+                fontSize: 16,
+              ),
+        ));
+        break;
+      }
+
+      // Add text before mention
+      if (mentionIndex > 0) {
+        textSpans.add(TextSpan(
+          text: remainingText.substring(0, mentionIndex),
+          style: _textStyle ??
+              textTheme.bodyMedium!.copyWith(
+                color: Colors.white,
+                fontSize: 16,
+              ),
+        ));
+      }
+
+      // Find the end of the mention (space or end of text)
+      final spaceIndex = remainingText.indexOf(' ', mentionIndex);
+      final mentionEnd = spaceIndex == -1 ? remainingText.length : spaceIndex;
+      final mentionText = remainingText.substring(mentionIndex, mentionEnd);
+
+      // Check if this mention is in the mentions list
+      final isMentioned = message.mentions!.any((mention) =>
+          mention.values.first.toLowerCase() ==
+          mentionText.replaceAll('@', '').toLowerCase());
+
+      if (isMentioned) {
+        textSpans.add(TextSpan(
+          text: mentionText,
+          style: _textStyle ??
+              textTheme.bodyMedium!.copyWith(
+                color: Colors.blue,
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+              ),
+        ));
+      } else {
+        textSpans.add(TextSpan(
+          text: mentionText,
+          style: _textStyle ??
+              textTheme.bodyMedium!.copyWith(
+                color: Colors.white,
+                fontSize: 16,
+              ),
+        ));
+      }
+
+      remainingText = remainingText.substring(mentionEnd);
+    }
+
+    return RichText(
+      text: TextSpan(children: textSpans),
     );
   }
 

@@ -28,7 +28,7 @@ import 'package:flutter/material.dart';
 typedef StringCallback = void Function(String);
 typedef StringMessageCallBack = void Function(
     String message, ReplyMessage replyMessage, MessageType messageType,
-    {Attachment? attachment});
+    {Attachment? attachment, List<dynamic>? mentions});
 typedef ReplyMessageWithReturnWidget = Widget Function(
   ReplyMessage? replyMessage,
 );
@@ -42,9 +42,7 @@ typedef AttchmentCallBack = void Function(
     Attachment? attachment, AttachmentSource source, String message);
 typedef StringWithReturnWidget = Widget Function(String separator);
 typedef DragUpdateDetailsCallback = void Function(DragUpdateDetails);
-typedef PinTapCallBack = void Function(
-  Message message
-);
+typedef PinTapCallBack = void Function(Message message);
 typedef ReactionCallback = void Function(
   Message message,
   String emoji,

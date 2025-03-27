@@ -301,14 +301,15 @@ class _ChatViewState extends State<ChatView>
                                 sendMessageBuilder: widget.sendMessageBuilder,
                                 sendMessageConfig: widget.sendMessageConfig,
                                 onSendTap: (message, replyMessage, messageType,
-                                    {attachment}) {
+                                    {attachment, mentions}) {
                                   if (context.suggestionsConfig
                                           ?.autoDismissOnSelection ??
                                       true) {
                                     chatController.removeReplySuggestions();
                                   }
                                   _onSendTap(message, replyMessage, messageType,
-                                      attachment: attachment);
+                                      attachment: attachment,
+                                      mentions: mentions);
                                 },
                                 onReplyCallback: (reply) =>
                                     replyMessage.value = reply,
@@ -353,11 +354,11 @@ class _ChatViewState extends State<ChatView>
 
   void _onSendTap(
       String message, ReplyMessage replyMessage, MessageType messageType,
-      {Attachment? attachment}) {
+      {Attachment? attachment, List<dynamic>? mentions}) {
     if (widget.sendMessageBuilder == null) {
       if (widget.onSendTap != null) {
         widget.onSendTap!(message, replyMessage, messageType,
-            attachment: attachment);
+            attachment: attachment, mentions: mentions);
       }
       _assignReplyMessage();
     }

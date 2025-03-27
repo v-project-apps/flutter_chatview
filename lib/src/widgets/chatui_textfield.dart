@@ -23,6 +23,7 @@ import 'dart:async';
 import 'dart:io' show File, Platform;
 
 import 'package:audio_waveforms/audio_waveforms.dart';
+import 'package:chatview/src/extensions/extensions.dart';
 import 'package:chatview/src/utils/constants/constants.dart';
 import 'package:chatview/src/values/attachment_source.dart';
 import 'package:chatview/src/widgets/image_url_picker_dialog.dart';
@@ -32,6 +33,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:waveform_recorder/waveform_recorder.dart'; // new import for web recording
+import 'package:mention_tag_text_field/mention_tag_text_field.dart';
 
 import '../../chatview.dart';
 import '../utils/debounce.dart';
@@ -40,22 +42,23 @@ import '../utils/package_strings.dart';
 class ChatUITextField extends StatefulWidget {
   const ChatUITextField({
     Key? key,
-    this.sendMessageConfig,
+    this.sendMessageConfiguration,
     required this.focusNode,
-    required this.textEditingController,
+    required this.controller,
     required this.onPressed,
     required this.onRecordingComplete,
     required this.onAttachmentSelected,
+    this.onSendMessage,
   }) : super(key: key);
 
   /// Provides configuration of default text field in chat.
-  final SendMessageConfiguration? sendMessageConfig;
+  final SendMessageConfiguration? sendMessageConfiguration;
 
   /// Provides focusNode for focusing text field.
   final FocusNode focusNode;
 
   /// Provides functions which handles text field.
-  final TextEditingController textEditingController;
+  final MentionTagTextEditingController controller;
 
   /// Provides callback when user tap on text field.
   final VoidCallBack onPressed;
@@ -66,23 +69,25 @@ class ChatUITextField extends StatefulWidget {
   /// Provides callback when user select images from camera/gallery.
   final AttchmentCallBack onAttachmentSelected;
 
+  /// Callback when message is sent with mentions
+  final Function(String message, List<String> mentionedUserIds)? onSendMessage;
+
   @override
   State<ChatUITextField> createState() => _ChatUITextFieldState();
 }
 
 class _ChatUITextFieldState extends State<ChatUITextField> {
-  final ValueNotifier<String> _inputText = ValueNotifier('');
-
   final ImagePicker _picker = ImagePicker();
 
   RecorderController? controller; // for mobile only
 
   ValueNotifier<bool> isRecording = ValueNotifier(false);
 
-  SendMessageConfiguration? get sendMessageConfig => widget.sendMessageConfig;
+  SendMessageConfiguration? get sendMessageConfig =>
+      widget.sendMessageConfiguration;
 
   VoiceRecordingConfiguration? get voiceRecordingConfig =>
-      widget.sendMessageConfig?.voiceRecordingConfiguration;
+      widget.sendMessageConfiguration?.voiceRecordingConfiguration;
 
   ImagePickerIconsConfiguration? get imagePickerIconsConfig =>
       sendMessageConfig?.imagePickerIconsConfig;
@@ -105,8 +110,9 @@ class _ChatUITextFieldState extends State<ChatUITextField> {
 
   OutlineInputBorder get _outLineBorder => OutlineInputBorder(
         borderSide: const BorderSide(color: Colors.transparent),
-        borderRadius: widget.sendMessageConfig?.textFieldConfig?.borderRadius ??
-            BorderRadius.circular(textFieldBorderRadius),
+        borderRadius:
+            widget.sendMessageConfiguration?.textFieldConfig?.borderRadius ??
+                BorderRadius.circular(textFieldBorderRadius),
       );
 
   ValueNotifier<TypeWriterStatus> composingStatus =
@@ -116,6 +122,11 @@ class _ChatUITextFieldState extends State<ChatUITextField> {
       WaveformRecorderController();
 
   late Debouncer debouncer;
+
+  List<ChatUser> _users = []; // Replace with your actual user model
+  List<ChatUser> _filteredUsers = [];
+  bool _showMentionSuggestions = false;
+  bool _initializedUsers = false;
 
   @override
   void initState() {
@@ -128,7 +139,46 @@ class _ChatUITextFieldState extends State<ChatUITextField> {
     if (!kIsWeb && (Platform.isIOS || Platform.isAndroid)) {
       controller = RecorderController();
     }
-    // For web, no controller needed.
+
+    // Set up mention controller
+    final mentionConfig = sendMessageConfig?.mentionConfiguration;
+    widget.controller.mentionTagDecoration = MentionTagDecoration(
+      mentionStart: mentionConfig?.mentionStart ?? const ['@'],
+      mentionBreak: mentionConfig?.mentionBreak ?? ' ',
+      allowDecrement: mentionConfig?.allowDecrement ?? true,
+      allowEmbedding: mentionConfig?.allowEmbedding ?? true,
+      showMentionStartSymbol: mentionConfig?.showMentionStartSymbol ?? true,
+      maxWords: mentionConfig?.maxWords ?? 1,
+      mentionTextStyle: mentionConfig != null
+          ? TextStyle(
+              color: mentionConfig.textColor,
+              backgroundColor: mentionConfig.backgroundColor,
+              fontWeight: mentionConfig.fontWeight,
+              height: mentionConfig.height,
+              letterSpacing: mentionConfig.letterSpacing,
+              fontSize: mentionConfig.fontSize ?? 16,
+            )
+          : const TextStyle(
+              color: Colors.blue,
+              backgroundColor: Color(0xFFE3F2FD),
+              fontWeight: FontWeight.bold,
+              height: 1.5,
+              letterSpacing: 0.2,
+              fontSize: 16,
+            ),
+    );
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (!_initializedUsers) {
+      // Initialize users
+      if (chatViewIW != null) {
+        _users = chatViewIW!.chatController.otherUsers;
+        _initializedUsers = true;
+      }
+    }
   }
 
   @override
@@ -136,13 +186,12 @@ class _ChatUITextFieldState extends State<ChatUITextField> {
     debouncer.dispose();
     composingStatus.dispose();
     isRecording.dispose();
-    _inputText.dispose();
     super.dispose();
   }
 
   void attachListeners() {
     composingStatus.addListener(() {
-      widget.sendMessageConfig?.textFieldConfig?.onMessageTyping
+      widget.sendMessageConfiguration?.textFieldConfig?.onMessageTyping
           ?.call(composingStatus.value);
     });
   }
@@ -159,175 +208,223 @@ class _ChatUITextFieldState extends State<ChatUITextField> {
             BorderRadius.circular(textFieldBorderRadius),
         color: sendMessageConfig?.textFieldBackgroundColor ?? Colors.white,
       ),
-      child: ValueListenableBuilder<bool>(
-        valueListenable: isRecording,
-        builder: (_, isRecordingValue, child) {
-          return Row(
-            children: [
-              // For mobile recording (iOS/Android)
-              if (isRecordingValue && controller != null && !kIsWeb)
-                Expanded(
-                  child: AudioWaveforms(
-                    size: const Size(double.maxFinite, 50),
-                    recorderController: controller!,
-                    margin: voiceRecordingConfig?.margin,
-                    padding: voiceRecordingConfig?.padding ??
-                        const EdgeInsets.symmetric(horizontal: 8),
-                    decoration: voiceRecordingConfig?.decoration ??
-                        BoxDecoration(
-                          color: voiceRecordingConfig?.backgroundColor,
-                          borderRadius: BorderRadius.circular(12.0),
-                        ),
-                    waveStyle: voiceRecordingConfig?.waveStyle ??
-                        WaveStyle(
-                          extendWaveform: true,
-                          showMiddleLine: false,
-                          waveColor:
-                              voiceRecordingConfig?.waveStyle?.waveColor ??
-                                  Colors.black,
-                        ),
+      child: Column(
+        children: [
+          if (_showMentionSuggestions && _filteredUsers.isNotEmpty)
+            Container(
+              constraints: const BoxConstraints(maxHeight: 200),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(8),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.1),
+                    blurRadius: 4,
+                    offset: const Offset(0, 2),
                   ),
-                )
-              // For web recording using waveform_recorder
-              else if (isRecordingValue && kIsWeb)
-                Expanded(
-                  child: WaveformRecorder(
-                    controller: _waveformRecorderController,
-                    height: 50,
-                    // Optionally configure margins/paddings as needed
-                    onRecordingStarted: () {
-                      // Called when recording starts
-                    },
-                    onRecordingStopped: _onWebRecordingStopped,
-                  ),
-                )
-              else
-                Expanded(
-                  child: TextField(
-                    focusNode: widget.focusNode,
-                    controller: widget.textEditingController,
-                    style: textFieldConfig?.textStyle ??
-                        const TextStyle(color: Colors.white),
-                    maxLines: textFieldConfig?.maxLines ?? 5,
-                    minLines: textFieldConfig?.minLines ?? 1,
-                    keyboardType: textFieldConfig?.textInputType,
-                    inputFormatters: textFieldConfig?.inputFormatters,
-                    onChanged: _onChanged,
-                    enabled: textFieldConfig?.enabled,
-                    textCapitalization: textFieldConfig?.textCapitalization ??
-                        TextCapitalization.sentences,
-                    decoration: InputDecoration(
-                      hintText:
-                          textFieldConfig?.hintText ?? PackageStrings.message,
-                      fillColor: sendMessageConfig?.textFieldBackgroundColor ??
-                          Colors.white,
-                      filled: true,
-                      hintStyle: textFieldConfig?.hintStyle ??
-                          TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w400,
-                            color: Colors.grey.shade600,
-                            letterSpacing: 0.25,
-                          ),
-                      contentPadding: textFieldConfig?.contentPadding ??
-                          const EdgeInsets.symmetric(horizontal: 6),
-                      border: outlineBorder,
-                      focusedBorder: outlineBorder,
-                      enabledBorder: outlineBorder,
-                      disabledBorder: outlineBorder,
-                    ),
-                  ),
-                ),
-              ValueListenableBuilder<String>(
-                valueListenable: _inputText,
-                builder: (_, inputTextValue, child) {
-                  if (inputTextValue.isNotEmpty) {
-                    return IconButton(
-                      color: sendMessageConfig?.defaultSendButtonColor ??
-                          Colors.green,
-                      onPressed: (textFieldConfig?.enabled ?? true)
-                          ? () {
-                              widget.onPressed();
-                              _inputText.value = '';
-                            }
-                          : null,
-                      icon: sendMessageConfig?.sendButtonIcon ??
-                          const Icon(Icons.send),
-                    );
-                  } else {
-                    return Row(
-                      children: [
-                        if (!isRecordingValue) ...[
-                          if (sendMessageConfig?.enableGalleryImagePicker ??
-                              true)
-                            IconButton(
-                              constraints: const BoxConstraints(),
-                              onPressed: (textFieldConfig?.enabled ?? true)
-                                  ? () {
-                                      AttchamentPickerBottomSheet().show(
-                                        context: context,
-                                        attachmentSourceCallback:
-                                            _onAttachmentSourcePicked,
-                                        attchamentPickerBottomSheetConfig:
-                                            attchamentPickerBottomSheetConfiguration,
-                                      );
-                                    }
-                                  : null,
-                              icon: imagePickerIconsConfig
-                                      ?.galleryImagePickerIcon ??
-                                  Icon(
-                                    Icons.attach_file_rounded,
-                                    color: imagePickerIconsConfig
-                                        ?.galleryIconColor,
-                                  ),
-                            ),
-                        ],
-                        if (sendMessageConfig?.allowRecordingVoice ?? false)
-                          // Mobile: use _recordOrStop; web: use _toggleWebRecording
-                          IconButton(
-                            onPressed: (textFieldConfig?.enabled ?? true)
-                                ? () {
-                                    if (kIsWeb) {
-                                      _toggleWebRecording();
-                                    } else if (Platform.isIOS ||
-                                        Platform.isAndroid) {
-                                      _recordOrStop();
-                                    }
-                                  }
-                                : null,
-                            icon: (isRecordingValue
-                                    ? voiceRecordingConfig?.stopIcon
-                                    : voiceRecordingConfig?.micIcon) ??
-                                Icon(
-                                  isRecordingValue ? Icons.stop : Icons.mic,
-                                  color:
-                                      voiceRecordingConfig?.recorderIconColor,
-                                ),
-                          ),
-                        if (isRecordingValue &&
-                            cancelRecordConfiguration != null)
-                          IconButton(
-                            onPressed: () {
-                              cancelRecordConfiguration?.onCancel?.call();
-                              if (kIsWeb) {
-                                _cancelWebRecording();
-                              } else {
-                                _cancelRecording();
-                              }
-                            },
-                            icon: cancelRecordConfiguration?.icon ??
-                                const Icon(Icons.cancel_outlined),
-                            color: cancelRecordConfiguration?.iconColor ??
-                                voiceRecordingConfig?.recorderIconColor,
-                          ),
-                      ],
-                    );
-                  }
+                ],
+              ),
+              child: ListView.builder(
+                shrinkWrap: true,
+                itemCount: _filteredUsers.length,
+                itemBuilder: (context, index) {
+                  final user = _filteredUsers[index];
+                  return ListTile(
+                    title: Text(user.name),
+                    onTap: () => _onUserSelected(user),
+                  );
                 },
               ),
-            ],
-          );
-        },
+            ),
+          ValueListenableBuilder<bool>(
+            valueListenable: isRecording,
+            builder: (_, isRecordingValue, child) {
+              return Row(children: [
+                // For mobile recording (iOS/Android)
+                if (isRecordingValue && controller != null && !kIsWeb)
+                  Expanded(
+                    child: AudioWaveforms(
+                      size: const Size(double.maxFinite, 50),
+                      recorderController: controller!,
+                      margin: voiceRecordingConfig?.margin,
+                      padding: voiceRecordingConfig?.padding ??
+                          const EdgeInsets.symmetric(horizontal: 8),
+                      decoration: voiceRecordingConfig?.decoration ??
+                          BoxDecoration(
+                            color: voiceRecordingConfig?.backgroundColor,
+                            borderRadius: BorderRadius.circular(12.0),
+                          ),
+                      waveStyle: voiceRecordingConfig?.waveStyle ??
+                          WaveStyle(
+                            extendWaveform: true,
+                            showMiddleLine: false,
+                            waveColor:
+                                voiceRecordingConfig?.waveStyle?.waveColor ??
+                                    Colors.black,
+                          ),
+                    ),
+                  )
+                // For web recording using waveform_recorder
+                else if (isRecordingValue && kIsWeb)
+                  Expanded(
+                    child: WaveformRecorder(
+                      controller: _waveformRecorderController,
+                      height: 50,
+                      // Optionally configure margins/paddings as needed
+                      onRecordingStarted: () {
+                        // Called when recording starts
+                      },
+                      onRecordingStopped: _onWebRecordingStopped,
+                    ),
+                  )
+                else
+                  Expanded(
+                    child: MentionTagTextField(
+                      controller: widget.controller,
+                      focusNode: widget.focusNode,
+                      onMention: (value) {
+                        debugPrint('Mention value: $value');
+                        if (value != null) {
+                          _handleMention(value);
+                        }
+                      },
+                      enableSuggestions: true,
+                      mentionTagDecoration:
+                          widget.controller.mentionTagDecoration,
+                      style: textFieldConfig?.textStyle ??
+                          const TextStyle(color: Colors.white),
+                      maxLines: textFieldConfig?.maxLines ?? 5,
+                      minLines: textFieldConfig?.minLines ?? 1,
+                      keyboardType: textFieldConfig?.textInputType,
+                      inputFormatters: textFieldConfig?.inputFormatters,
+                      onChanged: (text) {
+                        setState(() {
+                          if (!text.contains("@")) {
+                            _showMentionSuggestions = false;
+                          }
+                        });
+
+                        _onChanged(text);
+                        if (widget.onSendMessage != null) {
+                          final mentionedUserIds = widget.controller.mentions
+                              .whereType<String>()
+                              .map((mention) => mention)
+                              .toList();
+                          widget.onSendMessage!(text, mentionedUserIds);
+                        }
+                      },
+                      enabled: textFieldConfig?.enabled,
+                      textCapitalization: textFieldConfig?.textCapitalization ??
+                          TextCapitalization.sentences,
+                      decoration: InputDecoration(
+                        hintText:
+                            textFieldConfig?.hintText ?? PackageStrings.message,
+                        fillColor:
+                            sendMessageConfig?.textFieldBackgroundColor ??
+                                Colors.white,
+                        filled: true,
+                        hintStyle: textFieldConfig?.hintStyle ??
+                            TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w400,
+                              color: Colors.grey.shade600,
+                              letterSpacing: 0.25,
+                            ),
+                        contentPadding: textFieldConfig?.contentPadding ??
+                            const EdgeInsets.symmetric(horizontal: 6),
+                        border: outlineBorder,
+                        focusedBorder: outlineBorder,
+                        enabledBorder: outlineBorder,
+                        disabledBorder: outlineBorder,
+                      ),
+                    ),
+                  ),
+
+                widget.controller.getText.isNotEmpty
+                    ? IconButton(
+                        color: sendMessageConfig?.defaultSendButtonColor ??
+                            Colors.green,
+                        onPressed: (textFieldConfig?.enabled ?? true)
+                            ? () {
+                                widget.onPressed();
+                                debugPrint(
+                                    "Mentions: ${widget.controller.mentions}");
+                              }
+                            : null,
+                        icon: sendMessageConfig?.sendButtonIcon ??
+                            const Icon(Icons.send),
+                      )
+                    : Row(
+                        children: [
+                          if (!isRecordingValue) ...[
+                            if (sendMessageConfig?.enableGalleryImagePicker ??
+                                true)
+                              IconButton(
+                                constraints: const BoxConstraints(),
+                                onPressed: (textFieldConfig?.enabled ?? true)
+                                    ? () {
+                                        AttchamentPickerBottomSheet().show(
+                                          context: context,
+                                          attachmentSourceCallback:
+                                              _onAttachmentSourcePicked,
+                                          attchamentPickerBottomSheetConfig:
+                                              attchamentPickerBottomSheetConfiguration,
+                                        );
+                                      }
+                                    : null,
+                                icon: imagePickerIconsConfig
+                                        ?.galleryImagePickerIcon ??
+                                    Icon(
+                                      Icons.attach_file_rounded,
+                                      color: imagePickerIconsConfig
+                                          ?.galleryIconColor,
+                                    ),
+                              ),
+                          ],
+                          if (sendMessageConfig?.allowRecordingVoice ?? false)
+                            // Mobile: use _recordOrStop; web: use _toggleWebRecording
+                            IconButton(
+                              onPressed: (textFieldConfig?.enabled ?? true)
+                                  ? () {
+                                      if (kIsWeb) {
+                                        _toggleWebRecording();
+                                      } else if (Platform.isIOS ||
+                                          Platform.isAndroid) {
+                                        _recordOrStop();
+                                      }
+                                    }
+                                  : null,
+                              icon: (isRecordingValue
+                                      ? voiceRecordingConfig?.stopIcon
+                                      : voiceRecordingConfig?.micIcon) ??
+                                  Icon(
+                                    isRecordingValue ? Icons.stop : Icons.mic,
+                                    color:
+                                        voiceRecordingConfig?.recorderIconColor,
+                                  ),
+                            ),
+                          if (isRecordingValue &&
+                              cancelRecordConfiguration != null)
+                            IconButton(
+                              onPressed: () {
+                                cancelRecordConfiguration?.onCancel?.call();
+                                if (kIsWeb) {
+                                  _cancelWebRecording();
+                                } else {
+                                  _cancelRecording();
+                                }
+                              },
+                              icon: cancelRecordConfiguration?.icon ??
+                                  const Icon(Icons.cancel_outlined),
+                              color: cancelRecordConfiguration?.iconColor ??
+                                  voiceRecordingConfig?.recorderIconColor,
+                            ),
+                        ],
+                      )
+              ]);
+            },
+          ),
+        ],
       ),
     );
   }
@@ -625,6 +722,48 @@ class _ChatUITextFieldState extends State<ChatUITextField> {
     }, () {
       composingStatus.value = TypeWriterStatus.typing;
     });
-    _inputText.value = inputText;
+    debugPrint("Text: ${widget.controller.getText}");
+  }
+
+  void _handleMention(String value) async {
+    debugPrint('Handling mention: $value');
+
+    // If value is empty or contains a space, hide suggestions
+    if (value.isEmpty || value.contains(' ')) {
+      setState(() {
+        _showMentionSuggestions = false;
+      });
+      return;
+    }
+
+    // Remove @ symbol and trim whitespace
+    final searchValue = value.trim();
+
+    // If there's no text after @, hide suggestions
+    if (searchValue.isEmpty) {
+      setState(() {
+        _showMentionSuggestions = false;
+      });
+      return;
+    }
+
+    setState(() {
+      _filteredUsers = _users
+          .where((user) => user.name
+              .toLowerCase()
+              .contains(searchValue.replaceAll('@', '').toLowerCase()))
+          .toList();
+      _showMentionSuggestions = _filteredUsers.isNotEmpty;
+    });
+  }
+
+  void _onUserSelected(ChatUser user) {
+    widget.controller.addMention(
+      label: user.name,
+      data: {user.id: user.name},
+    );
+    setState(() {
+      _showMentionSuggestions = false;
+    });
   }
 }
