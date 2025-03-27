@@ -50,31 +50,31 @@ class _ChatScreenState extends State<ChatScreen> {
     scrollController: ScrollController(),
     currentUser: ChatUser(
       id: '1',
-      name: 'Flutter',
+      name: 'Flutter DEV',
       profilePhoto: Data.profileImage,
     ),
     otherUsers: [
       ChatUser(
         id: '2',
-        name: 'Simform',
+        name: 'Simform Solutions',
         profilePhoto: Data.profileImage,
       ),
       ChatUser(
         id: '3',
-        name: 'Jhon',
+        name: 'Jhon Doe',
       ),
       ChatUser(
         id: '4',
-        name: 'Mike',
+        name: 'Mike Doe',
         profilePhoto: Data.profileImage,
       ),
       ChatUser(
         id: '5',
-        name: 'Rich',
+        name: 'Rich Ked',
       ),
       ChatUser(
         id: '6',
-        name: 'Rich',
+        name: 'Rich Medison',
         profilePhoto: Data.profileImage,
       ),
     ],

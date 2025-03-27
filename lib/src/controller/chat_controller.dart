@@ -188,6 +188,7 @@ class ChatController {
       messageType: message.messageType,
       status: message.status,
       seenBy: message.seenBy,
+      mentions: message.mentions,
     );
     if (!messageStreamController.isClosed) {
       messageStreamController.sink.add(initialMessageList);

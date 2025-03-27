@@ -148,7 +148,6 @@ class TextMessageView extends StatelessWidget {
 
     final List<TextSpan> textSpans = [];
     String remainingText = message.message;
-    int currentIndex = 0;
 
     while (remainingText.isNotEmpty) {
       final mentionIndex = remainingText.indexOf('@');
@@ -177,19 +176,34 @@ class TextMessageView extends StatelessWidget {
         ));
       }
 
-      // Find the end of the mention (space or end of text)
-      final spaceIndex = remainingText.indexOf(' ', mentionIndex);
-      final mentionEnd = spaceIndex == -1 ? remainingText.length : spaceIndex;
-      final mentionText = remainingText.substring(mentionIndex, mentionEnd);
+      // Find a matching mention from the mentions list
+      String? matchedMention;
+      int matchEndIndex = mentionIndex;
 
-      // Check if this mention is in the mentions list
-      final isMentioned = message.mentions!.any((mention) =>
-          mention.values.first.toLowerCase() ==
-          mentionText.replaceAll('@', '').toLowerCase());
+      // Sort mentions by length (longest first) to match the most specific mention
+      final sortedMentions = message.mentions!.toList()
+        ..sort(
+            (a, b) => b.values.first.length.compareTo(a.values.first.length));
 
-      if (isMentioned) {
+      for (final mention in sortedMentions) {
+        final mentionValue = mention.values.first;
+        final mentionWithAt = '@$mentionValue';
+
+        // Check if the remaining text starts with this mention (case insensitive)
+        if (remainingText
+            .substring(mentionIndex)
+            .toLowerCase()
+            .startsWith(mentionWithAt.toLowerCase())) {
+          matchedMention = mentionWithAt;
+          matchEndIndex = mentionIndex + mentionWithAt.length;
+          break;
+        }
+      }
+
+      if (matchedMention != null) {
+        // Add the matched mention with highlighting
         textSpans.add(TextSpan(
-          text: mentionText,
+          text: remainingText.substring(mentionIndex, matchEndIndex),
           style: _textStyle ??
               textTheme.bodyMedium!.copyWith(
                 color: mentionColor ?? Colors.blue,
@@ -197,18 +211,19 @@ class TextMessageView extends StatelessWidget {
                 fontWeight: FontWeight.bold,
               ),
         ));
+        remainingText = remainingText.substring(matchEndIndex);
       } else {
+        // No match found, treat @ as normal text
         textSpans.add(TextSpan(
-          text: mentionText,
+          text: '@',
           style: _textStyle ??
               textTheme.bodyMedium!.copyWith(
                 color: Colors.white,
                 fontSize: 16,
               ),
         ));
+        remainingText = remainingText.substring(mentionIndex + 1);
       }
-
-      remainingText = remainingText.substring(mentionEnd);
     }
 
     return RichText(
