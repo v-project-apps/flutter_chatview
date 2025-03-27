@@ -49,6 +49,8 @@ class ChatBubbleConfiguration {
 
   final ReceiptsWidgetConfig? receiptsWidgetConfig;
 
+  final Color? mentionColor;
+
   /// A flag to disable link preview functionality.
   ///
   /// When `true`, link previews will be disabled, rendering links as plain text
@@ -68,5 +70,6 @@ class ChatBubbleConfiguration {
     this.onDoubleTap,
     this.receiptsWidgetConfig,
     this.disableLinkPreview = false,
+    this.mentionColor,
   });
 }

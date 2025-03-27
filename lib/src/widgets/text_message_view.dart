@@ -41,6 +41,7 @@ class TextMessageView extends StatelessWidget {
     this.messageReactionConfig,
     this.highlightMessage = false,
     this.highlightColor,
+    this.mentionColor,
   }) : super(key: key);
 
   /// Represents current message is sent by current user.
@@ -66,6 +67,8 @@ class TextMessageView extends StatelessWidget {
 
   /// Allow user to set color of highlighted message.
   final Color? highlightColor;
+
+  final Color? mentionColor;
 
   @override
   Widget build(BuildContext context) {
@@ -189,7 +192,7 @@ class TextMessageView extends StatelessWidget {
           text: mentionText,
           style: _textStyle ??
               textTheme.bodyMedium!.copyWith(
-                color: Colors.blue,
+                color: mentionColor ?? Colors.blue,
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
               ),

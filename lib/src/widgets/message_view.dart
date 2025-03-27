@@ -49,6 +49,7 @@ class MessageView extends StatefulWidget {
     this.messageConfig,
     this.onMaxDuration,
     this.controller,
+    this.mentionColor,
   }) : super(key: key);
 
   /// Provides message instance of chat.
@@ -92,6 +93,8 @@ class MessageView extends StatefulWidget {
   final bool isLongPressEnable;
 
   final ChatController? controller;
+
+  final Color? mentionColor;
 
   final Function(int)? onMaxDuration;
 
@@ -256,6 +259,7 @@ class _MessageViewState extends State<MessageView>
                     messageReactionConfig: messageConfig?.messageReactionConfig,
                     highlightColor: widget.highlightColor,
                     highlightMessage: widget.shouldHighlight,
+                    mentionColor: widget.mentionColor,
                   );
                 } else if (widget.message.messageType.isVoice) {
                   return VoiceMessageView(

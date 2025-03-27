@@ -128,7 +128,10 @@ class Message {
             MessageStatus.pending,
         isPinned: json['isPinned'] ?? false,
         mentions: json['mentions'] is List<dynamic>
-            ? List<Map<String, String>>.from(json['mentions'])
+            ? List<Map<String, String>>.from((json['mentions'] as List).map(
+                (item) => Map<String, String>.from((item as Map).map(
+                    (key, value) =>
+                        MapEntry(key.toString(), value.toString())))))
             : null,
       );
 
