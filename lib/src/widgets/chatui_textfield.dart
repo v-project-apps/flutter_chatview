@@ -130,7 +130,6 @@ class _ChatUITextFieldState extends State<ChatUITextField> {
 
   @override
   void initState() {
-    super.initState();
     attachListeners();
     debouncer = Debouncer(
         sendMessageConfig?.textFieldConfig?.compositionThresholdTime ??
@@ -139,6 +138,35 @@ class _ChatUITextFieldState extends State<ChatUITextField> {
     if (!kIsWeb && (Platform.isIOS || Platform.isAndroid)) {
       controller = RecorderController();
     }
+
+    // Set up mention controller
+    final mentionConfig = sendMessageConfig?.mentionConfiguration;
+    widget.controller.mentionTagDecoration = MentionTagDecoration(
+      mentionStart: mentionConfig?.mentionStart ?? const ['@'],
+      mentionBreak: mentionConfig?.mentionBreak ?? ' ',
+      allowDecrement: mentionConfig?.allowDecrement ?? true,
+      allowEmbedding: mentionConfig?.allowEmbedding ?? true,
+      showMentionStartSymbol: mentionConfig?.showMentionStartSymbol ?? true,
+      maxWords: mentionConfig?.maxWords ?? 1,
+      mentionTextStyle: mentionConfig != null
+          ? TextStyle(
+              color: mentionConfig.textColor,
+              backgroundColor: mentionConfig.backgroundColor,
+              fontWeight: mentionConfig.fontWeight,
+              height: mentionConfig.height,
+              letterSpacing: mentionConfig.letterSpacing,
+              fontSize: mentionConfig.fontSize ?? 16,
+            )
+          : const TextStyle(
+              color: Colors.blue,
+              backgroundColor: Color(0xFFE3F2FD),
+              fontWeight: FontWeight.bold,
+              height: 1.5,
+              letterSpacing: 0.2,
+              fontSize: 16,
+            ),
+    );
+    super.initState();
   }
 
   @override
