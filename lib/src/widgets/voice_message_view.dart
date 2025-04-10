@@ -8,7 +8,6 @@ import 'package:chatview/src/widgets/horizontal_user_avatars.dart';
 import 'package:chatview/src/widgets/reaction_widget.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'voice_message_web_view.dart';
 
 class VoiceMessageView extends StatefulWidget {
   const VoiceMessageView({
@@ -66,11 +65,10 @@ class _VoiceMessageViewState extends State<VoiceMessageView> {
   void initState() {
     super.initState();
     controller = PlayerController();
-    if (!kIsWeb) {
-      _initializePlayer();
-      playerStateSubscription = controller.onPlayerStateChanged
-          .listen((state) => _playerState.value = state);
-    }
+
+    _initializePlayer();
+    playerStateSubscription = controller.onPlayerStateChanged
+        .listen((state) => _playerState.value = state);
   }
 
   Future<void> _initializePlayer() async {
@@ -112,17 +110,6 @@ class _VoiceMessageViewState extends State<VoiceMessageView> {
 
   @override
   Widget build(BuildContext context) {
-    if (kIsWeb) {
-      return VoiceMessageWebView(
-        message: widget.message,
-        isMessageBySender: widget.isMessageBySender,
-        inComingChatBubbleConfig: widget.inComingChatBubbleConfig,
-        outgoingChatBubbleConfig: widget.outgoingChatBubbleConfig,
-        messageReactionConfig: widget.messageReactionConfig,
-        screenWidth: widget.screenWidth,
-        config: widget.config?.webConfiguration,
-      );
-    }
     return Stack(
       clipBehavior: Clip.none,
       children: [

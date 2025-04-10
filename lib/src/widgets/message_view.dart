@@ -22,6 +22,8 @@
 import 'package:chatview/chatview.dart';
 import 'package:chatview/src/widgets/chat_view_inherited_widget.dart';
 import 'package:chatview/src/widgets/horizontal_user_avatars.dart';
+import 'package:chatview/src/widgets/voice_message_web_view.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 import 'package:chatview/src/extensions/extensions.dart';
@@ -262,16 +264,31 @@ class _MessageViewState extends State<MessageView>
                     mentionColor: widget.mentionColor,
                   );
                 } else if (widget.message.messageType.isVoice) {
-                  return VoiceMessageView(
-                    screenWidth: MediaQuery.of(context).size.width,
-                    message: widget.message,
-                    config: messageConfig?.voiceMessageConfig,
-                    onMaxDuration: widget.onMaxDuration,
-                    isMessageBySender: widget.isMessageBySender,
-                    messageReactionConfig: messageConfig?.messageReactionConfig,
-                    inComingChatBubbleConfig: widget.inComingChatBubbleConfig,
-                    outgoingChatBubbleConfig: widget.outgoingChatBubbleConfig,
-                  );
+                  if (kIsWeb) {
+                    return VoiceMessageWebView(
+                      message: widget.message,
+                      isMessageBySender: widget.isMessageBySender,
+                      inComingChatBubbleConfig: widget.inComingChatBubbleConfig,
+                      outgoingChatBubbleConfig: widget.outgoingChatBubbleConfig,
+                      messageReactionConfig:
+                          messageConfig?.messageReactionConfig,
+                      screenWidth: MediaQuery.of(context).size.width,
+                      config:
+                          messageConfig?.voiceMessageConfig?.webConfiguration,
+                    );
+                  } else {
+                    return VoiceMessageView(
+                      screenWidth: MediaQuery.of(context).size.width,
+                      message: widget.message,
+                      config: messageConfig?.voiceMessageConfig,
+                      onMaxDuration: widget.onMaxDuration,
+                      isMessageBySender: widget.isMessageBySender,
+                      messageReactionConfig:
+                          messageConfig?.messageReactionConfig,
+                      inComingChatBubbleConfig: widget.inComingChatBubbleConfig,
+                      outgoingChatBubbleConfig: widget.outgoingChatBubbleConfig,
+                    );
+                  }
                 } else if (widget.message.messageType.isCustom &&
                     messageConfig?.customMessageBuilder != null) {
                   return messageConfig?.customMessageBuilder!(widget.message);
