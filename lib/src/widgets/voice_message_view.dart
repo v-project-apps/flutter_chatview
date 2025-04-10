@@ -66,9 +66,11 @@ class _VoiceMessageViewState extends State<VoiceMessageView> {
   void initState() {
     super.initState();
     controller = PlayerController();
-    _initializePlayer();
-    playerStateSubscription = controller.onPlayerStateChanged
-        .listen((state) => _playerState.value = state);
+    if (!kIsWeb) {
+      _initializePlayer();
+      playerStateSubscription = controller.onPlayerStateChanged
+          .listen((state) => _playerState.value = state);
+    }
   }
 
   Future<void> _initializePlayer() async {
