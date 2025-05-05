@@ -20,6 +20,7 @@ doc/api/
 *.js.deps
 *.js.map
 .idea/
+.history/
 example/android/app/.cxx
 .flutter-plugins
 /.flutter-plugins-dependencies

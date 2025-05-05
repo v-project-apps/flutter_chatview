@@ -25,10 +25,12 @@ import 'package:flutter/material.dart';
 
 import 'package:chatview/src/extensions/extensions.dart';
 import 'package:chatview/src/models/models.dart';
+import 'package:chatview/src/values/mention_configuration.dart';
 
 import '../utils/constants/constants.dart';
 import 'link_preview.dart';
 import 'reaction_widget.dart';
+import 'mention_text.dart';
 
 class TextMessageView extends StatelessWidget {
   const TextMessageView({
@@ -100,12 +102,7 @@ class TextMessageView extends StatelessWidget {
             color: highlightMessage ? highlightColor : _color,
             borderRadius: _borderRadius(textMessage),
           ),
-          child: textMessage.isUrl
-              ? LinkPreview(
-                  linkPreviewConfig: _linkPreviewConfig,
-                  url: textMessage,
-                )
-              : _buildMessageText(textTheme),
+          child: _buildMessageText(textTheme),
         ),
         if (message.seenBy?.isNotEmpty ?? false)
           Positioned(
@@ -135,99 +132,37 @@ class TextMessageView extends StatelessWidget {
   }
 
   Widget _buildMessageText(TextTheme textTheme) {
-    if (message.mentions == null || message.mentions!.isEmpty) {
-      return Text(
-        message.message,
-        style: _textStyle ??
-            textTheme.bodyMedium!.copyWith(
-              color: Colors.white,
-              fontSize: 16,
-            ),
+    if (message.message.isUrl) {
+      return LinkPreview(
+        linkPreviewConfig: _linkPreviewConfig,
+        url: message.message,
       );
     }
 
-    final List<TextSpan> textSpans = [];
-    String remainingText = message.message;
-
-    while (remainingText.isNotEmpty) {
-      final mentionIndex = remainingText.indexOf('@');
-      if (mentionIndex == -1) {
-        // No more mentions, add remaining text
-        textSpans.add(TextSpan(
-          text: remainingText,
-          style: _textStyle ??
-              textTheme.bodyMedium!.copyWith(
-                color: Colors.white,
-                fontSize: 16,
-              ),
-        ));
-        break;
-      }
-
-      // Add text before mention
-      if (mentionIndex > 0) {
-        textSpans.add(TextSpan(
-          text: remainingText.substring(0, mentionIndex),
-          style: _textStyle ??
-              textTheme.bodyMedium!.copyWith(
-                color: Colors.white,
-                fontSize: 16,
-              ),
-        ));
-      }
-
-      // Find a matching mention from the mentions list
-      String? matchedMention;
-      int matchEndIndex = mentionIndex;
-
-      // Sort mentions by length (longest first) to match the most specific mention
-      final sortedMentions = message.mentions!.toList()
-        ..sort(
-            (a, b) => b.values.first.length.compareTo(a.values.first.length));
-
-      for (final mention in sortedMentions) {
-        final mentionValue = mention.values.first;
-        final mentionWithAt = '@$mentionValue';
-
-        // Check if the remaining text starts with this mention (case insensitive)
-        if (remainingText
-            .substring(mentionIndex)
-            .toLowerCase()
-            .startsWith(mentionWithAt.toLowerCase())) {
-          matchedMention = mentionWithAt;
-          matchEndIndex = mentionIndex + mentionWithAt.length;
-          break;
-        }
-      }
-
-      if (matchedMention != null) {
-        // Add the matched mention with highlighting
-        textSpans.add(TextSpan(
-          text: remainingText.substring(mentionIndex, matchEndIndex),
-          style: _textStyle ??
-              textTheme.bodyMedium!.copyWith(
-                color: mentionColor ?? Colors.blue,
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-              ),
-        ));
-        remainingText = remainingText.substring(matchEndIndex);
-      } else {
-        // No match found, treat @ as normal text
-        textSpans.add(TextSpan(
-          text: '@',
-          style: _textStyle ??
-              textTheme.bodyMedium!.copyWith(
-                color: Colors.white,
-                fontSize: 16,
-              ),
-        ));
-        remainingText = remainingText.substring(mentionIndex + 1);
+    // Convert mentions to the required format
+    Map<String, String>? mentionsMap;
+    if (message.mentions != null) {
+      mentionsMap = {};
+      for (var mentionMap in message.mentions!) {
+        mentionMap.forEach((key, value) {
+          mentionsMap![key] = value;
+        });
       }
     }
 
-    return RichText(
-      text: TextSpan(children: textSpans),
+    return MentionText(
+      text: message.message,
+      mentions: mentionsMap,
+      style: _textStyle ??
+          textTheme.bodyMedium!.copyWith(
+            color: Colors.white,
+            fontSize: 16,
+          ),
+      mentionConfiguration: MentionConfiguration(
+        textColor: mentionColor ?? Colors.blue,
+        fontWeight: FontWeight.bold,
+        fontSize: 16,
+      ),
     );
   }
 

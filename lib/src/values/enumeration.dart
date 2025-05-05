@@ -33,6 +33,7 @@ enum MessageType {
   file,
   text,
   voice,
+  system,
   custom;
 
   String get textName {
@@ -49,6 +50,8 @@ enum MessageType {
         return 'text';
       case voice:
         return 'voice';
+      case system:
+        return 'system';
       case custom:
         return 'message';
     }
@@ -71,6 +74,8 @@ enum MessageType {
       return videoFromUrl;
     } else if (type == file.name) {
       return file;
+    } else if (type == system.name) {
+      return system;
     } else if (type == custom.name) {
       return custom;
     }

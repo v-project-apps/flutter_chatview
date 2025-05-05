@@ -111,6 +111,18 @@ class Data {
     ),
     Message(
       id: '11',
+      message: "User @Jhon Doe has joined the group",
+      mentions: [
+        {"3": "Jhon Doe"}
+      ],
+      createdAt: DateTime.now(),
+      messageType: MessageType.system,
+      sentBy: 't',
+      status: MessageStatus.read,
+      seenBy: [],
+    ),
+    Message(
+      id: '11',
       message: "https://miro.medium.com/max/1000/0*s7of7kWnf9fDg4XM.jpeg",
       createdAt: DateTime.now(),
       messageType: MessageType.image,
