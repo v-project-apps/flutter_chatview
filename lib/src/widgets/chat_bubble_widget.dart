@@ -102,7 +102,7 @@ class _ChatBubbleWidgetState extends State<ChatBubbleWidget> {
         mainAxisSize: MainAxisSize.min,
         mainAxisAlignment:
             isMessageBySender ? MainAxisAlignment.end : MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.end,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           if (!isMessageBySender &&
               (featureActiveConfig?.enableOtherUserProfileAvatar ?? true))

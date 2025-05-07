@@ -96,7 +96,7 @@ class ProfileImageWidget extends StatelessWidget {
             fit: BoxFit.cover,
             errorBuilder: assetImageErrorBuilder ?? _errorWidget,
           ),
-        _ => const SizedBox.shrink(),
+        _ => _errorWidget(context, "", "stackTrace"),
       },
     );
   }
