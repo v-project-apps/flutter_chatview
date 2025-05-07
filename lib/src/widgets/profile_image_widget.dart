@@ -104,7 +104,7 @@ class ProfileImageWidget extends StatelessWidget {
   Widget _networkImageErrorWidget(context, url, error) {
     return CircleAvatar(
       radius: circleRadius ?? 20,
-      backgroundColor: Theme.of(context).primaryColor.withValues(alpha: 0.1),
+      backgroundColor: Theme.of(context).primaryColor.withOpacity(0.1),
       child: Text(
         userName?.isNotEmpty == true ? userName![0].toUpperCase() : '?',
         style: TextStyle(
@@ -119,7 +119,7 @@ class ProfileImageWidget extends StatelessWidget {
   Widget _errorWidget(context, error, stackTrace) {
     return CircleAvatar(
       radius: circleRadius ?? 20,
-      backgroundColor: Theme.of(context).primaryColor.withValues(alpha: 0.1),
+      backgroundColor: Theme.of(context).primaryColor.withOpacity(0.1),
       child: Text(
         userName?.isNotEmpty == true ? userName![0].toUpperCase() : '?',
         style: TextStyle(
