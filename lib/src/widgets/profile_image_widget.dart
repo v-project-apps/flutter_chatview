@@ -38,6 +38,7 @@ class ProfileImageWidget extends StatelessWidget {
     this.assetImageErrorBuilder,
     this.networkImageErrorBuilder,
     this.imageType = ImageType.network,
+    this.userName,
     required this.networkImageProgressIndicatorBuilder,
   });
 
@@ -62,6 +63,9 @@ class ProfileImageWidget extends StatelessWidget {
   /// Progress indicator builder for network image
   final NetworkImageProgressIndicatorBuilder?
       networkImageProgressIndicatorBuilder;
+
+  /// User's name to display first letter in error state
+  final String? userName;
 
   @override
   Widget build(BuildContext context) {
@@ -98,19 +102,31 @@ class ProfileImageWidget extends StatelessWidget {
   }
 
   Widget _networkImageErrorWidget(context, url, error) {
-    return const Center(
-      child: Icon(
-        Icons.error_outline,
-        size: 18,
+    return CircleAvatar(
+      radius: circleRadius ?? 20,
+      backgroundColor: Theme.of(context).primaryColor.withValues(alpha: 0.1),
+      child: Text(
+        userName?.isNotEmpty == true ? userName![0].toUpperCase() : '?',
+        style: TextStyle(
+          color: Theme.of(context).primaryColor,
+          fontSize: (circleRadius ?? 20) * 0.8,
+          fontWeight: FontWeight.bold,
+        ),
       ),
     );
   }
 
   Widget _errorWidget(context, error, stackTrace) {
-    return const Center(
-      child: Icon(
-        Icons.error_outline,
-        size: 18,
+    return CircleAvatar(
+      radius: circleRadius ?? 20,
+      backgroundColor: Theme.of(context).primaryColor.withValues(alpha: 0.1),
+      child: Text(
+        userName?.isNotEmpty == true ? userName![0].toUpperCase() : '?',
+        style: TextStyle(
+          color: Theme.of(context).primaryColor,
+          fontSize: (circleRadius ?? 20) * 0.8,
+          fontWeight: FontWeight.bold,
+        ),
       ),
     );
   }

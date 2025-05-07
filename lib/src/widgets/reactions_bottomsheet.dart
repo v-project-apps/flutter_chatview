@@ -72,6 +72,7 @@ class ReactionsBottomSheet {
                         imageUrl: reactedUser.profilePhoto,
                         imageType: reactedUser.imageType,
                         defaultAvatarImage: reactedUser.defaultAvatarImage,
+                        userName: reactedUser.name,
                         assetImageErrorBuilder:
                             reactedUser.assetImageErrorBuilder,
                         networkImageErrorBuilder:

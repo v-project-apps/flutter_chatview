@@ -139,6 +139,7 @@ class ChatViewAppBar extends StatelessWidget {
                       child: ProfileImageWidget(
                         imageUrl: profilePicture,
                         defaultAvatarImage: defaultAvatarImage,
+                        userName: chatTitle,
                         assetImageErrorBuilder: assetImageErrorBuilder,
                         networkImageErrorBuilder: networkImageErrorBuilder,
                         imageType: imageType,

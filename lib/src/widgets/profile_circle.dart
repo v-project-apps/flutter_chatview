@@ -40,6 +40,7 @@ class ProfileCircle extends StatelessWidget {
     this.assetImageErrorBuilder,
     this.networkImageErrorBuilder,
     this.imageType = ImageType.network,
+    this.userName,
     this.networkImageProgressIndicatorBuilder,
   }) : super(key: key);
 
@@ -79,6 +80,9 @@ class ProfileCircle extends StatelessWidget {
   final NetworkImageProgressIndicatorBuilder?
       networkImageProgressIndicatorBuilder;
 
+  /// User's name to display first letter in error state
+  final String? userName;
+
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -94,6 +98,7 @@ class ProfileCircle extends StatelessWidget {
           assetImageErrorBuilder: assetImageErrorBuilder,
           networkImageErrorBuilder: networkImageErrorBuilder,
           imageType: imageType,
+          userName: userName,
           networkImageProgressIndicatorBuilder:
               networkImageProgressIndicatorBuilder,
         ),
