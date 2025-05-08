@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:chatview/chatview.dart';
 import 'package:chatview/src/values/mention_configuration.dart';
+import 'package:intl/intl.dart';
 import 'mention_text.dart';
 
 class SystemMessageView extends StatelessWidget {
@@ -35,17 +36,32 @@ class SystemMessageView extends StatelessWidget {
             color: Colors.grey.withOpacity(0.2),
             borderRadius: BorderRadius.circular(12.0),
           ),
-          child: MentionText(
-            text: message.message,
-            mentions: mentionsMap,
-            style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: Colors.grey[700],
+          child: Flexible(
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                MentionText(
+                  text: message.message,
+                  mentions: mentionsMap,
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: Colors.grey[700],
+                      ),
+                  textAlign: TextAlign.center,
+                  mentionConfiguration: MentionConfiguration(
+                      textColor: mentionColor ?? Colors.blue,
+                      fontWeight: FontWeight.bold,
+                      showMentionStartSymbol: false),
                 ),
-            textAlign: TextAlign.center,
-            mentionConfiguration: MentionConfiguration(
-                textColor: mentionColor ?? Colors.blue,
-                fontWeight: FontWeight.bold,
-                showMentionStartSymbol: false),
+                const SizedBox(width: 8),
+                Text(
+                  DateFormat('HH:mm').format(message.createdAt),
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: Colors.grey[600],
+                        fontSize: 11,
+                      ),
+                ),
+              ],
+            ),
           ),
         ),
       ),

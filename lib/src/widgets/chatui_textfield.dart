@@ -31,9 +31,9 @@ import 'package:chatview/src/widgets/video_url_picker_dialog.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:waveform_recorder/waveform_recorder.dart'; // new import for web recording
-import 'package:mention_tag_text_field/mention_tag_text_field.dart';
 
 import '../../chatview.dart';
 import '../utils/debounce.dart';
@@ -279,63 +279,78 @@ class _ChatUITextFieldState extends State<ChatUITextField> {
                   )
                 else
                   Expanded(
-                    child: MentionTagTextField(
-                      controller: widget.controller,
-                      focusNode: widget.focusNode,
-                      onMention: (value) {
-                        debugPrint('Mention value: $value');
-                        if (value != null) {
-                          _handleMention(value);
-                        }
-                      },
-                      enableSuggestions: true,
-                      mentionTagDecoration:
-                          widget.controller.mentionTagDecoration,
-                      style: textFieldConfig?.textStyle ??
-                          const TextStyle(color: Colors.white),
-                      maxLines: textFieldConfig?.maxLines ?? 5,
-                      minLines: textFieldConfig?.minLines ?? 1,
-                      keyboardType: textFieldConfig?.textInputType,
-                      inputFormatters: textFieldConfig?.inputFormatters,
-                      onChanged: (text) {
-                        setState(() {
-                          if (!text.contains("@")) {
-                            _showMentionSuggestions = false;
+                    child: Focus(
+                      onKeyEvent: (node, event) {
+                        if (kIsWeb &&
+                            event is KeyDownEvent &&
+                            event.logicalKey == LogicalKeyboardKey.enter) {
+                          if (!HardwareKeyboard.instance.isShiftPressed &&
+                              widget.controller.getText.isNotEmpty) {
+                            widget.onPressed();
+                            return KeyEventResult.handled;
                           }
-                        });
-
-                        _onChanged(text);
-                        if (widget.onSendMessage != null) {
-                          final mentionedUserIds = widget.controller.mentions
-                              .whereType<String>()
-                              .map((mention) => mention)
-                              .toList();
-                          widget.onSendMessage!(text, mentionedUserIds);
                         }
+                        return KeyEventResult.ignored;
                       },
-                      enabled: textFieldConfig?.enabled,
-                      textCapitalization: textFieldConfig?.textCapitalization ??
-                          TextCapitalization.sentences,
-                      decoration: InputDecoration(
-                        hintText:
-                            textFieldConfig?.hintText ?? PackageStrings.message,
-                        fillColor:
-                            sendMessageConfig?.textFieldBackgroundColor ??
-                                Colors.white,
-                        filled: true,
-                        hintStyle: textFieldConfig?.hintStyle ??
-                            TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w400,
-                              color: Colors.grey.shade600,
-                              letterSpacing: 0.25,
-                            ),
-                        contentPadding: textFieldConfig?.contentPadding ??
-                            const EdgeInsets.symmetric(horizontal: 6),
-                        border: outlineBorder,
-                        focusedBorder: outlineBorder,
-                        enabledBorder: outlineBorder,
-                        disabledBorder: outlineBorder,
+                      child: MentionTagTextField(
+                        controller: widget.controller,
+                        focusNode: widget.focusNode,
+                        onMention: (value) {
+                          debugPrint('Mention value: $value');
+                          if (value != null) {
+                            _handleMention(value);
+                          }
+                        },
+                        enableSuggestions: true,
+                        mentionTagDecoration:
+                            widget.controller.mentionTagDecoration,
+                        style: textFieldConfig?.textStyle ??
+                            const TextStyle(color: Colors.white),
+                        maxLines: textFieldConfig?.maxLines ?? 5,
+                        minLines: textFieldConfig?.minLines ?? 1,
+                        keyboardType: textFieldConfig?.textInputType,
+                        inputFormatters: textFieldConfig?.inputFormatters,
+                        onChanged: (text) {
+                          setState(() {
+                            if (!text.contains("@")) {
+                              _showMentionSuggestions = false;
+                            }
+                          });
+
+                          _onChanged(text);
+                          if (widget.onSendMessage != null) {
+                            final mentionedUserIds = widget.controller.mentions
+                                .whereType<String>()
+                                .map((mention) => mention)
+                                .toList();
+                            widget.onSendMessage!(text, mentionedUserIds);
+                          }
+                        },
+                        enabled: textFieldConfig?.enabled,
+                        textCapitalization:
+                            textFieldConfig?.textCapitalization ??
+                                TextCapitalization.sentences,
+                        decoration: InputDecoration(
+                          hintText: textFieldConfig?.hintText ??
+                              PackageStrings.message,
+                          fillColor:
+                              sendMessageConfig?.textFieldBackgroundColor ??
+                                  Colors.white,
+                          filled: true,
+                          hintStyle: textFieldConfig?.hintStyle ??
+                              TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w400,
+                                color: Colors.grey.shade600,
+                                letterSpacing: 0.25,
+                              ),
+                          contentPadding: textFieldConfig?.contentPadding ??
+                              const EdgeInsets.symmetric(horizontal: 6),
+                          border: outlineBorder,
+                          focusedBorder: outlineBorder,
+                          enabledBorder: outlineBorder,
+                          disabledBorder: outlineBorder,
+                        ),
                       ),
                     ),
                   ),
