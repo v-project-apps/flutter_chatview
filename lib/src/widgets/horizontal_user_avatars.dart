@@ -1,4 +1,5 @@
 import 'package:chatview/chatview.dart';
+import 'package:chatview/src/widgets/chat_view_inherited_widget.dart';
 import 'package:flutter/material.dart';
 
 class HorizontalUserAvatars extends StatelessWidget {
@@ -14,10 +15,17 @@ class HorizontalUserAvatars extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    int extraUsers =
-        users.length > maxVisibleUsers ? users.length - maxVisibleUsers : 0;
-    List<ChatUser> displayUsers =
-        users.isNotEmpty ? users.take(maxVisibleUsers).toList() : [];
+    List<ChatUser> usersWithoutCurrentUser = users
+        .where((user) =>
+            user.id !=
+            ChatViewInheritedWidget.of(context)?.chatController.currentUser.id)
+        .toList();
+    int extraUsers = usersWithoutCurrentUser.length > maxVisibleUsers
+        ? usersWithoutCurrentUser.length - maxVisibleUsers
+        : 0;
+    List<ChatUser> displayUsers = usersWithoutCurrentUser.isNotEmpty
+        ? usersWithoutCurrentUser.take(maxVisibleUsers).toList()
+        : [];
 
     double widgetWidth = ((circleRadius + 1) * 2) +
         (displayUsers.length - 1) * (circleRadius * 1.3);
