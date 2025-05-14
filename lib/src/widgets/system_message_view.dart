@@ -36,11 +36,11 @@ class SystemMessageView extends StatelessWidget {
             color: Colors.grey.withOpacity(0.2),
             borderRadius: BorderRadius.circular(12.0),
           ),
-          child: Flexible(
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                MentionText(
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Flexible(
+                child: MentionText(
                   text: message.message,
                   mentions: mentionsMap,
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
@@ -52,16 +52,16 @@ class SystemMessageView extends StatelessWidget {
                       fontWeight: FontWeight.bold,
                       showMentionStartSymbol: false),
                 ),
-                const SizedBox(width: 8),
-                Text(
-                  DateFormat('HH:mm').format(message.createdAt),
-                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: Colors.grey[600],
-                        fontSize: 11,
-                      ),
-                ),
-              ],
-            ),
+              ),
+              const SizedBox(width: 8),
+              Text(
+                DateFormat('HH:mm').format(message.createdAt),
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                      color: Colors.grey[600],
+                      fontSize: 11,
+                    ),
+              ),
+            ],
           ),
         ),
       ),
