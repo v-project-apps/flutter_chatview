@@ -69,6 +69,13 @@ class ChatGroupedListWidget extends StatefulWidget {
 
 class _ChatGroupedListWidgetState extends State<ChatGroupedListWidget>
     with TickerProviderStateMixin {
+  static const int _pageSize = 20;
+  List<Message> _cachedMessages = [];
+  bool _isLoadingMore = false;
+  final bool _hasMoreMessages = true;
+  final DateTime _lastMatchedDate = DateTime.now();
+  Map<int, DateTime> _cachedMessageSeparator = {};
+
   bool get showPopUp => widget.showPopUp;
 
   bool highlightMessage = false;
@@ -93,6 +100,48 @@ class _ChatGroupedListWidgetState extends State<ChatGroupedListWidget>
     super.initState();
     _initializeAnimation();
     updateChatTextFieldHeight();
+    _setupScrollListener();
+  }
+
+  void _setupScrollListener() {
+    widget.scrollController.addListener(() {
+      if (widget.scrollController.position.pixels >=
+          widget.scrollController.position.maxScrollExtent - 200) {
+        _loadMoreMessages();
+      }
+    });
+  }
+
+  Future<void> _loadMoreMessages() async {
+    if (_isLoadingMore || !_hasMoreMessages) return;
+
+    setState(() {
+      _isLoadingMore = true;
+    });
+
+    try {
+      if (chatController != null) {
+        chatController!
+            .loadMoreData([]); // This will trigger the loadMoreData callback
+        setState(() {
+          _cachedMessages = chatController!.initialMessageList;
+          _updateMessageSeparator();
+        });
+      }
+    } finally {
+      setState(() {
+        _isLoadingMore = false;
+      });
+    }
+  }
+
+  void _updateMessageSeparator() {
+    if (featureActiveConfig?.enableChatSeparator ?? false) {
+      _cachedMessageSeparator = _getMessageSeparator(
+        _cachedMessages,
+        _lastMatchedDate,
+      ).$1;
+    }
   }
 
   @override
@@ -252,7 +301,6 @@ class _ChatGroupedListWidgetState extends State<ChatGroupedListWidget>
   }
 
   Widget get _chatStreamBuilder {
-    DateTime lastMatchedDate = DateTime.now();
     return StreamBuilder<List<Message>>(
       stream: chatController?.messageStreamController.stream,
       builder: (context, snapshot) {
@@ -261,85 +309,79 @@ class _ChatGroupedListWidgetState extends State<ChatGroupedListWidget>
             child: chatBackgroundConfig.loadingWidget ??
                 const CircularProgressIndicator(),
           );
-        } else {
-          final messages = chatBackgroundConfig.sortEnable
+        }
+
+        if (snapshot.hasData) {
+          _cachedMessages = chatBackgroundConfig.sortEnable
               ? sortMessage(snapshot.data!)
               : snapshot.data!;
-
-          final enableSeparator =
-              featureActiveConfig?.enableChatSeparator ?? false;
-
-          Map<int, DateTime> messageSeparator = {};
-
-          if (enableSeparator) {
-            /// Get separator when date differ for two messages
-            (messageSeparator, lastMatchedDate) = _getMessageSeparator(
-              messages,
-              lastMatchedDate,
-            );
-          }
-
-          /// [count] that indicates how many separators
-          /// needs to be display in chat
-          var count = 0;
-
-          return ListView.builder(
-            key: widget.key,
-            physics: const NeverScrollableScrollPhysics(),
-            padding: EdgeInsets.zero,
-            shrinkWrap: true,
-            itemCount: (enableSeparator
-                ? messages.length + messageSeparator.length
-                : messages.length),
-            itemBuilder: (context, index) {
-              /// By removing [count] from [index] will get actual index
-              /// to display message in chat
-              var newIndex = index - count;
-
-              /// Check [messageSeparator] contains group separator for [index]
-              if (enableSeparator && messageSeparator.containsKey(index)) {
-                /// Increase counter each time
-                /// after separating messages with separator
-                count++;
-                return _groupSeparator(
-                  messageSeparator[index]!,
-                );
-              }
-
-              return ValueListenableBuilder<String?>(
-                valueListenable: _replyId,
-                builder: (context, state, child) {
-                  final message = messages[newIndex];
-                  final enableScrollToRepliedMsg = chatListConfig
-                          .repliedMessageConfig
-                          ?.repliedMsgAutoScrollConfig
-                          .enableScrollToRepliedMsg ??
-                      false;
-                  if (message.messageType == MessageType.system) {
-                    return SystemMessageView(message: message);
-                  } else {
-                    return ChatBubbleWidget(
-                      key: message.key,
-                      message: message,
-                      slideAnimation: _slideAnimation,
-                      onLongPress: (yCoordinate, xCoordinate) =>
-                          widget.onChatBubbleLongPress(
-                        yCoordinate,
-                        xCoordinate,
-                        message,
-                      ),
-                      onSwipe: widget.assignReplyMessage,
-                      shouldHighlight: state == message.id,
-                      onReplyTap: enableScrollToRepliedMsg
-                          ? (replyId) => _onReplyTap(replyId, snapshot.data)
-                          : null,
-                    );
-                  }
-                },
-              );
-            },
-          );
+          _updateMessageSeparator();
         }
+
+        final enableSeparator =
+            featureActiveConfig?.enableChatSeparator ?? false;
+        final itemCount = enableSeparator
+            ? _cachedMessages.length + _cachedMessageSeparator.length
+            : _cachedMessages.length;
+
+        return ListView.builder(
+          key: widget.key,
+          physics: const NeverScrollableScrollPhysics(),
+          padding: EdgeInsets.zero,
+          shrinkWrap: true,
+          itemCount: itemCount,
+          itemBuilder: (context, index) {
+            if (enableSeparator && _cachedMessageSeparator.containsKey(index)) {
+              return _groupSeparator(_cachedMessageSeparator[index]!);
+            }
+
+            // Calculate the actual message index by subtracting the number of separators before this index
+            final separatorCount = enableSeparator
+                ? _cachedMessageSeparator.keys
+                    .where((key) => key < index)
+                    .length
+                : 0;
+            final messageIndex = index - separatorCount;
+
+            // Safety check to prevent index out of range
+            if (messageIndex >= _cachedMessages.length) {
+              return const SizedBox.shrink();
+            }
+
+            return ValueListenableBuilder<String?>(
+              valueListenable: _replyId,
+              builder: (context, state, child) {
+                final message = _cachedMessages[messageIndex];
+                final enableScrollToRepliedMsg = chatListConfig
+                        .repliedMessageConfig
+                        ?.repliedMsgAutoScrollConfig
+                        .enableScrollToRepliedMsg ??
+                    false;
+
+                if (message.messageType == MessageType.system) {
+                  return SystemMessageView(message: message);
+                }
+
+                return ChatBubbleWidget(
+                  key: message.key,
+                  message: message,
+                  slideAnimation: _slideAnimation,
+                  onLongPress: (yCoordinate, xCoordinate) =>
+                      widget.onChatBubbleLongPress(
+                    yCoordinate,
+                    xCoordinate,
+                    message,
+                  ),
+                  onSwipe: widget.assignReplyMessage,
+                  shouldHighlight: state == message.id,
+                  onReplyTap: enableScrollToRepliedMsg
+                      ? (replyId) => _onReplyTap(replyId, _cachedMessages)
+                      : null,
+                );
+              },
+            );
+          },
+        );
       },
     );
   }
