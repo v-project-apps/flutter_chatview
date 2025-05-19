@@ -110,6 +110,7 @@ class _ChatScreenState extends State<ChatScreen> {
         featureActiveConfig: const FeatureActiveConfig(
           lastSeenAgoBuilderVisibility: true,
           receiptsBuilderVisibility: true,
+          enablePagination: true,
           enableScrollToBottomButton: true,
         ),
         scrollToBottomButtonConfig: ScrollToBottomButtonConfig(
@@ -124,6 +125,11 @@ class _ChatScreenState extends State<ChatScreen> {
             size: 30,
           ),
         ),
+        loadMoreData: () async {
+          await Future.delayed(const Duration(seconds: 3));
+          _chatController.loadMoreData(Data.oldMessages);
+        },
+        isLastPage: false,
         chatViewState: ChatViewState.hasMessages,
         chatViewStateConfig: ChatViewStateConfiguration(
           loadingWidgetConfig: ChatViewStateWidgetConfiguration(

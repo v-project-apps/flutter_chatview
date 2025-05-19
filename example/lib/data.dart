@@ -148,4 +148,39 @@ class Data {
       ],
     ),
   ];
+
+  static final List<Message> oldMessages = [
+    Message(
+      id: '13',
+      message: "Old message 1!",
+      createdAt: DateTime.now().subtract(const Duration(days: 1)),
+      sentBy: '1',
+      status: MessageStatus.read,
+      seenBy: ['2', '3'],
+    ),
+    Message(
+      id: '14',
+      message: "Old message 2!",
+      createdAt: DateTime.now().subtract(const Duration(days: 2)),
+      sentBy: '2',
+      status: MessageStatus.read,
+      seenBy: ['2', '3'],
+    ),
+    Message(
+      id: '15',
+      message: "Old message 3!",
+      createdAt: DateTime.now().subtract(const Duration(days: 3)),
+      sentBy: '3',
+      status: MessageStatus.read,
+      seenBy: ['2', '3'],
+    ),
+    Message(
+      id: '16',
+      message: "Old message 4!",
+      createdAt: DateTime.now().subtract(const Duration(days: 4)),
+      sentBy: '4',
+      status: MessageStatus.read,
+      seenBy: ['2', '3'],
+    ),
+  ];
 }
