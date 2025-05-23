@@ -1,6 +1,7 @@
 import 'package:chatview/chatview.dart';
 import 'package:chatview/src/widgets/chat_view_inherited_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 class HorizontalUserAvatars extends StatelessWidget {
   final List<ChatUser> users;
@@ -52,23 +53,40 @@ class HorizontalUserAvatars extends StatelessWidget {
                       ),
                       child: CircleAvatar(
                         maxRadius: circleRadius,
-                        backgroundImage: displayUsers[i].profilePhoto != null
-                            ? NetworkImage(displayUsers[i].profilePhoto!)
-                            : null,
-                        backgroundColor: displayUsers[i].profilePhoto == null
-                            ? Colors.primaries[i % Colors.primaries.length]
-                            : Colors.transparent,
-                        child: displayUsers[i].profilePhoto == null
-                            ? Center(
-                                child: FittedBox(
-                                  fit: BoxFit.fitHeight,
-                                  child: Text(
-                                    displayUsers[i].name[0],
-                                    style: const TextStyle(color: Colors.white),
+                        backgroundColor:
+                            Colors.primaries[i % Colors.primaries.length],
+                        child: displayUsers[i].profilePhoto != null
+                            ? ClipOval(
+                                child: CachedNetworkImage(
+                                  imageUrl: displayUsers[i].profilePhoto!,
+                                  fit: BoxFit.cover,
+                                  width: circleRadius * 2,
+                                  height: circleRadius * 2,
+                                  errorWidget: (context, url, error) => Center(
+                                    child: FittedBox(
+                                      fit: BoxFit.fitHeight,
+                                      child: Text(
+                                        displayUsers[i].name.isNotEmpty
+                                            ? displayUsers[i].name[0]
+                                            : '?',
+                                        style: const TextStyle(
+                                            color: Colors.white),
+                                      ),
+                                    ),
                                   ),
                                 ),
                               )
-                            : null,
+                            : Center(
+                                child: FittedBox(
+                                  fit: BoxFit.fitHeight,
+                                  child: Text(
+                                    displayUsers[i].name.isNotEmpty
+                                        ? displayUsers[i].name[0]
+                                        : '?',
+                                    style: const TextStyle(color: Colors.white),
+                                  ),
+                                ),
+                              ),
                       ),
                     ),
                     Visibility(
