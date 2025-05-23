@@ -90,7 +90,29 @@ class _ChatBubbleWidgetState extends State<ChatBubbleWidget> {
   Widget build(BuildContext context) {
     // Get user from id.
     final messagedUser = chatController?.getUserFromId(widget.message.sentBy);
-    return _chatBubbleWidget(messagedUser);
+    return Stack(
+      children: [
+        if (featureActiveConfig?.enableSwipeToSeeTime ?? true) ...[
+          Visibility(
+            visible: widget.slideAnimation?.value.dx == 0.0 ? false : true,
+            child: Positioned.fill(
+              child: Align(
+                alignment: Alignment.centerRight,
+                child: MessageTimeWidget(
+                  messageTime: widget.message.createdAt,
+                  isCurrentUser: isMessageBySender,
+                ),
+              ),
+            ),
+          ),
+          SlideTransition(
+            position: widget.slideAnimation!,
+            child: _chatBubbleWidget(messagedUser),
+          ),
+        ] else
+          _chatBubbleWidget(messagedUser),
+      ],
+    );
   }
 
   Widget _chatBubbleWidget(ChatUser? messagedUser) {

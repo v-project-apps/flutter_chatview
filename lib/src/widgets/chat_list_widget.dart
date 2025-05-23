@@ -173,34 +173,31 @@ class _ChatListWidgetState extends State<ChatListWidget> {
           child: ValueListenableBuilder<bool>(
             valueListenable: chatViewIW!.showPopUp,
             builder: (_, showPopupValue, child) {
-              return Stack(children: [
-                ChatGroupedListWidget(
-                  showPopUp: showPopupValue,
-                  scrollController: scrollController,
-                  isEnableSwipeToSeeTime:
-                      featureActiveConfig?.enableSwipeToSeeTime ?? true,
-                  assignReplyMessage: widget.assignReplyMessage,
-                  replyMessage: widget.replyMessage,
-                  onChatBubbleLongPress: (yCoordinate, xCoordinate, message) {
-                    if (featureActiveConfig?.enableReactionPopup ?? false) {
-                      chatViewIW?.reactionPopupKey.currentState?.refreshWidget(
-                        message: message,
-                        xCoordinate: xCoordinate,
-                        yCoordinate: yCoordinate,
-                      );
-                      chatViewIW?.showPopUp.value = true;
-                    }
-
-                    if (featureActiveConfig?.enableReplySnackBar ?? false) {
-                      _showReplyPopup(
-                        message: message,
-                        sentByCurrentUser: message.sentBy == currentUser?.id,
-                      );
-                    }
-                  },
-                  onChatListTap: _onChatListTap,
-                )
-              ]);
+              return ChatGroupedListWidget(
+                showPopUp: showPopupValue,
+                scrollController: scrollController,
+                isEnableSwipeToSeeTime:
+                    featureActiveConfig?.enableSwipeToSeeTime ?? true,
+                assignReplyMessage: widget.assignReplyMessage,
+                replyMessage: widget.replyMessage,
+                onChatBubbleLongPress: (yCoordinate, xCoordinate, message) {
+                  if (featureActiveConfig?.enableReactionPopup ?? false) {
+                    chatViewIW?.reactionPopupKey.currentState?.refreshWidget(
+                      message: message,
+                      xCoordinate: xCoordinate,
+                      yCoordinate: yCoordinate,
+                    );
+                    chatViewIW?.showPopUp.value = true;
+                  }
+                  if (featureActiveConfig?.enableReplySnackBar ?? false) {
+                    _showReplyPopup(
+                      message: message,
+                      sentByCurrentUser: message.sentBy == currentUser?.id,
+                    );
+                  }
+                },
+                onChatListTap: _onChatListTap,
+              );
             },
           ),
         ),

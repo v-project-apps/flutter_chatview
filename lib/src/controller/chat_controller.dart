@@ -152,6 +152,30 @@ class ChatController {
     }
   }
 
+  void replaceMessage(Message message) {
+    final index =
+        initialMessageList.indexWhere((element) => element.id == message.id);
+    if (index != -1) {
+      initialMessageList[index] = message;
+    }
+    if (!messageStreamController.isClosed) {
+      messageStreamController.sink.add(initialMessageList);
+    }
+  }
+
+  void replaceAllMessages(List<Message> messages) {
+    for (final message in messages) {
+      final index =
+          initialMessageList.indexWhere((element) => element.id == message.id);
+      if (index != -1) {
+        initialMessageList[index] = message;
+      }
+    }
+    if (!messageStreamController.isClosed) {
+      messageStreamController.sink.add(initialMessageList);
+    }
+  }
+
   /// Used to add reply suggestions.
   void addReplySuggestions(List<SuggestionItemData> suggestions) {
     _replySuggestion.value = suggestions;
