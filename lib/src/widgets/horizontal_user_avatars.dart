@@ -57,7 +57,7 @@ class HorizontalUserAvatars extends StatelessWidget {
                             : null,
                         backgroundColor: displayUsers[i].profilePhoto == null
                             ? Colors.primaries[i % Colors.primaries.length]
-                            : null,
+                            : Colors.transparent,
                         child: displayUsers[i].profilePhoto == null
                             ? Center(
                                 child: FittedBox(

@@ -296,7 +296,6 @@ class _ChatUITextFieldState extends State<ChatUITextField> {
                         controller: widget.controller,
                         focusNode: widget.focusNode,
                         onMention: (value) {
-                          debugPrint('Mention value: $value');
                           if (value != null) {
                             _handleMention(value);
                           }
@@ -362,8 +361,6 @@ class _ChatUITextFieldState extends State<ChatUITextField> {
                         onPressed: (textFieldConfig?.enabled ?? true)
                             ? () {
                                 widget.onPressed();
-                                debugPrint(
-                                    "Mentions: ${widget.controller.mentions}");
                               }
                             : null,
                         icon: sendMessageConfig?.sendButtonIcon ??
@@ -737,7 +734,6 @@ class _ChatUITextFieldState extends State<ChatUITextField> {
     }, () {
       composingStatus.value = TypeWriterStatus.typing;
     });
-    debugPrint("Text: ${widget.controller.getText}");
   }
 
   void _handleMention(String value) async {
