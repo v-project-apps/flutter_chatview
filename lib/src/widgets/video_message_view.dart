@@ -34,7 +34,7 @@ import 'package:path_provider/path_provider.dart';
 import 'reaction_widget.dart';
 import 'share_icon.dart';
 
-class VideoMessageView extends StatelessWidget {
+class VideoMessageView extends StatefulWidget {
   const VideoMessageView(
       {Key? key,
       required this.message,
@@ -63,59 +63,70 @@ class VideoMessageView extends StatelessWidget {
   /// Provides scale of highlighted video when user taps on replied video.
   final double highlightScale;
 
-  String get videoPath =>
-      message.attachment?.url ?? message.attachment?.file?.path ?? "";
+  @override
+  State<VideoMessageView> createState() => _VideoMessageViewState();
+}
 
-  String get thumbnailUrl => message.attachment?.thumbnailUrl ?? "";
+class _VideoMessageViewState extends State<VideoMessageView> {
+  String get videoPath =>
+      widget.message.attachment?.url ??
+      widget.message.attachment?.file?.path ??
+      "";
+
+  String get thumbnailUrl => widget.message.attachment?.thumbnailUrl ?? "";
 
   Widget get iconButton => ShareIcon(
-        shareIconConfig: videoMessageConfiguration?.shareIconConfig,
+        shareIconConfig: widget.videoMessageConfiguration?.shareIconConfig,
         imageUrl: videoPath,
       );
+
+  Widget? _cachedThumbnail;
 
   @override
   Widget build(BuildContext context) {
     return Material(
       child: Row(
         mainAxisSize: MainAxisSize.min,
-        mainAxisAlignment:
-            isMessageBySender ? MainAxisAlignment.end : MainAxisAlignment.start,
+        mainAxisAlignment: widget.isMessageBySender
+            ? MainAxisAlignment.end
+            : MainAxisAlignment.start,
         children: [
-          if (isMessageBySender &&
-              !(videoMessageConfiguration?.hideShareIcon ?? false))
+          if (widget.isMessageBySender &&
+              !(widget.videoMessageConfiguration?.hideShareIcon ?? false))
             iconButton,
           Stack(
             children: [
               GestureDetector(
                 onTap: () {
-                  videoMessageConfiguration?.onTap != null
-                      ? videoMessageConfiguration?.onTap!(message)
+                  widget.videoMessageConfiguration?.onTap != null
+                      ? widget.videoMessageConfiguration?.onTap!(widget.message)
                       : Navigator.of(context).push(MaterialPageRoute(
                           builder: (context) =>
                               Material(child: VideoPlayer(videoUrl: videoPath)),
                         ));
                 },
                 child: Transform.scale(
-                  scale: highlightVideo ? highlightScale : 1.0,
-                  alignment: isMessageBySender
+                  scale: widget.highlightVideo ? widget.highlightScale : 1.0,
+                  alignment: widget.isMessageBySender
                       ? Alignment.centerRight
                       : Alignment.centerLeft,
                   child: Container(
-                    padding:
-                        videoMessageConfiguration?.padding ?? EdgeInsets.zero,
-                    margin: videoMessageConfiguration?.margin ??
+                    padding: widget.videoMessageConfiguration?.padding ??
+                        EdgeInsets.zero,
+                    margin: widget.videoMessageConfiguration?.margin ??
                         EdgeInsets.only(
                           top: 6,
-                          right: isMessageBySender ? 6 : 0,
-                          left: isMessageBySender ? 0 : 6,
-                          bottom: message.reactions.isNotEmpty ||
-                                  (message.seenBy?.isNotEmpty ?? false)
+                          right: widget.isMessageBySender ? 6 : 0,
+                          left: widget.isMessageBySender ? 0 : 6,
+                          bottom: widget.message.reactions.isNotEmpty ||
+                                  (widget.message.seenBy?.isNotEmpty ?? false)
                               ? 15
                               : 0,
                         ),
                     child: ClipRRect(
-                      borderRadius: videoMessageConfiguration?.borderRadius ??
-                          BorderRadius.circular(14),
+                      borderRadius:
+                          widget.videoMessageConfiguration?.borderRadius ??
+                              BorderRadius.circular(14),
                       child: FutureBuilder(
                           future: getVideoPreview(),
                           builder: (context, snapshot) {
@@ -125,7 +136,8 @@ class VideoMessageView extends StatelessWidget {
                                   const CircularProgressIndicator());
                             } else if (snapshot.connectionState ==
                                 ConnectionState.done) {
-                              return snapshot.data as Widget;
+                              _cachedThumbnail = snapshot.data as Widget;
+                              return _cachedThumbnail!;
                             } else {
                               return Container();
                             }
@@ -134,33 +146,33 @@ class VideoMessageView extends StatelessWidget {
                   ),
                 ),
               ),
-              if (message.seenBy?.isNotEmpty ?? false)
+              if (widget.message.seenBy?.isNotEmpty ?? false)
                 Positioned(
                   bottom: 0,
-                  right: isMessageBySender ? 0 : null,
-                  left: isMessageBySender ? null : 0,
+                  right: widget.isMessageBySender ? 0 : null,
+                  left: widget.isMessageBySender ? null : 0,
                   child: Padding(
                     padding: const EdgeInsets.symmetric(
                         vertical: 1.7, horizontal: 6),
                     child: HorizontalUserAvatars(
                       users: ChatViewInheritedWidget.of(context)
                               ?.chatController
-                              .getUsersByIds(message.seenBy!) ??
+                              .getUsersByIds(widget.message.seenBy!) ??
                           [],
                       circleRadius: 8,
                     ),
                   ),
                 ),
-              if (message.reactions.isNotEmpty)
+              if (widget.message.reactions.isNotEmpty)
                 ReactionWidget(
-                  isMessageBySender: isMessageBySender,
-                  reactions: message.reactions,
-                  messageReactionConfig: messageReactionConfig,
+                  isMessageBySender: widget.isMessageBySender,
+                  reactions: widget.message.reactions,
+                  messageReactionConfig: widget.messageReactionConfig,
                 ),
             ],
           ),
-          if (!isMessageBySender &&
-              !(videoMessageConfiguration?.hideShareIcon ?? false))
+          if (!widget.isMessageBySender &&
+              !(widget.videoMessageConfiguration?.hideShareIcon ?? false))
             iconButton,
         ],
       ),
@@ -168,8 +180,8 @@ class VideoMessageView extends StatelessWidget {
   }
 
   Widget _videoContainer(Widget child) => Container(
-      height: videoMessageConfiguration?.previewHeight ?? 720,
-      width: videoMessageConfiguration?.previewWidth ?? 1080,
+      height: widget.videoMessageConfiguration?.previewHeight ?? 720,
+      width: widget.videoMessageConfiguration?.previewWidth ?? 1080,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(8),
         color: Colors.black,
@@ -177,7 +189,12 @@ class VideoMessageView extends StatelessWidget {
       child: Center(child: child));
 
   Future<Widget> getVideoPreview() async {
-    if (message.messageType == MessageType.videoFromUrl) {
+    // Return cached thumbnail if available
+    if (_cachedThumbnail != null) {
+      return _cachedThumbnail!;
+    }
+
+    if (widget.message.messageType == MessageType.videoFromUrl) {
       if (thumbnailUrl.isNotEmpty) {
         return Stack(
           children: [
@@ -209,8 +226,10 @@ class VideoMessageView extends StatelessWidget {
         video: videoPath,
         thumbnailPath: kIsWeb ? null : (await getTemporaryDirectory()).path,
         imageFormat: ImageFormat.JPEG,
-        maxHeight: videoMessageConfiguration?.previewHeight?.toInt() ?? 720,
-        maxWidth: videoMessageConfiguration?.previewWidth?.toInt() ?? 1080,
+        maxHeight:
+            widget.videoMessageConfiguration?.previewHeight?.toInt() ?? 720,
+        maxWidth:
+            widget.videoMessageConfiguration?.previewWidth?.toInt() ?? 1080,
         quality: 100,
       );
 
