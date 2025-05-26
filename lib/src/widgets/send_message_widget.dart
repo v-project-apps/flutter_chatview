@@ -324,6 +324,8 @@ class SendMessageWidgetState extends State<SendMessageWidget> {
         replyTo: message.sentBy,
         messageType: message.messageType,
         messageId: message.id,
+        attachment: message.attachment,
+        mentions: message.mentions,
         voiceMessageDuration: message.voiceMessageDuration,
       );
     }

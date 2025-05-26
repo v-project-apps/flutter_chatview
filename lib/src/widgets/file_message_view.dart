@@ -132,7 +132,13 @@ class _FileMessageViewState extends State<FileMessageView> {
                                     .fileMessageConfiguration?.loadingSize,
                                 child: const CircularProgressIndicator(),
                               )
-                            : _getFileIcon(),
+                            : FileMessageViewUtils.getFileIcon(
+                                widget.message.message,
+                                iconSize:
+                                    widget.fileMessageConfiguration?.iconSize,
+                                iconColor:
+                                    widget.fileMessageConfiguration?.iconColor,
+                              ),
                         const SizedBox(width: 8),
                         Flexible(
                           child: Column(
@@ -215,8 +221,20 @@ class _FileMessageViewState extends State<FileMessageView> {
       isDownloading = false;
     });
   }
+}
 
-  Widget _getFileIcon() {
+/// A utility class for file message related operations
+class FileMessageViewUtils {
+  /// Returns an appropriate icon widget based on the file extension in the message
+  ///
+  /// [message] The message containing the file name
+  /// [iconSize] Optional size for the icon
+  /// [iconColor] Optional color for the icon
+  static Widget getFileIcon(
+    String message, {
+    double? iconSize,
+    Color? iconColor,
+  }) {
     const fileIcons = {
       '.pdf': Icons.picture_as_pdf,
       '.doc': Icons.description,
@@ -231,15 +249,11 @@ class _FileMessageViewState extends State<FileMessageView> {
     };
 
     for (var entry in fileIcons.entries) {
-      if (widget.message.message.contains(entry.key)) {
-        return Icon(entry.value,
-            size: widget.fileMessageConfiguration?.iconSize,
-            color: widget.fileMessageConfiguration?.iconColor);
+      if (message.contains(entry.key)) {
+        return Icon(entry.value, size: iconSize, color: iconColor);
       }
     }
 
-    return Icon(Icons.insert_drive_file,
-        size: widget.fileMessageConfiguration?.iconSize,
-        color: widget.fileMessageConfiguration?.iconColor);
+    return Icon(Icons.insert_drive_file, size: iconSize, color: iconColor);
   }
 }

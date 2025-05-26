@@ -34,6 +34,7 @@ class PackageStrings {
       "Tap and hold to multiply your reaction";
   static const String photo = "Photo";
   static const String video = "Video";
+  static const String voiceMessage = "Voice message";
   static const String file = "File";
   static const String send = "Send";
   static const String you = "You";

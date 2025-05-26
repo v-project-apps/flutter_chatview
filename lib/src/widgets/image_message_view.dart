@@ -163,6 +163,10 @@ class ImageMessageView extends StatelessWidget {
       return CachedNetworkImage(
         imageUrl: imageUrl,
         fit: BoxFit.fitHeight,
+        imageBuilder: (context, imageProvider) => Image(
+          image: ResizeImage(imageProvider, height: 720),
+          fit: BoxFit.cover,
+        ),
         progressIndicatorBuilder: (context, child, downloadProgress) {
           return Center(
             child: CircularProgressIndicator(
@@ -175,11 +179,13 @@ class ImageMessageView extends StatelessWidget {
       return Image.memory(
         base64Decode(imageUrl.substring(imageUrl.indexOf('base64') + 7)),
         fit: BoxFit.fill,
+        filterQuality: FilterQuality.medium,
       );
     } else {
       return Image.file(
         File(imageUrl),
         fit: BoxFit.fill,
+        filterQuality: FilterQuality.medium,
       );
     }
   }

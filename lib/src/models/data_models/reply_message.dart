@@ -19,7 +19,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import '../../values/enumeration.dart';
+import 'package:chatview/chatview.dart';
 
 class ReplyMessage {
   /// Provides reply message.
@@ -30,7 +30,15 @@ class ReplyMessage {
 
   /// Provides user id of whom to reply.
   final String replyTo;
+
+  /// Provides message type.
   final MessageType messageType;
+
+  /// Provides attachment of message.
+  final Attachment? attachment;
+
+  /// Provides list of mentions in message.
+  final List<dynamic>? mentions;
 
   /// Provides max duration for recorded voice message.
   final Duration? voiceMessageDuration;
@@ -45,6 +53,8 @@ class ReplyMessage {
     this.replyBy = '',
     this.messageType = MessageType.text,
     this.voiceMessageDuration,
+    this.attachment,
+    this.mentions,
   });
 
   factory ReplyMessage.fromJson(Map<String, dynamic> json) => ReplyMessage(
@@ -58,6 +68,16 @@ class ReplyMessage {
           microseconds:
               int.tryParse(json['voice_message_duration'].toString()) ?? 0,
         ),
+        attachment: json['attachment'] != null &&
+                json['attachment'] is Map<String, dynamic>
+            ? Attachment.fromJson(json['attachment'])
+            : null,
+        mentions: json['mentions'] is List<dynamic>
+            ? List<Map<String, String>>.from((json['mentions'] as List).map(
+                (item) => Map<String, String>.from((item as Map).map(
+                    (key, value) =>
+                        MapEntry(key.toString(), value.toString())))))
+            : null,
       );
 
   Map<String, dynamic> toJson() => {
@@ -67,6 +87,8 @@ class ReplyMessage {
         'message_type': messageType.name,
         'id': messageId,
         'voice_message_duration': voiceMessageDuration?.inMicroseconds,
+        'attachment': attachment?.toJson(),
+        'mentions': mentions,
       };
 
   ReplyMessage copyWith({
@@ -77,6 +99,8 @@ class ReplyMessage {
     MessageType? messageType,
     Duration? voiceMessageDuration,
     bool forceNullValue = false,
+    Attachment? attachment,
+    List<dynamic>? mentions,
   }) {
     return ReplyMessage(
       messageId: messageId ?? this.messageId,
@@ -87,6 +111,8 @@ class ReplyMessage {
       voiceMessageDuration: forceNullValue
           ? voiceMessageDuration
           : voiceMessageDuration ?? this.voiceMessageDuration,
+      attachment: attachment ?? this.attachment,
+      mentions: mentions ?? this.mentions,
     );
   }
 }
