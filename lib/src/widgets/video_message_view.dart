@@ -82,10 +82,14 @@ class _VideoMessageViewState extends State<VideoMessageView> {
 
   Widget? _cachedThumbnail;
   Future<Widget>? _thumbnailFuture;
+  String? _lastVideoPath;
+  String? _lastThumbnailUrl;
 
   @override
   void initState() {
     super.initState();
+    _lastVideoPath = videoPath;
+    _lastThumbnailUrl = thumbnailUrl;
     _initializeThumbnail();
   }
 
@@ -108,6 +112,8 @@ class _VideoMessageViewState extends State<VideoMessageView> {
               memCacheHeight:
                   (widget.videoMessageConfiguration?.previewHeight ?? 720)
                       .toInt(),
+              fadeInDuration: Duration.zero,
+              fadeOutDuration: Duration.zero,
             )),
             const Positioned(
               bottom: 0,
@@ -151,6 +157,8 @@ class _VideoMessageViewState extends State<VideoMessageView> {
                   memCacheHeight:
                       (widget.videoMessageConfiguration?.previewHeight ?? 720)
                           .toInt(),
+                  fadeInDuration: Duration.zero,
+                  fadeOutDuration: Duration.zero,
                 )
               : Image.file(
                   File(file.path),
@@ -288,9 +296,9 @@ class _VideoMessageViewState extends State<VideoMessageView> {
   void didUpdateWidget(VideoMessageView oldWidget) {
     super.didUpdateWidget(oldWidget);
     // Only regenerate thumbnail if video path or thumbnail URL changes
-    if (videoPath != oldWidget.message.attachment?.url &&
-            videoPath != oldWidget.message.attachment?.file?.path ||
-        thumbnailUrl != oldWidget.message.attachment?.thumbnailUrl) {
+    if (videoPath != _lastVideoPath || thumbnailUrl != _lastThumbnailUrl) {
+      _lastVideoPath = videoPath;
+      _lastThumbnailUrl = thumbnailUrl;
       _initializeThumbnail();
     }
   }
