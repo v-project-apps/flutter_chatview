@@ -64,7 +64,7 @@ class HorizontalUserAvatars extends StatelessWidget {
                                   height: circleRadius * 2,
                                   errorWidget: (context, url, error) => Center(
                                     child: FittedBox(
-                                      fit: BoxFit.fitHeight,
+                                      fit: BoxFit.fill,
                                       child: Text(
                                         displayUsers[i].name.isNotEmpty
                                             ? displayUsers[i].name[0]
