@@ -192,28 +192,31 @@ class ChatController {
     required String messageId,
     required String userId,
   }) {
-    final message =
-        initialMessageList.firstWhere((element) => element.id == messageId);
-    final indexOfMessage = initialMessageList.indexOf(message);
-    if (message.reactions.any((reaction) =>
-        reaction.emoji == emoji && reaction.reactedUserId == userId)) {
-      message.reactions.removeWhere((reaction) =>
-          reaction.emoji == emoji && reaction.reactedUserId == userId);
-    } else {
-      message.reactions.add(Reaction(emoji: emoji, reactedUserId: userId));
+    final message = initialMessageList
+        .cast<Message?>()
+        .firstWhere((element) => element?.id == messageId, orElse: () => null);
+    if (message != null) {
+      final indexOfMessage = initialMessageList.indexOf(message);
+      if (message.reactions.any((reaction) =>
+          reaction.emoji == emoji && reaction.reactedUserId == userId)) {
+        message.reactions.removeWhere((reaction) =>
+            reaction.emoji == emoji && reaction.reactedUserId == userId);
+      } else {
+        message.reactions.add(Reaction(emoji: emoji, reactedUserId: userId));
+      }
+      initialMessageList[indexOfMessage] = Message(
+        id: messageId,
+        message: message.message,
+        createdAt: message.createdAt,
+        sentBy: message.sentBy,
+        replyMessage: message.replyMessage,
+        reactions: message.reactions,
+        messageType: message.messageType,
+        status: message.status,
+        seenBy: message.seenBy,
+        mentions: message.mentions,
+      );
     }
-    initialMessageList[indexOfMessage] = Message(
-      id: messageId,
-      message: message.message,
-      createdAt: message.createdAt,
-      sentBy: message.sentBy,
-      replyMessage: message.replyMessage,
-      reactions: message.reactions,
-      messageType: message.messageType,
-      status: message.status,
-      seenBy: message.seenBy,
-      mentions: message.mentions,
-    );
     if (!messageStreamController.isClosed) {
       messageStreamController.sink.add(initialMessageList);
     }
@@ -233,12 +236,13 @@ class ChatController {
       );
 
   void scrollToMessage(Message message) {
-    final chatMessage =
-        initialMessageList.firstWhere((m) => m.id == message.id);
+    final chatMessage = initialMessageList
+        .cast<Message?>()
+        .firstWhere((m) => m?.id == message.id, orElse: () => null);
 
-    final key = chatMessage.key;
+    final key = chatMessage?.key;
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      final context = key.currentContext;
+      final context = key?.currentContext;
       if (context != null) {
         Scrollable.ensureVisible(context,
             duration: const Duration(milliseconds: 500),

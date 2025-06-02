@@ -299,7 +299,7 @@ class _MessageViewState extends State<MessageView>
             valueListenable: widget.message.statusNotifier,
             builder: (context, value, child) {
               if (widget.isMessageBySender &&
-                  widget.controller?.initialMessageList.last.id ==
+                  widget.controller?.initialMessageList.lastOrNull?.id ==
                       widget.message.id &&
                   widget.message.status == MessageStatus.read) {
                 if (ChatViewInheritedWidget.of(context)

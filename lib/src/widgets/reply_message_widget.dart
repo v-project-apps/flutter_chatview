@@ -23,12 +23,8 @@ import 'package:audio_waveforms/audio_waveforms.dart';
 import 'package:chatview/chatview.dart';
 import 'package:flutter/material.dart';
 
-import '../models/data_models/message.dart';
-import '../models/data_models/reply_message.dart';
-import '../models/config_models/replied_message_configuration.dart';
 import '../utils/constants/constants.dart';
 import '../utils/package_strings.dart';
-import '../values/enumeration.dart';
 import 'chat_view_inherited_widget.dart';
 import 'vertical_line.dart';
 
