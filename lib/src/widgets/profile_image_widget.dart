@@ -109,7 +109,7 @@ class ProfileImageWidget extends StatelessWidget {
       child: Text(
         user?.name.isNotEmpty == true ? user!.name[0].toUpperCase() : '?',
         style: TextStyle(
-          color: user != null ? Theme.of(context).primaryColor : Colors.white,
+          color: user != null ? Colors.white : Theme.of(context).primaryColor,
           fontSize: (circleRadius ?? 20) * 0.8,
           fontWeight: FontWeight.bold,
         ),
@@ -126,7 +126,7 @@ class ProfileImageWidget extends StatelessWidget {
       child: Text(
         user?.name.isNotEmpty == true ? user!.name[0].toUpperCase() : '?',
         style: TextStyle(
-          color: user != null ? Theme.of(context).primaryColor : Colors.white,
+          color: user != null ? Colors.white : Theme.of(context).primaryColor,
           fontSize: (circleRadius ?? 20) * 0.8,
           fontWeight: FontWeight.bold,
         ),
