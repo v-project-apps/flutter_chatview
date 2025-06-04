@@ -94,7 +94,7 @@ extension ValidateString on String {
       child: ProfileImageWidget(
         imageUrl: user?.profilePhoto,
         imageType: user?.imageType,
-        userName: user?.name,
+        user: user,
         defaultAvatarImage:
             user?.defaultAvatarImage ?? user?.profilePhoto ?? profileImage,
         circleRadius: profileCircleRadius ?? 8,

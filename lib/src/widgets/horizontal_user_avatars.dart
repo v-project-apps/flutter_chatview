@@ -53,8 +53,9 @@ class HorizontalUserAvatars extends StatelessWidget {
                       ),
                       child: CircleAvatar(
                         maxRadius: circleRadius,
-                        backgroundColor:
-                            Colors.primaries[i % Colors.primaries.length],
+                        backgroundColor: Colors.primaries[
+                            displayUsers[i].id.hashCode %
+                                Colors.primaries.length],
                         child: displayUsers[i].profilePhoto != null
                             ? ClipOval(
                                 child: CachedNetworkImage(

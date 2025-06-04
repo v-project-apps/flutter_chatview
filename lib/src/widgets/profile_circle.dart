@@ -20,11 +20,10 @@
  * SOFTWARE.
  */
 
+import 'package:chatview/chatview.dart';
 import 'package:flutter/material.dart';
 
 import '../utils/constants/constants.dart';
-import '../values/enumeration.dart';
-import '../values/typedefs.dart';
 import 'profile_image_widget.dart';
 
 class ProfileCircle extends StatelessWidget {
@@ -40,7 +39,7 @@ class ProfileCircle extends StatelessWidget {
     this.assetImageErrorBuilder,
     this.networkImageErrorBuilder,
     this.imageType = ImageType.network,
-    this.userName,
+    this.user,
     this.networkImageProgressIndicatorBuilder,
   }) : super(key: key);
 
@@ -81,7 +80,7 @@ class ProfileCircle extends StatelessWidget {
       networkImageProgressIndicatorBuilder;
 
   /// User's name to display first letter in error state
-  final String? userName;
+  final ChatUser? user;
 
   @override
   Widget build(BuildContext context) {
@@ -98,7 +97,7 @@ class ProfileCircle extends StatelessWidget {
           assetImageErrorBuilder: assetImageErrorBuilder,
           networkImageErrorBuilder: networkImageErrorBuilder,
           imageType: imageType,
-          userName: userName,
+          user: user,
           networkImageProgressIndicatorBuilder:
               networkImageProgressIndicatorBuilder,
         ),

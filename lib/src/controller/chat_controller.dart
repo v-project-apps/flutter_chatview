@@ -264,5 +264,6 @@ class ChatController {
   /// Function for getting ChatUser object from user id
   ChatUser getUserFromId(String userId) => userId == currentUser.id
       ? currentUser
-      : otherUsers.firstWhere((element) => element.id == userId);
+      : otherUsers.firstWhere((element) => element.id == userId,
+          orElse: () => throw Exception('User not found'));
 }

@@ -23,11 +23,10 @@
 import 'dart:convert';
 
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:chatview/chatview.dart';
 import 'package:flutter/material.dart';
 
 import '../utils/constants/constants.dart';
-import '../values/enumeration.dart';
-import '../values/typedefs.dart';
 
 class ProfileImageWidget extends StatelessWidget {
   const ProfileImageWidget({
@@ -38,7 +37,7 @@ class ProfileImageWidget extends StatelessWidget {
     this.assetImageErrorBuilder,
     this.networkImageErrorBuilder,
     this.imageType = ImageType.network,
-    this.userName,
+    this.user,
     required this.networkImageProgressIndicatorBuilder,
   });
 
@@ -65,7 +64,7 @@ class ProfileImageWidget extends StatelessWidget {
       networkImageProgressIndicatorBuilder;
 
   /// User's name to display first letter in error state
-  final String? userName;
+  final ChatUser? user;
 
   @override
   Widget build(BuildContext context) {
@@ -104,11 +103,13 @@ class ProfileImageWidget extends StatelessWidget {
   Widget _networkImageErrorWidget(context, url, error) {
     return CircleAvatar(
       radius: circleRadius ?? 20,
-      backgroundColor: Theme.of(context).primaryColor.withOpacity(0.1),
+      backgroundColor: user != null
+          ? Colors.primaries[user!.id.hashCode % Colors.primaries.length]
+          : Colors.primaries[0],
       child: Text(
-        userName?.isNotEmpty == true ? userName![0].toUpperCase() : '?',
+        user?.name.isNotEmpty == true ? user!.name[0].toUpperCase() : '?',
         style: TextStyle(
-          color: Theme.of(context).primaryColor,
+          color: user != null ? Theme.of(context).primaryColor : Colors.white,
           fontSize: (circleRadius ?? 20) * 0.8,
           fontWeight: FontWeight.bold,
         ),
@@ -119,11 +120,13 @@ class ProfileImageWidget extends StatelessWidget {
   Widget _errorWidget(context, error, stackTrace) {
     return CircleAvatar(
       radius: circleRadius ?? 20,
-      backgroundColor: Theme.of(context).primaryColor.withOpacity(0.1),
+      backgroundColor: user != null
+          ? Colors.primaries[user!.id.hashCode % Colors.primaries.length]
+          : Colors.primaries[0],
       child: Text(
-        userName?.isNotEmpty == true ? userName![0].toUpperCase() : '?',
+        user?.name.isNotEmpty == true ? user!.name[0].toUpperCase() : '?',
         style: TextStyle(
-          color: Theme.of(context).primaryColor,
+          color: user != null ? Theme.of(context).primaryColor : Colors.white,
           fontSize: (circleRadius ?? 20) * 0.8,
           fontWeight: FontWeight.bold,
         ),
