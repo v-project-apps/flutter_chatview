@@ -199,6 +199,13 @@ class _ChatScreenState extends State<ChatScreen> {
             cameraIconColor: theme.cameraIconColor,
             galleryIconColor: theme.galleryIconColor,
           ),
+          allowGifPicker: true,
+          gifPickerConfiguration: const GifPickerConfiguration(
+            apiKey: "yecm82d7ivn5Mwtnot2TkgkjNRGdeQQ5",
+            lang: "en",
+            randomID: "abcd",
+            tabColor: Colors.teal,
+          ),
           replyMessageColor: theme.replyMessageColor,
           defaultSendButtonColor: theme.sendButtonColor,
           replyDialogColor: theme.replyDialogColor,

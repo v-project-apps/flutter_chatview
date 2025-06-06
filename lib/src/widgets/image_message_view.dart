@@ -21,6 +21,7 @@
  */
 import 'dart:convert';
 import 'dart:io';
+import 'package:flutter/foundation.dart' show kIsWeb;
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:chatview/src/extensions/extensions.dart';
@@ -160,6 +161,15 @@ class ImageMessageView extends StatelessWidget {
 
   Widget _imageWidget() {
     if (imageUrl.isUrl) {
+      // Handle GIFs differently on web
+      if (kIsWeb && imageUrl.toLowerCase().endsWith('.gif')) {
+        return Image.network(
+          imageUrl,
+          fit: BoxFit.cover,
+          filterQuality: FilterQuality.medium,
+        );
+      }
+
       return CachedNetworkImage(
         imageUrl: imageUrl,
         fit: BoxFit.fitHeight,

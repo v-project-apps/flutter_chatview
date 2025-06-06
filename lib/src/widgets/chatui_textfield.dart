@@ -32,6 +32,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:giphy_get/giphy_get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:waveform_recorder/waveform_recorder.dart'; // new import for web recording
 
@@ -369,6 +370,18 @@ class _ChatUITextFieldState extends State<ChatUITextField> {
                     : Row(
                         children: [
                           if (!isRecordingValue) ...[
+                            if (sendMessageConfig?.allowGifPicker ?? true)
+                              IconButton(
+                                constraints: const BoxConstraints(),
+                                onPressed: (textFieldConfig?.enabled ?? true)
+                                    ? _onGifPicked
+                                    : null,
+                                icon: Icon(
+                                  Icons.gif_box_outlined,
+                                  color:
+                                      imagePickerIconsConfig?.galleryIconColor,
+                                ),
+                              ),
                             if (sendMessageConfig?.enableGalleryImagePicker ??
                                 true)
                               IconButton(
@@ -555,6 +568,37 @@ class _ChatUITextFieldState extends State<ChatUITextField> {
       case AttachmentSource.audioFromFile:
         _onAudioFromFilePicker();
         break;
+    }
+  }
+
+  void _onGifPicked() async {
+    try {
+      GiphyGif? gif = await GiphyGet.getGif(
+        context: context,
+        apiKey: sendMessageConfig?.gifPickerConfiguration?.apiKey ?? "",
+        lang: sendMessageConfig?.gifPickerConfiguration?.lang ??
+            GiphyLanguage.english,
+        randomID: sendMessageConfig?.gifPickerConfiguration?.randomID ?? "abcd",
+        tabColor:
+            sendMessageConfig?.gifPickerConfiguration?.tabColor ?? Colors.teal,
+        debounceTimeInMilliseconds: sendMessageConfig
+                ?.gifPickerConfiguration?.debounceTimeInMilliseconds ??
+            350,
+      );
+
+      widget.onAttachmentSelected(
+          Attachment(
+              name: gif?.title ?? "",
+              url: gif?.images?.original?.url ?? "",
+              size: 0,
+              file: null,
+              fileBytes: null),
+          AttachmentSource.imageFromUrl,
+          "");
+    } catch (e) {
+      debugPrint(e.toString());
+      widget.onAttachmentSelected(
+          null, AttachmentSource.imageFromUrl, e.toString());
     }
   }
 

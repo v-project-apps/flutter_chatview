@@ -25,6 +25,7 @@ import 'package:chatview/src/models/config_models/attachment_picker_bottom_sheet
 import 'package:chatview/src/values/mention_configuration.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:giphy_get/giphy_get.dart';
 import 'package:image_picker/image_picker.dart';
 
 import '../../values/enumeration.dart';
@@ -70,6 +71,12 @@ class SendMessageConfiguration {
   /// Enable/disable voice recording. Enabled by default.
   final bool allowRecordingVoice;
 
+  /// Enable/disable gif picker. Enabled by default.
+  final bool allowGifPicker;
+
+  /// Configuration for gif picker.
+  final GifPickerConfiguration? gifPickerConfiguration;
+
   /// Enable/disable image picker from gallery. Enabled by default.
   final bool enableGalleryImagePicker;
 
@@ -109,6 +116,8 @@ class SendMessageConfiguration {
     this.replyMessageColor,
     this.closeIconColor,
     this.allowRecordingVoice = true,
+    this.allowGifPicker = true,
+    this.gifPickerConfiguration,
     this.enableCameraImagePicker = true,
     this.enableGalleryImagePicker = true,
     this.enableFilePicker = true,
@@ -359,4 +368,20 @@ class CancelRecordConfiguration {
 
   /// Provides callback on voice record cancel
   final VoidCallBack? onCancel;
+}
+
+class GifPickerConfiguration {
+  final String apiKey;
+  final String lang;
+  final String randomID;
+  final Color tabColor;
+  final int debounceTimeInMilliseconds;
+
+  const GifPickerConfiguration({
+    required this.apiKey,
+    this.lang = GiphyLanguage.english,
+    this.randomID = "abcd",
+    this.tabColor = Colors.teal,
+    this.debounceTimeInMilliseconds = 350,
+  });
 }
