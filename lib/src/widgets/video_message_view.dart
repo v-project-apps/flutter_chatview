@@ -98,39 +98,35 @@ class _VideoMessageViewState extends State<VideoMessageView> {
   }
 
   Future<Widget> _generateThumbnail() async {
-    if (widget.message.messageType == MessageType.videoFromUrl) {
-      if (thumbnailUrl.isNotEmpty) {
-        return Stack(
-          children: [
-            _videoContainer(CachedNetworkImage(
-              imageUrl: thumbnailUrl,
-              placeholder: (context, url) => const CircularProgressIndicator(),
-              fit: BoxFit.cover,
-              memCacheWidth:
-                  (widget.videoMessageConfiguration?.previewWidth ?? 1080)
-                      .toInt(),
-              memCacheHeight:
-                  (widget.videoMessageConfiguration?.previewHeight ?? 720)
-                      .toInt(),
-              fadeInDuration: Duration.zero,
-              fadeOutDuration: Duration.zero,
-            )),
-            const Positioned(
-              bottom: 0,
-              right: 0,
-              left: 0,
-              top: 0,
-              child: Icon(
-                Icons.play_circle_fill,
-                color: Colors.white,
-                size: 48,
-              ),
+    if (thumbnailUrl.isNotEmpty) {
+      return Stack(
+        children: [
+          _videoContainer(CachedNetworkImage(
+            imageUrl: thumbnailUrl,
+            placeholder: (context, url) => const CircularProgressIndicator(),
+            fit: BoxFit.cover,
+            memCacheWidth:
+                (widget.videoMessageConfiguration?.previewWidth ?? 1080)
+                    .toInt(),
+            memCacheHeight:
+                (widget.videoMessageConfiguration?.previewHeight ?? 720)
+                    .toInt(),
+            fadeInDuration: Duration.zero,
+            fadeOutDuration: Duration.zero,
+          )),
+          const Positioned(
+            bottom: 0,
+            right: 0,
+            left: 0,
+            top: 0,
+            child: Icon(
+              Icons.play_circle_fill,
+              color: Colors.white,
+              size: 48,
             ),
-          ],
-        );
-      } else {
-        return _videoContainer(const SizedBox());
-      }
+          ),
+        ],
+      );
     } else {
       final file = await VideoThumbnail.thumbnailFile(
         video: videoPath,
