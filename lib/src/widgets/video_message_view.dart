@@ -98,87 +98,92 @@ class _VideoMessageViewState extends State<VideoMessageView> {
   }
 
   Future<Widget> _generateThumbnail() async {
-    if (thumbnailUrl.isNotEmpty) {
-      return Stack(
-        children: [
-          _videoContainer(CachedNetworkImage(
-            imageUrl: thumbnailUrl,
-            placeholder: (context, url) => const CircularProgressIndicator(),
-            fit: BoxFit.cover,
-            memCacheWidth:
-                (widget.videoMessageConfiguration?.previewWidth ?? 1080)
-                    .toInt(),
-            memCacheHeight:
-                (widget.videoMessageConfiguration?.previewHeight ?? 720)
-                    .toInt(),
-            fadeInDuration: Duration.zero,
-            fadeOutDuration: Duration.zero,
-          )),
-          const Positioned(
-            bottom: 0,
-            right: 0,
-            left: 0,
-            top: 0,
-            child: Icon(
-              Icons.play_circle_fill,
-              color: Colors.white,
-              size: 48,
+    try {
+      if (thumbnailUrl.isNotEmpty) {
+        return Stack(
+          children: [
+            _videoContainer(CachedNetworkImage(
+              imageUrl: thumbnailUrl,
+              placeholder: (context, url) => const CircularProgressIndicator(),
+              fit: BoxFit.cover,
+              memCacheWidth:
+                  (widget.videoMessageConfiguration?.previewWidth ?? 1080)
+                      .toInt(),
+              memCacheHeight:
+                  (widget.videoMessageConfiguration?.previewHeight ?? 720)
+                      .toInt(),
+              fadeInDuration: Duration.zero,
+              fadeOutDuration: Duration.zero,
+            )),
+            const Positioned(
+              bottom: 0,
+              right: 0,
+              left: 0,
+              top: 0,
+              child: Icon(
+                Icons.play_circle_fill,
+                color: Colors.white,
+                size: 48,
+              ),
             ),
-          ),
-        ],
-      );
-    } else {
-      final file = await VideoThumbnail.thumbnailFile(
-        video: videoPath,
-        thumbnailPath: kIsWeb ? null : (await getTemporaryDirectory()).path,
-        imageFormat: ImageFormat.JPEG,
-        maxHeight:
-            widget.videoMessageConfiguration?.previewHeight?.toInt() ?? 720,
-        maxWidth:
-            widget.videoMessageConfiguration?.previewWidth?.toInt() ?? 1080,
-        quality: 100,
-      );
+          ],
+        );
+      } else {
+        final file = await VideoThumbnail.thumbnailFile(
+          video: videoPath,
+          thumbnailPath: kIsWeb ? null : (await getTemporaryDirectory()).path,
+          imageFormat: ImageFormat.JPEG,
+          maxHeight:
+              widget.videoMessageConfiguration?.previewHeight?.toInt() ?? 720,
+          maxWidth:
+              widget.videoMessageConfiguration?.previewWidth?.toInt() ?? 1080,
+          quality: 100,
+        );
 
-      return Stack(
-        children: [
-          _videoContainer(kIsWeb
-              ? CachedNetworkImage(
-                  imageUrl: file.path,
-                  placeholder: (context, url) =>
-                      const CircularProgressIndicator(),
-                  fit: BoxFit.cover,
-                  memCacheWidth:
-                      (widget.videoMessageConfiguration?.previewWidth ?? 1080)
-                          .toInt(),
-                  memCacheHeight:
-                      (widget.videoMessageConfiguration?.previewHeight ?? 720)
-                          .toInt(),
-                  fadeInDuration: Duration.zero,
-                  fadeOutDuration: Duration.zero,
-                )
-              : Image.file(
-                  File(file.path),
-                  fit: BoxFit.cover,
-                  cacheWidth:
-                      (widget.videoMessageConfiguration?.previewWidth ?? 1080)
-                          .toInt(),
-                  cacheHeight:
-                      (widget.videoMessageConfiguration?.previewHeight ?? 720)
-                          .toInt(),
-                )),
-          const Positioned(
-            bottom: 0,
-            right: 0,
-            left: 0,
-            top: 0,
-            child: Icon(
-              Icons.play_circle_fill,
-              color: Colors.white,
-              size: 48,
+        return Stack(
+          children: [
+            _videoContainer(kIsWeb
+                ? CachedNetworkImage(
+                    imageUrl: file.path,
+                    placeholder: (context, url) =>
+                        const CircularProgressIndicator(),
+                    fit: BoxFit.cover,
+                    memCacheWidth:
+                        (widget.videoMessageConfiguration?.previewWidth ?? 1080)
+                            .toInt(),
+                    memCacheHeight:
+                        (widget.videoMessageConfiguration?.previewHeight ?? 720)
+                            .toInt(),
+                    fadeInDuration: Duration.zero,
+                    fadeOutDuration: Duration.zero,
+                  )
+                : Image.file(
+                    File(file.path),
+                    fit: BoxFit.cover,
+                    cacheWidth:
+                        (widget.videoMessageConfiguration?.previewWidth ?? 1080)
+                            .toInt(),
+                    cacheHeight:
+                        (widget.videoMessageConfiguration?.previewHeight ?? 720)
+                            .toInt(),
+                  )),
+            const Positioned(
+              bottom: 0,
+              right: 0,
+              left: 0,
+              top: 0,
+              child: Icon(
+                Icons.play_circle_fill,
+                color: Colors.white,
+                size: 48,
+              ),
             ),
-          ),
-        ],
-      );
+          ],
+        );
+      }
+    } catch (e) {
+      debugPrint(e.toString());
+      return _videoContainer(const SizedBox());
     }
   }
 
