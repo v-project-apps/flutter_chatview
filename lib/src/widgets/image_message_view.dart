@@ -115,8 +115,12 @@ class ImageMessageView extends StatelessWidget {
                             ? 15
                             : 0,
                       ),
-                  height: imageMessageConfig?.height ?? 200,
-                  width: imageMessageConfig?.width ?? 150,
+                  constraints: BoxConstraints(
+                    maxHeight: imageMessageConfig?.height ?? 360,
+                    maxWidth: imageMessageConfig?.width ?? 540,
+                  ),
+                  // height: imageMessageConfig?.height ?? 200,
+                  // width: imageMessageConfig?.width ?? 150,
                   child: ClipRRect(
                     borderRadius: imageMessageConfig?.borderRadius ??
                         BorderRadius.circular(14),
