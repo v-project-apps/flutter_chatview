@@ -95,9 +95,9 @@ class _ChatScreenState extends State<ChatScreen> {
     );
     await Future.delayed(const Duration(milliseconds: 500));
     _chatController.addReplySuggestions([
-      const SuggestionItemData(text: 'Thanks.'),
-      const SuggestionItemData(text: 'Thank you very much.'),
-      const SuggestionItemData(text: 'Great.')
+      const SuggestionItemData(id: '1', text: 'Thanks.'),
+      const SuggestionItemData(id: '2', text: 'Thank you very much.'),
+      const SuggestionItemData(id: '3', text: 'Great.')
     ]);
   }
 
