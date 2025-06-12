@@ -26,6 +26,7 @@ import 'package:audio_waveforms/audio_waveforms.dart';
 import 'package:chatview/src/extensions/extensions.dart';
 import 'package:chatview/src/utils/constants/constants.dart';
 import 'package:chatview/src/values/attachment_source.dart';
+import 'package:chatview/src/widgets/audio_url_picker_dialog.dart';
 import 'package:chatview/src/widgets/image_url_picker_dialog.dart';
 import 'package:chatview/src/widgets/video_url_picker_dialog.dart';
 import 'package:file_picker/file_picker.dart';
@@ -505,41 +506,84 @@ class _ChatUITextFieldState extends State<ChatUITextField> {
   }
 
   // New method for toggling web recording using waveform_recorder.
-  void _toggleWebRecording() {
-    if (_waveformRecorderController.isRecording) {
-      _waveformRecorderController.stopRecording();
+  Future<void> _toggleWebRecording() async {
+    try {
+      if (_waveformRecorderController.isRecording) {
+        isRecording.value = false;
+        await _waveformRecorderController.stopRecording();
+      } else {
+        // Start recording and handle permissions
+        await _waveformRecorderController.startRecording();
+        // Only set isRecording to true after successful start
+        isRecording.value = true;
+      }
+    } catch (e) {
+      debugPrint('Error during web recording: $e');
+      // Reset state if there's an error
       isRecording.value = false;
-    } else {
-      _waveformRecorderController.startRecording();
-      isRecording.value = true;
+      // Optionally show an error message to the user
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Failed to start recording: ${e.toString()}'),
+            duration: const Duration(seconds: 2),
+          ),
+        );
+      }
     }
   }
 
   // Callback invoked by WaveformRecorder when recording stops on web.
   Future<void> _onWebRecordingStopped() async {
-    setState(() {
-      isRecording.value = false;
-    });
-    final file = _waveformRecorderController.file;
-    if (file != null) {
-      widget.onRecordingComplete(
-        Attachment(
-          name: file.name,
-          url: file.path,
-          size: (await file.readAsBytes()).length.toDouble(),
-          file: File(file.path),
-          fileBytes: await file.readAsBytes(),
-        ),
-      );
+    try {
+      setState(() {
+        isRecording.value = false;
+      });
+      final file = _waveformRecorderController.file;
+      if (file != null) {
+        widget.onRecordingComplete(
+          Attachment(
+            name: file.name,
+            url: file.path,
+            size: (await file.readAsBytes()).length.toDouble(),
+            file: File(file.path),
+            fileBytes: await file.readAsBytes(),
+          ),
+        );
+      }
+    } catch (e) {
+      debugPrint('Error stopping web recording: $e');
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Failed to stop recording: ${e.toString()}'),
+            duration: const Duration(seconds: 2),
+          ),
+        );
+      }
     }
   }
 
   // Optionally, a method to cancel web recording.
-  void _cancelWebRecording() {
-    // Implement cancellation logic as needed. Here we simply set isRecording to false.
-    setState(() {
-      isRecording.value = false;
-    });
+  Future<void> _cancelWebRecording() async {
+    try {
+      if (_waveformRecorderController.isRecording) {
+        await _waveformRecorderController.cancelRecording();
+      }
+      setState(() {
+        isRecording.value = false;
+      });
+    } catch (e) {
+      debugPrint('Error canceling web recording: $e');
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Failed to cancel recording: ${e.toString()}'),
+            duration: const Duration(seconds: 2),
+          ),
+        );
+      }
+    }
   }
 
   void _onAttachmentSourcePicked(AttachmentSource source) {
@@ -568,6 +612,9 @@ class _ChatUITextFieldState extends State<ChatUITextField> {
       case AttachmentSource.audioFromFile:
         _onAudioFromFilePicker();
         break;
+      case AttachmentSource.audioFromUrl:
+        _onAudioFromUrlPicked();
+        break;
     }
   }
 
@@ -585,16 +632,17 @@ class _ChatUITextFieldState extends State<ChatUITextField> {
                 ?.gifPickerConfiguration?.debounceTimeInMilliseconds ??
             350,
       );
-
-      widget.onAttachmentSelected(
-          Attachment(
-              name: gif?.title ?? "",
-              url: gif?.images?.original?.url ?? "",
-              size: 0,
-              file: null,
-              fileBytes: null),
-          AttachmentSource.imageFromUrl,
-          "");
+      if (gif != null) {
+        widget.onAttachmentSelected(
+            Attachment(
+                name: gif.title ?? "",
+                url: gif.images?.original?.url ?? "",
+                size: 0,
+                file: null,
+                fileBytes: null),
+            AttachmentSource.imageFromUrl,
+            "");
+      }
     } catch (e) {
       debugPrint(e.toString());
       widget.onAttachmentSelected(
@@ -626,6 +674,23 @@ class _ChatUITextFieldState extends State<ChatUITextField> {
       widget.onAttachmentSelected(
           null, AttachmentSource.audioFromFile, e.toString());
     }
+  }
+
+  void _onAudioFromUrlPicked() {
+    showDialog(
+      context: context,
+      builder: (context) => AudioUrlPickerDialog(onPicked: (audioUrl) {
+        widget.onAttachmentSelected(
+          Attachment(
+            name: audioUrl,
+            url: audioUrl,
+            size: 0,
+          ),
+          AttachmentSource.audioFromUrl,
+          '',
+        );
+      }),
+    );
   }
 
   void _onImageFromUrlPicked() {

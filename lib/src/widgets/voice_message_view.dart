@@ -159,7 +159,9 @@ class _VoiceMessageViewState extends State<VoiceMessageView> {
                 valueListenable: _playerState,
               ),
               AudioFileWaveforms(
-                size: Size(widget.screenWidth * 0.50, 60),
+                size: Size(
+                    widget.config?.waveformWidth ?? widget.screenWidth * 0.45,
+                    60),
                 playerController: controller,
                 waveformType: WaveformType.fitWidth,
                 playerWaveStyle:

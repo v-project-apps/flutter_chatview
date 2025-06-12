@@ -15,6 +15,7 @@ class VoiceMessageConfiguration {
     this.playIcon,
     this.waveformMargin,
     this.waveformPadding,
+    this.waveformWidth,
     this.enableSeekGesture = true,
     this.webConfiguration,
   });
@@ -33,6 +34,9 @@ class VoiceMessageConfiguration {
 
   /// Applies padding to waveform.
   final EdgeInsets? waveformMargin;
+
+  /// Applies width to waveform.
+  final double? waveformWidth;
 
   /// BoxDecoration for voice message bubble.
   final BoxDecoration? decoration;

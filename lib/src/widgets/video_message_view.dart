@@ -183,7 +183,22 @@ class _VideoMessageViewState extends State<VideoMessageView> {
       }
     } catch (e) {
       debugPrint(e.toString());
-      return _videoContainer(const SizedBox());
+      return Stack(
+        children: [
+          _videoContainer(const SizedBox()),
+          const Positioned(
+            bottom: 0,
+            right: 0,
+            left: 0,
+            top: 0,
+            child: Icon(
+              Icons.play_circle_fill,
+              color: Colors.white,
+              size: 48,
+            ),
+          ),
+        ],
+      );
     }
   }
 

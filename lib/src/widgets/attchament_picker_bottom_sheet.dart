@@ -27,8 +27,8 @@ class AttchamentPickerBottomSheet {
                     leading: const Icon(Icons.camera_alt),
                     title: const Text('Camera'),
                     onTap: () {
-                      attachmentSourceCallback(AttachmentSource.camera);
                       Navigator.pop(context);
+                      attachmentSourceCallback(AttachmentSource.camera);
                     },
                   ),
                 if (attchamentPickerBottomSheetConfig
@@ -38,8 +38,8 @@ class AttchamentPickerBottomSheet {
                     leading: const Icon(Icons.image),
                     title: const Text('Gallery'),
                     onTap: () {
-                      attachmentSourceCallback(AttachmentSource.gallery);
                       Navigator.pop(context);
+                      attachmentSourceCallback(AttachmentSource.gallery);
                     },
                   ),
                 if (attchamentPickerBottomSheetConfig
@@ -60,8 +60,8 @@ class AttchamentPickerBottomSheet {
                     leading: const Icon(Icons.video_file),
                     title: const Text('Gallery Video'),
                     onTap: () {
-                      attachmentSourceCallback(AttachmentSource.video);
                       Navigator.pop(context);
+                      attachmentSourceCallback(AttachmentSource.video);
                     },
                   ),
                 if (attchamentPickerBottomSheetConfig
@@ -80,8 +80,8 @@ class AttchamentPickerBottomSheet {
                     leading: const Icon(Icons.insert_drive_file_rounded),
                     title: const Text('File'),
                     onTap: () {
-                      attachmentSourceCallback(AttachmentSource.file);
                       Navigator.pop(context);
+                      attachmentSourceCallback(AttachmentSource.file);
                     },
                   ),
                 if (attchamentPickerBottomSheetConfig
@@ -91,8 +91,19 @@ class AttchamentPickerBottomSheet {
                     leading: const Icon(Icons.audio_file),
                     title: const Text('Audio from file'),
                     onTap: () {
-                      attachmentSourceCallback(AttachmentSource.audioFromFile);
                       Navigator.pop(context);
+                      attachmentSourceCallback(AttachmentSource.audioFromFile);
+                    },
+                  ),
+                if (attchamentPickerBottomSheetConfig
+                        ?.enableAudioFromUrlPicker ??
+                    true)
+                  ListTile(
+                    leading: const Icon(Icons.add_link),
+                    title: const Text('Audio from URL'),
+                    onTap: () {
+                      Navigator.pop(context);
+                      attachmentSourceCallback(AttachmentSource.audioFromUrl);
                     },
                   ),
               ],

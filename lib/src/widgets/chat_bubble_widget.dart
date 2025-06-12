@@ -63,7 +63,8 @@ class ChatBubbleWidget extends StatefulWidget {
   State<ChatBubbleWidget> createState() => _ChatBubbleWidgetState();
 }
 
-class _ChatBubbleWidgetState extends State<ChatBubbleWidget> {
+class _ChatBubbleWidgetState extends State<ChatBubbleWidget>
+    with AutomaticKeepAliveClientMixin {
   String get replyMessage => widget.message.replyMessage.message;
 
   bool get isMessageBySender => widget.message.sentBy == currentUser?.id;
@@ -87,7 +88,11 @@ class _ChatBubbleWidgetState extends State<ChatBubbleWidget> {
   }
 
   @override
+  bool get wantKeepAlive => true;
+
+  @override
   Widget build(BuildContext context) {
+    super.build(context);
     // Get user from id.
     final messagedUser = chatController?.getUserFromId(widget.message.sentBy);
     return Stack(

@@ -14,6 +14,7 @@ class AttachmentPickerBottomSheetConfiguration {
     this.enableVideoFromUrlPicker = true,
     this.enableImageFromUrlPicker = true,
     this.enableAudioFromFilePicker = true,
+    this.enableAudioFromUrlPicker = true,
   });
 
   /// Used for giving padding of bottom sheet.
@@ -47,6 +48,9 @@ class AttachmentPickerBottomSheetConfiguration {
 
   /// Enable/disable send audio from file. Enabled by default.
   final bool enableAudioFromFilePicker;
+
+  /// Enable/disable send audio from URL. Enabled by default.
+  final bool enableAudioFromUrlPicker;
 
   /// Used for giving background color of bottom sheet.
   final Color? backgroundColor;
