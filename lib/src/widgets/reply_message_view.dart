@@ -77,6 +77,22 @@ class ReplyMessageView extends StatelessWidget {
             ),
           ],
         ),
+      MessageType.gif => Row(
+          children: [
+            Icon(
+              Icons.gif_box_outlined,
+              size: 20,
+              color:
+                  sendMessageConfig?.replyMessageColor ?? Colors.grey.shade700,
+            ),
+            Text(
+              PackageStrings.gif,
+              style: TextStyle(
+                color: sendMessageConfig?.replyMessageColor ?? Colors.black,
+              ),
+            ),
+          ],
+        ),
       MessageType.videoFromUrl || MessageType.video => Row(
           children: [
             Icon(

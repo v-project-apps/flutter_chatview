@@ -147,6 +147,7 @@ class ReplyMessageWidget extends StatelessWidget {
     switch (replyMessage.messageType) {
       case MessageType.image:
       case MessageType.imageFromUrl:
+      case MessageType.gif:
         return Container(
           height: repliedMessageConfig?.repliedImageMessageHeight ?? 100,
           width: repliedMessageConfig?.repliedImageMessageWidth ?? 80,

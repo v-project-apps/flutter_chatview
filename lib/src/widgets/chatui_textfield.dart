@@ -375,7 +375,8 @@ class _ChatUITextFieldState extends State<ChatUITextField> {
                               IconButton(
                                 constraints: const BoxConstraints(),
                                 onPressed: (textFieldConfig?.enabled ?? true)
-                                    ? _onGifPicked
+                                    ? () => _onAttachmentSourcePicked(
+                                        AttachmentSource.gif)
                                     : null,
                                 icon: Icon(
                                   Icons.gif_box_outlined,
@@ -596,6 +597,8 @@ class _ChatUITextFieldState extends State<ChatUITextField> {
         _onImagePicked(ImageSource.gallery,
             config: sendMessageConfig?.imagePickerConfiguration);
         break;
+      case AttachmentSource.gif:
+        _onGifPicked();
       case AttachmentSource.video:
         _onVideoPicked(ImageSource.gallery,
             config: sendMessageConfig?.videoPickerConfiguration);
@@ -640,7 +643,7 @@ class _ChatUITextFieldState extends State<ChatUITextField> {
                 size: 0,
                 file: null,
                 fileBytes: null),
-            AttachmentSource.imageFromUrl,
+            AttachmentSource.gif,
             "");
       }
     } catch (e) {

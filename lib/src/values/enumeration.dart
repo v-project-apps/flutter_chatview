@@ -28,6 +28,7 @@ import 'package:flutter/material.dart';
 enum MessageType {
   image,
   imageFromUrl,
+  gif,
   video,
   videoFromUrl,
   file,
@@ -41,6 +42,8 @@ enum MessageType {
       case image:
       case imageFromUrl:
         return 'image';
+      case gif:
+        return 'gif';
       case video:
       case videoFromUrl:
         return 'video';
@@ -64,6 +67,8 @@ enum MessageType {
       return image;
     } else if (type == imageFromUrl.name) {
       return imageFromUrl;
+    } else if (type == gif.name) {
+      return gif;
     } else if (type == text.name) {
       return text;
     } else if (type == voice.name) {
@@ -90,6 +95,8 @@ enum MessageType {
         return MessageType.image;
       case AttachmentSource.imageFromUrl:
         return MessageType.imageFromUrl;
+      case AttachmentSource.gif:
+        return MessageType.gif;
       case AttachmentSource.file:
         return MessageType.file;
       case AttachmentSource.video:
