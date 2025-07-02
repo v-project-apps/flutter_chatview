@@ -35,7 +35,10 @@ enum MessageType {
   text,
   voice,
   system,
-  custom;
+  custom,
+  voting,
+  quiz,
+  question;
 
   String get textName {
     switch (this) {
@@ -57,8 +60,25 @@ enum MessageType {
         return 'system';
       case custom:
         return 'message';
+      case voting:
+        return 'voting';
+      case quiz:
+        return 'quiz';
+      case question:
+        return 'question';
     }
   }
+
+  bool get isImage => this == image || this == imageFromUrl;
+  bool get isVideo => this == video || this == videoFromUrl;
+  bool get isText => this == text;
+  bool get isFile => this == file;
+  bool get isVoice => this == voice;
+  bool get isSystem => this == system;
+  bool get isCustom => this == custom;
+  bool get isVoting => this == voting;
+  bool get isQuiz => this == quiz;
+  bool get isQuestion => this == question;
 
   static MessageType? tryParse(String? value) {
     final type = value?.trim();
@@ -83,6 +103,12 @@ enum MessageType {
       return system;
     } else if (type == custom.name) {
       return custom;
+    } else if (type == voting.name) {
+      return voting;
+    } else if (type == quiz.name) {
+      return quiz;
+    } else if (type == question.name) {
+      return question;
     }
     return null;
   }
@@ -106,6 +132,12 @@ enum MessageType {
       case AttachmentSource.audioFromFile:
       case AttachmentSource.audioFromUrl:
         return MessageType.voice;
+      case AttachmentSource.poll:
+        return MessageType.voting;
+      case AttachmentSource.quiz:
+        return MessageType.quiz;
+      case AttachmentSource.question:
+        return MessageType.question;
     }
   }
 }

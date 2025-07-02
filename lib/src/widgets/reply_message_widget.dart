@@ -52,7 +52,6 @@ class ReplyMessageWidget extends StatelessWidget {
     final currentUser = chatController?.currentUser;
     final replyBySender = message.replyMessage.replyBy == currentUser?.id;
     final textTheme = Theme.of(context).textTheme;
-    final replyMessage = message.replyMessage.message;
     final messagedUser =
         chatController?.getUserFromId(message.replyMessage.replyBy);
     final replyBy = replyBySender ? PackageStrings.you : messagedUser?.name;
@@ -159,6 +158,39 @@ class ReplyMessageWidget extends StatelessWidget {
             borderRadius:
                 repliedMessageConfig?.borderRadius ?? BorderRadius.circular(14),
           ),
+        );
+      case MessageType.voting:
+        return Row(
+          children: [
+            Icon(
+              Icons.poll,
+              color: repliedMessageConfig?.micIconColor ?? Colors.white,
+            ),
+            const SizedBox(width: 4),
+            Text(
+              "Voting",
+              style: repliedMessageConfig?.textStyle ??
+                  textTheme.bodyMedium!.copyWith(color: Colors.white),
+            ),
+          ],
+        );
+      case MessageType.quiz:
+        return Row(
+          children: [
+            Icon(
+              Icons.quiz,
+              color: repliedMessageConfig?.micIconColor ?? Colors.white,
+            ),
+          ],
+        );
+      case MessageType.question:
+        return Row(
+          children: [
+            Icon(
+              Icons.question_answer,
+              color: repliedMessageConfig?.micIconColor ?? Colors.white,
+            ),
+          ],
         );
 
       case MessageType.voice:

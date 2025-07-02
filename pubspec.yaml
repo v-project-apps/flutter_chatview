@@ -13,7 +13,7 @@ platforms:
   linux:
 
 environment:
-  sdk: '>=3.5.0 <4.0.0'
+  sdk: '>=3.0.0 <4.0.0'
 
 dependencies:
   flutter:
@@ -31,7 +31,7 @@ dependencies:
   get_thumbnail_video: ^0.7.3
   path_provider: ^2.1.5
   video_player: ^2.9.2
-  chewie: ^1.10.0
+  chewie: ^1.8.0
   open_filex: ^4.7.0
   dio: ^5.8.0+1
   just_audio: ^0.9.46

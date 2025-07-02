@@ -8,4 +8,7 @@ enum AttachmentSource {
   videoFromUrl,
   audioFromFile,
   audioFromUrl,
+  poll,
+  quiz,
+  question,
 }

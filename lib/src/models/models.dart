@@ -22,6 +22,9 @@
 export 'chat_bubble.dart';
 export 'config_models/image_message_configuration.dart';
 export 'data_models/message.dart';
+export 'data_models/voting_message.dart';
+export 'data_models/quiz_message.dart';
+export 'data_models/question_message.dart';
 export 'config_models/message_reaction_configuration.dart';
 export 'data_models/reply_message.dart';
 export 'config_models/profile_circle_configuration.dart';
@@ -49,3 +52,6 @@ export 'config_models/suggestion_item_config.dart';
 export 'config_models/scroll_to_bottom_button_config.dart';
 export 'config_models/voice_message_configuration.dart';
 export 'config_models/voice_message_web_configuration.dart';
+export 'config_models/voting_message_configuration.dart';
+export 'config_models/quiz_message_configuration.dart';
+export 'config_models/question_message_configuration.dart';

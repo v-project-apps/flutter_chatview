@@ -176,7 +176,7 @@ class ImageMessageView extends StatelessWidget {
 
       return CachedNetworkImage(
         imageUrl: imageUrl,
-        fit: BoxFit.fitHeight,
+        fit: BoxFit.cover,
         imageBuilder: (context, imageProvider) => Image(
           image: ResizeImage(imageProvider, height: 720),
           fit: BoxFit.cover,
@@ -192,13 +192,15 @@ class ImageMessageView extends StatelessWidget {
     } else if (imageUrl.fromMemory) {
       return Image.memory(
         base64Decode(imageUrl.substring(imageUrl.indexOf('base64') + 7)),
-        fit: BoxFit.fill,
+        height: 720,
+        fit: BoxFit.cover,
         filterQuality: FilterQuality.medium,
       );
     } else {
       return Image.file(
         File(imageUrl),
-        fit: BoxFit.fill,
+        height: 720,
+        fit: BoxFit.cover,
         filterQuality: FilterQuality.medium,
       );
     }

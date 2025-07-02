@@ -15,6 +15,9 @@ class AttachmentPickerBottomSheetConfiguration {
     this.enableImageFromUrlPicker = true,
     this.enableAudioFromFilePicker = true,
     this.enableAudioFromUrlPicker = true,
+    this.enablePollCreation = true,
+    this.enableQuizCreation = true,
+    this.enableQuestionCreation = true,
   });
 
   /// Used for giving padding of bottom sheet.
@@ -51,6 +54,15 @@ class AttachmentPickerBottomSheetConfiguration {
 
   /// Enable/disable send audio from URL. Enabled by default.
   final bool enableAudioFromUrlPicker;
+
+  /// Enable/disable send poll. Enabled by default.
+  final bool enablePollCreation;
+
+  /// Enable/disable send quiz. Enabled by default.
+  final bool enableQuizCreation;
+
+  /// Enable/disable send question. Enabled by default.
+  final bool enableQuestionCreation;
 
   /// Used for giving background color of bottom sheet.
   final Color? backgroundColor;

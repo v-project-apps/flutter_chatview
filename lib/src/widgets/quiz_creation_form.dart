@@ -1,0 +1,479 @@
+/*
+ * Copyright (c) 2022 Simform Solutions
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be
+ * included in all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
+
+import 'dart:developer';
+
+import 'package:chatview/chatview.dart';
+import 'package:flutter/material.dart';
+
+class QuizCreationForm extends StatefulWidget {
+  const QuizCreationForm({
+    Key? key,
+    required this.onQuizCreated,
+    this.theme,
+  }) : super(key: key);
+
+  final Function(QuizMessage) onQuizCreated;
+  final ThemeData? theme;
+
+  @override
+  State<QuizCreationForm> createState() => _QuizCreationFormState();
+}
+
+class _QuizCreationFormState extends State<QuizCreationForm>
+    with TickerProviderStateMixin {
+  final TextEditingController _questionController = TextEditingController();
+  final TextEditingController _explanationController = TextEditingController();
+  final List<TextEditingController> _optionControllers = [
+    TextEditingController(),
+    TextEditingController(),
+  ];
+  final List<GlobalKey<FormFieldState>> _optionKeys = [
+    GlobalKey<FormFieldState>(),
+    GlobalKey<FormFieldState>(),
+  ];
+
+  late AnimationController _animationController;
+  late Animation<double> _fadeAnimation;
+  late Animation<Offset> _slideAnimation;
+
+  int _correctAnswerIndex = -1;
+  final _formKey = GlobalKey<FormState>();
+
+  @override
+  void initState() {
+    super.initState();
+    _animationController = AnimationController(
+      duration: const Duration(milliseconds: 300),
+      vsync: this,
+    );
+
+    _fadeAnimation = Tween<double>(
+      begin: 0.0,
+      end: 1.0,
+    ).animate(CurvedAnimation(
+      parent: _animationController,
+      curve: Curves.easeInOut,
+    ));
+
+    _slideAnimation = Tween<Offset>(
+      begin: const Offset(0, 0.3),
+      end: Offset.zero,
+    ).animate(CurvedAnimation(
+      parent: _animationController,
+      curve: Curves.easeOutCubic,
+    ));
+
+    _animationController.forward();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = widget.theme ?? Theme.of(context);
+
+    return Scaffold(
+      backgroundColor: theme.scaffoldBackgroundColor,
+      appBar: AppBar(
+        title: const Text('Create Quiz'),
+        backgroundColor: theme.primaryColor,
+        foregroundColor: theme.primaryColor.computeLuminance() > 0.5
+            ? Colors.black
+            : Colors.white,
+        elevation: 0,
+        actions: [
+          TextButton(
+            onPressed: _submitQuiz,
+            child: const Text(
+              'Create',
+              style: TextStyle(
+                fontWeight: FontWeight.w600,
+                fontSize: 16,
+              ),
+            ),
+          ),
+        ],
+      ),
+      body: FadeTransition(
+        opacity: _fadeAnimation,
+        child: SlideTransition(
+          position: _slideAnimation,
+          child: SafeArea(
+            child: Form(
+              key: _formKey,
+              child: Column(
+                children: [
+                  Expanded(
+                    child: SingleChildScrollView(
+                      padding: const EdgeInsets.all(16),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          _buildHeader(),
+                          const SizedBox(height: 24),
+                          _buildQuestionField(),
+                          const SizedBox(height: 24),
+                          _buildOptionsSection(),
+                          const SizedBox(height: 24),
+                          _buildExplanationField(),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildHeader() {
+    return Row(
+      children: [
+        Container(
+          padding: const EdgeInsets.all(12),
+          decoration: BoxDecoration(
+            color: Colors.green[100],
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Icon(
+            Icons.quiz,
+            color: Colors.green[600],
+            size: 24,
+          ),
+        ),
+        const SizedBox(width: 16),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Create a Quiz',
+                style: TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.grey[800],
+                ),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                'Test knowledge with multiple choice questions',
+                style: TextStyle(
+                  fontSize: 14,
+                  color: Colors.grey[600],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildQuestionField() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Question',
+          style: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+            color: Colors.grey[800],
+          ),
+        ),
+        const SizedBox(height: 8),
+        TextFormField(
+          controller: _questionController,
+          decoration: InputDecoration(
+            hintText: 'Enter your quiz question...',
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: BorderSide(color: Colors.grey[300]!),
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: BorderSide(color: Colors.grey[300]!),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: const BorderSide(color: Colors.green, width: 2),
+            ),
+            filled: true,
+            fillColor: Colors.grey[50],
+            contentPadding: const EdgeInsets.all(16),
+          ),
+          maxLines: 3,
+          maxLength: 200,
+          validator: (value) {
+            if (value == null || value.trim().isEmpty) {
+              return 'Please enter a question';
+            }
+            return null;
+          },
+        ),
+      ],
+    );
+  }
+
+  Widget _buildOptionsSection() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              'Answer Options',
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+                color: Colors.grey[800],
+              ),
+            ),
+            Text(
+              '${_optionControllers.length}/6',
+              style: TextStyle(
+                fontSize: 14,
+                color: Colors.grey[600],
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 8),
+        ...List.generate(_optionControllers.length, (index) {
+          return Padding(
+            padding: const EdgeInsets.only(bottom: 12),
+            child: _buildOptionField(index),
+          );
+        }),
+        if (_optionControllers.length < 6)
+          Center(
+            child: TextButton.icon(
+              onPressed: _addOption,
+              icon: const Icon(Icons.add),
+              label: const Text('Add Option'),
+              style: TextButton.styleFrom(
+                foregroundColor: Colors.green[600],
+              ),
+            ),
+          ),
+        if (_correctAnswerIndex == -1 && _questionController.text.isNotEmpty)
+          Padding(
+            padding: const EdgeInsets.only(top: 8),
+            child: Text(
+              'Please select the correct answer',
+              style: TextStyle(
+                color: Colors.red[600],
+                fontSize: 12,
+              ),
+            ),
+          ),
+      ],
+    );
+  }
+
+  Widget _buildOptionField(int index) {
+    final isCorrect = _correctAnswerIndex == index;
+
+    return Container(
+      decoration: BoxDecoration(
+        color: isCorrect ? Colors.green[50] : Colors.white,
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(
+          color: isCorrect ? Colors.green : Colors.grey[300]!,
+          width: isCorrect ? 2 : 1,
+        ),
+      ),
+      child: Row(
+        children: [
+          Radio<int>(
+            value: index,
+            groupValue: _correctAnswerIndex,
+            onChanged: (value) {
+              setState(() {
+                _correctAnswerIndex = value!;
+              });
+            },
+            activeColor: Colors.green,
+          ),
+          Expanded(
+            child: TextFormField(
+              key: _optionKeys[index],
+              controller: _optionControllers[index],
+              decoration: InputDecoration(
+                hintText: 'Option ${index + 1}',
+                border: InputBorder.none,
+                contentPadding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 8,
+                ),
+              ),
+              validator: (value) {
+                if (value == null || value.trim().isEmpty) {
+                  return 'Please enter option text';
+                }
+                return null;
+              },
+            ),
+          ),
+          if (_optionControllers.length > 2)
+            IconButton(
+              onPressed: () => _removeOption(index),
+              icon: Icon(
+                Icons.remove_circle_outline,
+                color: Colors.red[400],
+              ),
+              tooltip: 'Remove option',
+            ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildExplanationField() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Explanation (Optional)',
+          style: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+            color: Colors.grey[800],
+          ),
+        ),
+        const SizedBox(height: 8),
+        TextFormField(
+          controller: _explanationController,
+          decoration: InputDecoration(
+            hintText: 'Explain why this is the correct answer...',
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: BorderSide(color: Colors.grey[300]!),
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: BorderSide(color: Colors.grey[300]!),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: const BorderSide(color: Colors.green, width: 2),
+            ),
+            filled: true,
+            fillColor: Colors.grey[50],
+            contentPadding: const EdgeInsets.all(16),
+          ),
+          maxLines: 3,
+          maxLength: 300,
+        ),
+      ],
+    );
+  }
+
+  void _addOption() {
+    if (_optionControllers.length < 6) {
+      setState(() {
+        _optionControllers.add(TextEditingController());
+        _optionKeys.add(GlobalKey<FormFieldState>());
+      });
+    }
+  }
+
+  void _removeOption(int index) {
+    if (_optionControllers.length > 2) {
+      setState(() {
+        _optionControllers[index].dispose();
+        _optionControllers.removeAt(index);
+        _optionKeys.removeAt(index);
+
+        // Adjust correct answer index if needed
+        if (_correctAnswerIndex == index) {
+          _correctAnswerIndex = -1;
+        } else if (_correctAnswerIndex > index) {
+          _correctAnswerIndex--;
+        }
+      });
+    }
+  }
+
+  void _submitQuiz() async {
+    if (!_formKey.currentState!.validate()) {
+      return;
+    }
+
+    if (_correctAnswerIndex == -1) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Please select the correct answer'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+      return;
+    }
+
+    try {
+      final options = <QuizOption>[];
+      for (int i = 0; i < _optionControllers.length; i++) {
+        options.add(QuizOption(
+          id: (i + 1).toString(),
+          text: _optionControllers[i].text.trim(),
+          isCorrect: i == _correctAnswerIndex,
+        ));
+      }
+
+      final quizMessage = QuizMessage(
+        question: _questionController.text.trim(),
+        options: options,
+        explanation: _explanationController.text.trim().isEmpty
+            ? null
+            : _explanationController.text.trim(),
+      );
+
+      widget.onQuizCreated(quizMessage);
+    } catch (e) {
+      log('Error creating quiz: $e');
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error creating quiz: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
+  }
+
+  @override
+  void dispose() {
+    _animationController.dispose();
+    _questionController.dispose();
+    _explanationController.dispose();
+    for (final controller in _optionControllers) {
+      controller.dispose();
+    }
+    super.dispose();
+  }
+}

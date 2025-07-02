@@ -1,6 +1,7 @@
 import 'package:chatview/chatview.dart';
 import 'package:example/data.dart';
 import 'package:example/models/theme.dart';
+import 'package:example/specialized_messages_example.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -20,7 +21,7 @@ class Example extends StatelessWidget {
         colorScheme:
             ColorScheme.fromSwatch(accentColor: const Color(0xffEE5366)),
       ),
-      home: const ChatScreen(),
+      home: const SpecializedMessagesExample(),
     );
   }
 }
@@ -346,28 +347,19 @@ class _ChatScreenState extends State<ChatScreen> {
               color: isDarkTheme ? Colors.white : Colors.black,
             ),
           ),
-          onTap: (item) =>
-              _onSendTap(item.text, const ReplyMessage(), MessageType.text),
+          onTap: (item) => _onSendTap(Message(
+            id: DateTime.now().toString(),
+            message: item.text,
+            createdAt: DateTime.now(),
+            sentBy: _chatController.currentUser.id,
+          )),
         ),
       ),
     );
   }
 
-  void _onSendTap(
-      String message, ReplyMessage replyMessage, MessageType messageType,
-      {Attachment? attachment, List<dynamic>? mentions}) {
-    _chatController.addMessage(
-      Message(
-        id: DateTime.now().toString(),
-        createdAt: DateTime.now(),
-        message: message,
-        sentBy: _chatController.currentUser.id,
-        replyMessage: replyMessage,
-        messageType: messageType,
-        attachment: attachment,
-        mentions: mentions,
-      ),
-    );
+  void _onSendTap(Message message) {
+    _chatController.addMessage(message);
     Future.delayed(const Duration(milliseconds: 300), () {
       _chatController.initialMessageList.last.setStatus =
           MessageStatus.undelivered;

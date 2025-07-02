@@ -21,6 +21,7 @@
  */
 import 'dart:async';
 import 'dart:io' show File, Platform;
+import 'dart:convert';
 
 import 'package:audio_waveforms/audio_waveforms.dart';
 import 'package:chatview/src/extensions/extensions.dart';
@@ -29,6 +30,9 @@ import 'package:chatview/src/values/attachment_source.dart';
 import 'package:chatview/src/widgets/audio_url_picker_dialog.dart';
 import 'package:chatview/src/widgets/image_url_picker_dialog.dart';
 import 'package:chatview/src/widgets/video_url_picker_dialog.dart';
+import 'package:chatview/src/widgets/poll_creation_form.dart';
+import 'package:chatview/src/widgets/quiz_creation_form.dart';
+import 'package:chatview/src/widgets/question_creation_form.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -47,10 +51,9 @@ class ChatUITextField extends StatefulWidget {
     this.sendMessageConfiguration,
     required this.focusNode,
     required this.controller,
-    required this.onPressed,
     required this.onRecordingComplete,
     required this.onAttachmentSelected,
-    this.onSendMessage,
+    required this.onSendMessage,
   }) : super(key: key);
 
   /// Provides configuration of default text field in chat.
@@ -62,9 +65,6 @@ class ChatUITextField extends StatefulWidget {
   /// Provides functions which handles text field.
   final MentionTagTextEditingController controller;
 
-  /// Provides callback when user tap on text field.
-  final VoidCallBack onPressed;
-
   /// Provides callback once voice is recorded.
   final Function(Attachment attachment) onRecordingComplete;
 
@@ -72,7 +72,7 @@ class ChatUITextField extends StatefulWidget {
   final AttchmentCallBack onAttachmentSelected;
 
   /// Callback when message is sent with mentions
-  final Function(String message, List<String> mentionedUserIds)? onSendMessage;
+  final Function(Message message) onSendMessage;
 
   @override
   State<ChatUITextField> createState() => _ChatUITextFieldState();
@@ -198,6 +198,20 @@ class _ChatUITextFieldState extends State<ChatUITextField> {
     });
   }
 
+  void _onSendMessage(String messageText) {
+    widget.onSendMessage.call(Message(
+      id: DateTime.now().toString(),
+      message: messageText,
+      messageType: MessageType.text,
+      createdAt: DateTime.now(),
+      mentions: widget.controller.mentions,
+      sentBy: chatViewIW?.chatController.currentUser.id ?? '',
+    ));
+    setState(() {
+      widget.controller.clear();
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final outlineBorder = _outLineBorder;
@@ -288,7 +302,7 @@ class _ChatUITextFieldState extends State<ChatUITextField> {
                             event.logicalKey == LogicalKeyboardKey.enter) {
                           if (!HardwareKeyboard.instance.isShiftPressed &&
                               widget.controller.getText.isNotEmpty) {
-                            widget.onPressed();
+                            _onSendMessage(widget.controller.getText);
                             return KeyEventResult.handled;
                           }
                         }
@@ -317,15 +331,7 @@ class _ChatUITextFieldState extends State<ChatUITextField> {
                               _showMentionSuggestions = false;
                             }
                           });
-
                           _onChanged(text);
-                          if (widget.onSendMessage != null) {
-                            final mentionedUserIds = widget.controller.mentions
-                                .whereType<String>()
-                                .map((mention) => mention)
-                                .toList();
-                            widget.onSendMessage!(text, mentionedUserIds);
-                          }
                         },
                         enabled: textFieldConfig?.enabled,
                         textCapitalization:
@@ -362,7 +368,9 @@ class _ChatUITextFieldState extends State<ChatUITextField> {
                             Colors.green,
                         onPressed: (textFieldConfig?.enabled ?? true)
                             ? () {
-                                widget.onPressed();
+                                if (widget.controller.getText.isNotEmpty) {
+                                  _onSendMessage(widget.controller.getText);
+                                }
                               }
                             : null,
                         icon: sendMessageConfig?.sendButtonIcon ??
@@ -618,6 +626,15 @@ class _ChatUITextFieldState extends State<ChatUITextField> {
       case AttachmentSource.audioFromUrl:
         _onAudioFromUrlPicked();
         break;
+      case AttachmentSource.poll:
+        _onPollCreation();
+        break;
+      case AttachmentSource.quiz:
+        _onQuizCreation();
+        break;
+      case AttachmentSource.question:
+        _onQuestionCreation();
+        break;
     }
   }
 
@@ -838,6 +855,76 @@ class _ChatUITextFieldState extends State<ChatUITextField> {
       debugPrint(e.toString());
       widget.onAttachmentSelected(null, AttachmentSource.file, e.toString());
     }
+  }
+
+  void _onPollCreation() {
+    showDialog(
+        context: context,
+        builder: (context) {
+          return PollCreationForm(
+            onPollCreated: (votingMessage) {
+              // Create a message with the voting data as JSON
+              final message = Message(
+                id: DateTime.now().millisecondsSinceEpoch.toString(),
+                message: jsonEncode(votingMessage.toJson()),
+                messageType: MessageType.voting,
+                sentBy: chatViewIW?.chatController.currentUser.id ?? '',
+                createdAt: DateTime.now(),
+              );
+              widget.onSendMessage(message);
+              Navigator.of(context).pop();
+            },
+            theme: Theme.of(context),
+          );
+        });
+  }
+
+  void _onQuizCreation() {
+    showDialog(
+      context: context,
+      builder: (context) => QuizCreationForm(
+        onQuizCreated: (quizMessage) {
+          // Check if widget is still mounted before accessing context
+          if (mounted) {
+            // Create a message with the quiz data as JSON
+            final message = Message(
+              id: DateTime.now().millisecondsSinceEpoch.toString(),
+              message: jsonEncode(quizMessage.toJson()),
+              messageType: MessageType.quiz,
+              sentBy: chatViewIW?.chatController.currentUser.id ?? '',
+              createdAt: DateTime.now(),
+            );
+            widget.onSendMessage(message);
+            Navigator.of(context).pop();
+          }
+        },
+        theme: Theme.of(context),
+      ),
+    );
+  }
+
+  void _onQuestionCreation() {
+    showDialog(
+      context: context,
+      builder: (context) => QuestionCreationForm(
+        onQuestionCreated: (questionMessage) {
+          // Check if widget is still mounted before accessing context
+          if (mounted) {
+            // Create a message with the question data as JSON
+            final message = Message(
+              id: DateTime.now().millisecondsSinceEpoch.toString(),
+              message: jsonEncode(questionMessage.toJson()),
+              messageType: MessageType.question,
+              sentBy: chatViewIW?.chatController.currentUser.id ?? '',
+              createdAt: DateTime.now(),
+            );
+            widget.onSendMessage(message);
+            Navigator.of(context).pop();
+          }
+        },
+        theme: Theme.of(context),
+      ),
+    );
   }
 
   void _onChanged(String inputText) {

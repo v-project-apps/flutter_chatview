@@ -39,6 +39,15 @@ class MessageConfiguration {
   /// Provides builder to create view for custom messages.
   final Widget Function(Message)? customMessageBuilder;
 
+  /// Provides configuration for voting messages.
+  final VotingMessageConfiguration? votingMessageConfig;
+
+  /// Provides configuration for quiz messages.
+  final QuizMessageConfiguration? quizMessageConfig;
+
+  /// Provides configuration for question messages.
+  final QuestionMessageConfiguration? questionMessageConfig;
+
   /// Configurations for voice message bubble
   final VoiceMessageConfiguration? voiceMessageConfig;
 
@@ -56,6 +65,9 @@ class MessageConfiguration {
     this.messageReactionConfig,
     this.emojiMessageConfig,
     this.customMessageBuilder,
+    this.votingMessageConfig,
+    this.quizMessageConfig,
+    this.questionMessageConfig,
     this.voiceMessageConfig,
     this.customMessageReplyViewBuilder,
     this.videoMessageConfig,

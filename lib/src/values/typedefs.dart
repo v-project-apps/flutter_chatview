@@ -26,9 +26,7 @@ import 'package:chatview/src/values/attachment_source.dart';
 import 'package:flutter/material.dart';
 
 typedef StringCallback = void Function(String);
-typedef StringMessageCallBack = void Function(
-    String message, ReplyMessage replyMessage, MessageType messageType,
-    {Attachment? attachment, List<dynamic>? mentions});
+typedef StringMessageCallBack = void Function(Message message);
 typedef ReplyMessageWithReturnWidget = Widget Function(
   ReplyMessage? replyMessage,
 );

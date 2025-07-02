@@ -259,7 +259,7 @@ class SendMessageWidgetState extends State<SendMessageWidget> {
                               ChatUITextField(
                                 focusNode: _focusNode,
                                 controller: _textEditingController,
-                                onPressed: _onPressed,
+                                onSendMessage: _onSendMessage,
                                 sendMessageConfiguration:
                                     widget.sendMessageConfig,
                                 onRecordingComplete: _onRecordingComplete,
@@ -279,8 +279,14 @@ class SendMessageWidgetState extends State<SendMessageWidget> {
 
   void _onRecordingComplete(Attachment attachment) {
     widget.onSendTap.call(
-        attachment.file?.path ?? "", replyMessage, MessageType.voice,
-        attachment: attachment);
+      Message(
+        message: attachment.file?.path ?? "",
+        messageType: MessageType.voice,
+        attachment: attachment,
+        createdAt: DateTime.now(),
+        sentBy: currentUser?.id ?? "",
+      ),
+    );
     _assignRepliedMessage();
   }
 
@@ -288,9 +294,13 @@ class SendMessageWidgetState extends State<SendMessageWidget> {
       Attachment? attachment, AttachmentSource source, String error) {
     debugPrint('Call onAttachmentSelected');
     if (attachment != null) {
-      widget.onSendTap.call(attachment.name, replyMessage,
-          MessageType.fromAttachmentSource(source),
-          attachment: attachment);
+      widget.onSendTap.call(Message(
+        message: attachment.name,
+        messageType: MessageType.fromAttachmentSource(source),
+        attachment: attachment,
+        createdAt: DateTime.now(),
+        sentBy: currentUser?.id ?? "",
+      ));
     }
     _assignRepliedMessage();
   }
@@ -301,17 +311,8 @@ class SendMessageWidgetState extends State<SendMessageWidget> {
     }
   }
 
-  void _onPressed() {
-    final messageText = _textEditingController.getText.trim();
-    _textEditingController.clear();
-    if (messageText.isEmpty) return;
-
-    widget.onSendTap.call(
-      messageText,
-      replyMessage,
-      MessageType.text,
-      mentions: _textEditingController.mentions,
-    );
+  void _onSendMessage(Message message) {
+    widget.onSendTap.call(message);
     _assignRepliedMessage();
   }
 

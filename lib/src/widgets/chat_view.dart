@@ -300,16 +300,13 @@ class _ChatViewState extends State<ChatView>
                                 key: _sendMessageKey,
                                 sendMessageBuilder: widget.sendMessageBuilder,
                                 sendMessageConfig: widget.sendMessageConfig,
-                                onSendTap: (message, replyMessage, messageType,
-                                    {attachment, mentions}) {
+                                onSendTap: (message) {
                                   if (context.suggestionsConfig
                                           ?.autoDismissOnSelection ??
                                       true) {
                                     chatController.removeReplySuggestions();
                                   }
-                                  _onSendTap(message, replyMessage, messageType,
-                                      attachment: attachment,
-                                      mentions: mentions);
+                                  _onSendTap(message);
                                 },
                                 onReplyCallback: (reply) =>
                                     replyMessage.value = reply,
@@ -352,13 +349,10 @@ class _ChatViewState extends State<ChatView>
     ScaffoldMessenger.of(context).hideCurrentSnackBar();
   }
 
-  void _onSendTap(
-      String message, ReplyMessage replyMessage, MessageType messageType,
-      {Attachment? attachment, List<dynamic>? mentions}) {
+  void _onSendTap(Message message) {
     if (widget.sendMessageBuilder == null) {
       if (widget.onSendTap != null) {
-        widget.onSendTap!(message, replyMessage, messageType,
-            attachment: attachment, mentions: mentions);
+        widget.onSendTap!(message);
       }
       _assignReplyMessage();
     }

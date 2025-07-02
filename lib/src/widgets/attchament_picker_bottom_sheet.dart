@@ -106,6 +106,38 @@ class AttchamentPickerBottomSheet {
                       attachmentSourceCallback(AttachmentSource.audioFromUrl);
                     },
                   ),
+                // Specialized message options
+
+                if (attchamentPickerBottomSheetConfig?.enablePollCreation ??
+                    true)
+                  ListTile(
+                    leading: const Icon(Icons.poll),
+                    title: const Text('Poll (Voting)'),
+                    onTap: () {
+                      Navigator.pop(context);
+                      attachmentSourceCallback(AttachmentSource.poll);
+                    },
+                  ),
+                if (attchamentPickerBottomSheetConfig?.enableQuizCreation ??
+                    true)
+                  ListTile(
+                    leading: const Icon(Icons.quiz),
+                    title: const Text('Quiz'),
+                    onTap: () {
+                      Navigator.pop(context);
+                      attachmentSourceCallback(AttachmentSource.quiz);
+                    },
+                  ),
+                if (attchamentPickerBottomSheetConfig?.enableQuestionCreation ??
+                    true)
+                  ListTile(
+                    leading: const Icon(Icons.help_outline),
+                    title: const Text('Ask a question'),
+                    onTap: () {
+                      Navigator.pop(context);
+                      attachmentSourceCallback(AttachmentSource.question);
+                    },
+                  ),
               ],
             ),
           ),

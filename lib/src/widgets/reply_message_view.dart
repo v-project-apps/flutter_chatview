@@ -61,6 +61,30 @@ class ReplyMessageView extends StatelessWidget {
               ),
           ],
         ),
+      MessageType.voting => Row(
+          children: [
+            Icon(
+              Icons.poll,
+              color: sendMessageConfig?.replyMessageColor,
+            ),
+          ],
+        ),
+      MessageType.quiz => Row(
+          children: [
+            Icon(
+              Icons.quiz,
+              color: sendMessageConfig?.replyMessageColor,
+            ),
+          ],
+        ),
+      MessageType.question => Row(
+          children: [
+            Icon(
+              Icons.question_answer,
+              color: sendMessageConfig?.replyMessageColor,
+            ),
+          ],
+        ),
       MessageType.imageFromUrl || MessageType.image => Row(
           children: [
             Icon(

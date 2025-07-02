@@ -28,7 +28,6 @@ import 'package:flutter/material.dart';
 
 import 'package:chatview/src/extensions/extensions.dart';
 import '../utils/constants/constants.dart';
-import 'image_message_view.dart';
 import 'text_message_view.dart';
 import 'reaction_widget.dart';
 import 'voice_message_view.dart';
@@ -292,6 +291,38 @@ class _MessageViewState extends State<MessageView>
                 } else if (widget.message.messageType.isCustom &&
                     messageConfig?.customMessageBuilder != null) {
                   return messageConfig?.customMessageBuilder!(widget.message);
+                } else if (widget.message.messageType.isVoting) {
+                  return VotingMessageView(
+                    message: widget.message,
+                    isMessageBySender: widget.isMessageBySender,
+                    inComingChatBubbleConfig: widget.inComingChatBubbleConfig,
+                    outgoingChatBubbleConfig: widget.outgoingChatBubbleConfig,
+                    chatBubbleMaxWidth: widget.chatBubbleMaxWidth,
+                    messageReactionConfig: messageConfig?.messageReactionConfig,
+                    votingMessageConfiguration:
+                        messageConfig?.votingMessageConfig,
+                  );
+                } else if (widget.message.messageType.isQuiz) {
+                  return QuizMessageView(
+                    message: widget.message,
+                    isMessageBySender: widget.isMessageBySender,
+                    inComingChatBubbleConfig: widget.inComingChatBubbleConfig,
+                    outgoingChatBubbleConfig: widget.outgoingChatBubbleConfig,
+                    chatBubbleMaxWidth: widget.chatBubbleMaxWidth,
+                    messageReactionConfig: messageConfig?.messageReactionConfig,
+                    quizMessageConfiguration: messageConfig?.quizMessageConfig,
+                  );
+                } else if (widget.message.messageType.isQuestion) {
+                  return QuestionMessageView(
+                    message: widget.message,
+                    isMessageBySender: widget.isMessageBySender,
+                    inComingChatBubbleConfig: widget.inComingChatBubbleConfig,
+                    outgoingChatBubbleConfig: widget.outgoingChatBubbleConfig,
+                    chatBubbleMaxWidth: widget.chatBubbleMaxWidth,
+                    messageReactionConfig: messageConfig?.messageReactionConfig,
+                    questionMessageConfiguration:
+                        messageConfig?.questionMessageConfig,
+                  );
                 }
               }()) ??
               const SizedBox(),
