@@ -200,7 +200,7 @@ class _ChatUITextFieldState extends State<ChatUITextField> {
 
   void _onSendMessage(String messageText) {
     widget.onSendMessage.call(Message(
-      id: DateTime.now().toString(),
+      id: DateTime.now().millisecondsSinceEpoch.toString(),
       message: messageText,
       messageType: MessageType.text,
       createdAt: DateTime.now(),
