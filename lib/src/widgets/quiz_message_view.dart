@@ -144,6 +144,8 @@ class _QuizMessageViewState extends State<QuizMessageView> {
                   const SizedBox(height: 12),
                   _buildExplanation(config),
                 ],
+                const SizedBox(height: 12),
+                _buildAnswersCount(config),
               ],
             ),
           ),
@@ -211,6 +213,25 @@ class _QuizMessageViewState extends State<QuizMessageView> {
               : _buildQuizOption(option, isSelected, config),
         );
       }).toList(),
+    );
+  }
+
+  Widget _buildAnswersCount(QuizMessageConfiguration? config) {
+    int answeredCount = 0;
+
+    for (QuizOption option in _quizMessage!.options) {
+      if (option.voters.isNotEmpty) {
+        answeredCount += option.voters.length;
+      }
+    }
+
+    return Text(
+      '$answeredCount answer${answeredCount == 1 ? '' : 's'}',
+      style: config?.questionCountTextStyle ??
+          const TextStyle(
+            fontSize: 12,
+            color: Colors.grey,
+          ),
     );
   }
 

@@ -88,6 +88,9 @@ class QuestionMessageConfiguration {
   /// Maximum lines for the text field
   final int? textFieldMaxLines;
 
+  /// Style for the question count text
+  final TextStyle? questionCountTextStyle;
+
   /// Callback when a question is submitted
   final Function(String messageId, QuestionSubmission submission)?
       onQuestionSubmitted;
@@ -123,5 +126,6 @@ class QuestionMessageConfiguration {
     this.onQuestionSubmitted,
     this.onQuestionCancelled,
     this.questionMessageBuilder,
+    this.questionCountTextStyle,
   });
 }

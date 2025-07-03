@@ -142,6 +142,24 @@ class _QuestionMessageViewState extends State<QuestionMessageView> {
               _isSubmitted
                   ? _buildSubmittedQuestion(config)
                   : _buildQuestionInput(config),
+              const SizedBox(height: 12),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  if (_isSubmitted &&
+                      _submittedQuestion?.submittedAt != null) ...[
+                    Text(
+                      'Submitted ${_formatTimeAgo(_submittedQuestion!.submittedAt!)}',
+                      style: config?.submittedTimeTextStyle ??
+                          const TextStyle(
+                            fontSize: 12,
+                            color: Colors.grey,
+                          ),
+                    ),
+                  ],
+                  _buildQuestionCount(config),
+                ],
+              ),
             ],
           ),
         ),
@@ -288,18 +306,18 @@ class _QuestionMessageViewState extends State<QuestionMessageView> {
                 ),
           ),
         ),
-        if (_submittedQuestion!.submittedAt != null) ...[
-          const SizedBox(height: 8),
-          Text(
-            'Submitted ${_formatTimeAgo(_submittedQuestion!.submittedAt!)}',
-            style: config?.submittedTimeTextStyle ??
-                const TextStyle(
-                  fontSize: 12,
-                  color: Colors.grey,
-                ),
-          ),
-        ],
       ],
+    );
+  }
+
+  Widget _buildQuestionCount(QuestionMessageConfiguration? config) {
+    return Text(
+      'Asked ${_questionMessage!.submissions.length} question${_questionMessage!.submissions.length == 1 ? '' : 's'}',
+      style: config?.questionCountTextStyle ??
+          const TextStyle(
+            fontSize: 12,
+            color: Colors.grey,
+          ),
     );
   }
 

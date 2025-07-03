@@ -104,13 +104,17 @@ class QuizMessageConfiguration {
   final EdgeInsets? optionPadding;
 
   /// Callback when an answer is submitted
-  final Function(String messageId, String optionId, bool isCorrect)? onAnswerSubmitted;
+  final Function(String messageId, String optionId, bool isCorrect)?
+      onAnswerSubmitted;
 
   /// Callback when quiz is completed
   final VoidCallback? onQuizCompleted;
 
   /// Custom builder for the quiz message
   final Widget Function(Message message)? quizMessageBuilder;
+
+  /// Style for the question count text
+  final TextStyle? questionCountTextStyle;
 
   const QuizMessageConfiguration({
     this.backgroundColor,
@@ -142,5 +146,6 @@ class QuizMessageConfiguration {
     this.onAnswerSubmitted,
     this.onQuizCompleted,
     this.quizMessageBuilder,
+    this.questionCountTextStyle,
   });
 }
