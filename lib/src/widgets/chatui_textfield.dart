@@ -25,10 +25,12 @@ import 'dart:convert';
 
 import 'package:audio_waveforms/audio_waveforms.dart';
 import 'package:chatview/src/extensions/extensions.dart';
+import 'package:chatview/src/models/config_models/pools_picker_bottom_sheet_configuration.dart';
 import 'package:chatview/src/utils/constants/constants.dart';
 import 'package:chatview/src/values/attachment_source.dart';
 import 'package:chatview/src/widgets/audio_url_picker_dialog.dart';
 import 'package:chatview/src/widgets/image_url_picker_dialog.dart';
+import 'package:chatview/src/widgets/pools_picker_bottom_sheet.dart';
 import 'package:chatview/src/widgets/video_url_picker_dialog.dart';
 import 'package:chatview/src/widgets/poll_creation_form.dart';
 import 'package:chatview/src/widgets/quiz_creation_form.dart';
@@ -109,6 +111,10 @@ class _ChatUITextFieldState extends State<ChatUITextField> {
   AttachmentPickerBottomSheetConfiguration?
       get attchamentPickerBottomSheetConfiguration =>
           sendMessageConfig?.attachmentPickerBottomSheetConfig;
+
+  PoolsPickerBottomSheetConfiguration?
+      get poolsPickerBottomSheetConfiguration =>
+          sendMessageConfig?.poolsPickerBottomSheetConfig;
 
   OutlineInputBorder get _outLineBorder => OutlineInputBorder(
         borderSide: const BorderSide(color: Colors.transparent),
@@ -389,7 +395,27 @@ class _ChatUITextFieldState extends State<ChatUITextField> {
                                 icon: Icon(
                                   Icons.gif_box_outlined,
                                   color:
-                                      imagePickerIconsConfig?.galleryIconColor,
+                                      imagePickerIconsConfig?.cameraIconColor,
+                                ),
+                              ),
+                            if (sendMessageConfig?.enablePollsPicker ?? true)
+                              IconButton(
+                                constraints: const BoxConstraints(),
+                                onPressed: (textFieldConfig?.enabled ?? true)
+                                    ? () {
+                                        PoolsPickerBottomSheet().show(
+                                          context: context,
+                                          attachmentSourceCallback:
+                                              _onAttachmentSourcePicked,
+                                          poolsPickerBottomSheetConfig:
+                                              poolsPickerBottomSheetConfiguration,
+                                        );
+                                      }
+                                    : null,
+                                icon: Icon(
+                                  Icons.poll_outlined,
+                                  color:
+                                      imagePickerIconsConfig?.cameraIconColor,
                                 ),
                               ),
                             if (sendMessageConfig?.enableGalleryImagePicker ??

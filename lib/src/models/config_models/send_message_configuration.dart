@@ -22,6 +22,7 @@
 
 import 'package:audio_waveforms/audio_waveforms.dart';
 import 'package:chatview/src/models/config_models/attachment_picker_bottom_sheet_configuration.dart';
+import 'package:chatview/src/models/config_models/pools_picker_bottom_sheet_configuration.dart';
 import 'package:chatview/src/values/mention_configuration.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -80,6 +81,9 @@ class SendMessageConfiguration {
   /// Enable/disable image picker from gallery. Enabled by default.
   final bool enableGalleryImagePicker;
 
+  /// Enable/disable polls picker. Enabled by default.
+  final bool enablePollsPicker;
+
   /// Enable/disable send image from camera. Enabled by default.
   final bool enableCameraImagePicker;
 
@@ -101,6 +105,8 @@ class SendMessageConfiguration {
   final AttachmentPickerBottomSheetConfiguration?
       attachmentPickerBottomSheetConfig;
 
+  final PoolsPickerBottomSheetConfiguration? poolsPickerBottomSheetConfig;
+
   /// Configuration for mention styling and behavior
   final MentionConfiguration? mentionConfiguration;
 
@@ -110,6 +116,7 @@ class SendMessageConfiguration {
     this.imagePickerIconsConfig,
     this.imagePickerConfiguration,
     this.defaultSendButtonColor,
+    this.enablePollsPicker = true,
     this.sendButtonIcon,
     this.replyDialogColor,
     this.replyTitleColor,
@@ -126,6 +133,7 @@ class SendMessageConfiguration {
     this.micIconColor,
     this.cancelRecordConfiguration,
     this.attachmentPickerBottomSheetConfig,
+    this.poolsPickerBottomSheetConfig,
     this.videoPickerConfiguration,
     this.filePickerConfiguration,
     this.mentionConfiguration,
