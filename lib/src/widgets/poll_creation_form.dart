@@ -55,6 +55,7 @@ class _PollCreationFormState extends State<PollCreationForm>
   late Animation<double> _fadeAnimation;
   late Animation<Offset> _slideAnimation;
 
+  int _prioritizedOptionIndex = -1;
   final _formKey = GlobalKey<FormState>();
 
   @override
@@ -274,74 +275,77 @@ class _PollCreationFormState extends State<PollCreationForm>
               ),
             ),
           ),
+        if (_prioritizedOptionIndex == -1 &&
+            _questionController.text.isNotEmpty)
+          Padding(
+            padding: const EdgeInsets.only(top: 8),
+            child: Text(
+              'Please select the prioritized option',
+              style: TextStyle(
+                color: Colors.red[600],
+                fontSize: 12,
+              ),
+            ),
+          ),
       ],
     );
   }
 
   Widget _buildOptionField(int index) {
-    return Row(
-      children: [
-        Container(
-          width: 32,
-          height: 32,
-          decoration: BoxDecoration(
-            color: Colors.blue[100],
-            borderRadius: BorderRadius.circular(16),
-          ),
-          child: Center(
-            child: Text(
-              '${index + 1}',
-              style: TextStyle(
-                color: Colors.blue[700],
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-          ),
+    final isPrioritized = _prioritizedOptionIndex == index;
+
+    return Container(
+      decoration: BoxDecoration(
+        color: isPrioritized ? Colors.green[50] : Colors.white,
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(
+          color: isPrioritized ? Colors.green : Colors.grey[300]!,
+          width: isPrioritized ? 2 : 1,
         ),
-        const SizedBox(width: 12),
-        Expanded(
-          child: TextFormField(
-            key: _optionKeys[index],
-            controller: _optionControllers[index],
-            decoration: InputDecoration(
-              hintText: 'Option ${index + 1}',
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(8),
-                borderSide: BorderSide(color: Colors.grey[300]!),
-              ),
-              enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(8),
-                borderSide: BorderSide(color: Colors.grey[300]!),
-              ),
-              focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(8),
-                borderSide: const BorderSide(color: Colors.blue, width: 2),
-              ),
-              filled: true,
-              fillColor: Colors.white,
-              contentPadding: const EdgeInsets.symmetric(
-                horizontal: 12,
-                vertical: 8,
-              ),
-            ),
-            validator: (value) {
-              if (value == null || value.trim().isEmpty) {
-                return 'Please enter option text';
-              }
-              return null;
+      ),
+      child: Row(
+        children: [
+          Radio<int>(
+            value: index,
+            groupValue: _prioritizedOptionIndex,
+            onChanged: (value) {
+              setState(() {
+                _prioritizedOptionIndex = value!;
+              });
             },
+            activeColor: Colors.green,
           ),
-        ),
-        if (_optionControllers.length > 2)
-          IconButton(
-            onPressed: () => _removeOption(index),
-            icon: Icon(
-              Icons.remove_circle_outline,
-              color: Colors.red[400],
+          Expanded(
+            child: TextFormField(
+              key: _optionKeys[index],
+              controller: _optionControllers[index],
+              decoration: InputDecoration(
+                hintText: 'Option ${index + 1}',
+                border: InputBorder.none,
+                contentPadding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 8,
+                ),
+              ),
+              validator: (value) {
+                if (value == null || value.trim().isEmpty) {
+                  return 'Please enter option text';
+                }
+                return null;
+              },
             ),
-            tooltip: 'Remove option',
           ),
-      ],
+          if (_optionControllers.length > 2)
+            IconButton(
+              onPressed: () => _removeOption(index),
+              icon: Icon(
+                Icons.remove_circle_outline,
+                color: Colors.red[400],
+              ),
+              tooltip: 'Remove option',
+            ),
+        ],
+      ),
     );
   }
 
@@ -360,12 +364,32 @@ class _PollCreationFormState extends State<PollCreationForm>
         _optionControllers[index].dispose();
         _optionControllers.removeAt(index);
         _optionKeys.removeAt(index);
+
+        // Adjust prioritized option index if needed
+        if (_prioritizedOptionIndex == index) {
+          _prioritizedOptionIndex = -1;
+        } else if (_prioritizedOptionIndex > index) {
+          _prioritizedOptionIndex--;
+        }
       });
     }
   }
 
   void _submitPoll() async {
     if (!_formKey.currentState!.validate()) {
+      return;
+    }
+
+    if (_prioritizedOptionIndex == -1) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text(
+                'Please select the prioritized option. It will be used for simulation voting by bots.'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
       return;
     }
 
@@ -377,6 +401,7 @@ class _PollCreationFormState extends State<PollCreationForm>
           text: _optionControllers[i].text.trim(),
           votes: 0,
           voters: [],
+          isPrioritized: i == _prioritizedOptionIndex,
         ));
       }
 

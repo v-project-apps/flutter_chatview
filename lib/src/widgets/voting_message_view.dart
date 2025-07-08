@@ -158,7 +158,27 @@ class _VotingMessageViewState extends State<VotingMessageView> {
                         ?.chatController
                         .getUsersByIds(widget.message.seenBy!) ??
                     [],
+                includeCurrentUser: true,
                 circleRadius: 8,
+              ),
+            ),
+          ),
+        if (config?.showDetailsButton ?? false)
+          Positioned(
+            top: 0,
+            right: widget.isMessageBySender ? null : 0,
+            left: widget.isMessageBySender ? 0 : null,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+              child: IconButton(
+                onPressed: () {
+                  widget.votingMessageConfiguration?.onDetailsButtonPressed
+                      ?.call(widget.message);
+                },
+                icon: const Icon(
+                  Icons.info_outline,
+                  size: 20,
+                ),
               ),
             ),
           ),
@@ -318,6 +338,14 @@ class _VotingMessageViewState extends State<VotingMessageView> {
                           ),
                 ),
               ),
+              HorizontalUserAvatars(
+                users: ChatViewInheritedWidget.of(context)
+                        ?.chatController
+                        .getUsersByIds(option.voters) ??
+                    [],
+                circleRadius: 8,
+              ),
+              const SizedBox(width: 8),
               Text(
                 '${(percentage * 100).toInt()}%',
                 style: config?.percentageTextStyle ??

@@ -94,6 +94,12 @@ class VotingMessageConfiguration {
   /// Custom builder for the voting message
   final Widget Function(Message message)? votingMessageBuilder;
 
+  /// Show details button
+  final bool showDetailsButton;
+
+  /// Callback when details button is pressed
+  final Function(Message message)? onDetailsButtonPressed;
+
   const VotingMessageConfiguration({
     this.backgroundColor,
     this.borderRadius,
@@ -118,5 +124,7 @@ class VotingMessageConfiguration {
     this.onVoteSubmitted,
     this.onVotingClosed,
     this.votingMessageBuilder,
+    this.showDetailsButton = false,
+    this.onDetailsButtonPressed,
   });
 }

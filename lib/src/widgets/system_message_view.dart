@@ -33,7 +33,7 @@ class SystemMessageView extends StatelessWidget {
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 6.0),
           decoration: BoxDecoration(
-            color: Colors.grey.withOpacity(0.2),
+            color: Colors.grey.withValues(alpha: 0.2),
             borderRadius: BorderRadius.circular(12.0),
           ),
           child: Row(

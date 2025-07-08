@@ -28,12 +28,14 @@ class VotingOption {
   final String text;
   final int votes;
   final List<String> voters;
+  final bool isPrioritized;
 
   const VotingOption({
     required this.id,
     required this.text,
     this.votes = 0,
     this.voters = const [],
+    this.isPrioritized = false,
   });
 
   VotingOption copyWith({
@@ -41,12 +43,14 @@ class VotingOption {
     String? text,
     int? votes,
     List<String>? voters,
+    bool? isPrioritized,
   }) {
     return VotingOption(
       id: id ?? this.id,
       text: text ?? this.text,
       votes: votes ?? this.votes,
       voters: voters ?? this.voters,
+      isPrioritized: isPrioritized ?? this.isPrioritized,
     );
   }
 
@@ -55,6 +59,7 @@ class VotingOption {
         'text': text,
         'votes': votes,
         'voters': voters,
+        'isPrioritized': isPrioritized,
       };
 
   factory VotingOption.fromJson(Map<String, dynamic> json) => VotingOption(
@@ -64,6 +69,7 @@ class VotingOption {
         voters: json['voters'] is List<dynamic>
             ? List<String>.from(json['voters'])
             : [],
+        isPrioritized: json['isPrioritized'] ?? false,
       );
 
   @override
@@ -74,11 +80,16 @@ class VotingOption {
           id == other.id &&
           text == other.text &&
           votes == other.votes &&
-          listEquals(voters, other.voters);
+          listEquals(voters, other.voters) &&
+          isPrioritized == other.isPrioritized;
 
   @override
   int get hashCode =>
-      id.hashCode ^ text.hashCode ^ votes.hashCode ^ voters.hashCode;
+      id.hashCode ^
+      text.hashCode ^
+      votes.hashCode ^
+      voters.hashCode ^
+      isPrioritized.hashCode;
 }
 
 /// Represents a voting message with question, options, and voting state

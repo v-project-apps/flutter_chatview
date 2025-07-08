@@ -7,26 +7,32 @@ class HorizontalUserAvatars extends StatelessWidget {
   final List<ChatUser> users;
   final int maxVisibleUsers;
   final double circleRadius;
+  final bool includeCurrentUser;
 
   const HorizontalUserAvatars(
       {super.key,
       required this.users,
       this.maxVisibleUsers = 4,
+      this.includeCurrentUser = false,
       this.circleRadius = 16.0});
 
   @override
   Widget build(BuildContext context) {
-    List<ChatUser> usersWithoutCurrentUser = users
-        .where((user) =>
-            user.id !=
-            ChatViewInheritedWidget.of(context)?.chatController.currentUser.id)
-        .toList();
-    int extraUsers = usersWithoutCurrentUser.length > maxVisibleUsers
-        ? usersWithoutCurrentUser.length - maxVisibleUsers
+    List<ChatUser> usersList = includeCurrentUser
+        ? users
+        : users
+            .where((user) =>
+                user.id !=
+                ChatViewInheritedWidget.of(context)
+                    ?.chatController
+                    .currentUser
+                    .id)
+            .toList();
+    int extraUsers = usersList.length > maxVisibleUsers
+        ? usersList.length - maxVisibleUsers
         : 0;
-    List<ChatUser> displayUsers = usersWithoutCurrentUser.isNotEmpty
-        ? usersWithoutCurrentUser.take(maxVisibleUsers).toList()
-        : [];
+    List<ChatUser> displayUsers =
+        usersList.isNotEmpty ? usersList.take(maxVisibleUsers).toList() : [];
 
     double widgetWidth = ((circleRadius + 1) * 2) +
         (displayUsers.length - 1) * (circleRadius * 1.3);
@@ -95,7 +101,7 @@ class HorizontalUserAvatars extends StatelessWidget {
                       child: Positioned.fill(
                         child: Container(
                           decoration: BoxDecoration(
-                            color: Colors.black.withOpacity(0.4),
+                            color: Colors.black.withValues(alpha: 0.4),
                             shape: BoxShape.circle,
                           ),
                           child: Center(

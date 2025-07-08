@@ -166,6 +166,25 @@ class _QuizMessageViewState extends State<QuizMessageView> {
               ),
             ),
           ),
+        if (widget.quizMessageConfiguration?.showDetailsButton ?? false)
+          Positioned(
+            top: 0,
+            right: widget.isMessageBySender ? null : 0,
+            left: widget.isMessageBySender ? 0 : null,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+              child: IconButton(
+                onPressed: () {
+                  widget.quizMessageConfiguration?.onDetailsButtonPressed
+                      ?.call(widget.message);
+                },
+                icon: const Icon(
+                  Icons.info_outline,
+                  size: 20,
+                ),
+              ),
+            ),
+          ),
         if (widget.message.reactions.isNotEmpty)
           ReactionWidget(
             reactions: widget.message.reactions,
@@ -218,20 +237,39 @@ class _QuizMessageViewState extends State<QuizMessageView> {
 
   Widget _buildAnswersCount(QuizMessageConfiguration? config) {
     int answeredCount = 0;
-
+    List<String> answeredBy = [];
     for (QuizOption option in _quizMessage!.options) {
       if (option.voters.isNotEmpty) {
         answeredCount += option.voters.length;
       }
     }
 
-    return Text(
-      '$answeredCount answer${answeredCount == 1 ? '' : 's'}',
-      style: config?.questionCountTextStyle ??
-          const TextStyle(
-            fontSize: 12,
-            color: Colors.grey,
-          ),
+    for (QuizOption option in _quizMessage!.options) {
+      if (option.voters.isNotEmpty) {
+        answeredBy.addAll(option.voters);
+      }
+    }
+
+    return Row(
+      children: [
+        HorizontalUserAvatars(
+          users: ChatViewInheritedWidget.of(context)
+                  ?.chatController
+                  .getUsersByIds(answeredBy) ??
+              [],
+          maxVisibleUsers: 6,
+          circleRadius: 8,
+        ),
+        const SizedBox(width: 8),
+        Text(
+          '$answeredCount answer${answeredCount == 1 ? '' : 's'}',
+          style: config?.questionCountTextStyle ??
+              const TextStyle(
+                fontSize: 12,
+                color: Colors.grey,
+              ),
+        ),
+      ],
     );
   }
 
@@ -365,7 +403,7 @@ class _QuizMessageViewState extends State<QuizMessageView> {
         color: config?.explanationBackgroundColor ?? Colors.blue[50],
         borderRadius: BorderRadius.circular(8),
         border: Border.all(
-          color: config?.explanationBackgroundColor?.withOpacity(0.3) ??
+          color: config?.explanationBackgroundColor?.withValues(alpha: 0.3) ??
               Colors.blue[200]!,
         ),
       ),

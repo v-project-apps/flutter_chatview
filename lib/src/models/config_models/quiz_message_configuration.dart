@@ -116,6 +116,12 @@ class QuizMessageConfiguration {
   /// Style for the question count text
   final TextStyle? questionCountTextStyle;
 
+  /// Show details button
+  final bool showDetailsButton;
+
+  /// Show details button
+  final Function(Message message)? onDetailsButtonPressed;
+
   const QuizMessageConfiguration({
     this.backgroundColor,
     this.borderRadius,
@@ -147,5 +153,7 @@ class QuizMessageConfiguration {
     this.onQuizCompleted,
     this.quizMessageBuilder,
     this.questionCountTextStyle,
+    this.showDetailsButton = false,
+    this.onDetailsButtonPressed,
   });
 }

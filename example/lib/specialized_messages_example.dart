@@ -48,10 +48,23 @@ class _SpecializedMessagesExampleState
     const votingMessage = VotingMessage(
       question: "What's your favorite programming language?",
       options: [
-        VotingOption(id: "1", text: "Dart/Flutter", votes: 15, voters: []),
-        VotingOption(id: "2", text: "JavaScript", votes: 12, voters: []),
-        VotingOption(id: "3", text: "Python", votes: 18, voters: []),
-        VotingOption(id: "4", text: "Java", votes: 8, voters: []),
+        VotingOption(id: "1", text: "Dart/Flutter", votes: 0, voters: []),
+        VotingOption(id: "2", text: "JavaScript", votes: 0, voters: [
+          "user9",
+          "user10",
+        ]),
+        VotingOption(id: "3", text: "Python", votes: 0, voters: [
+          "user4",
+          "user5",
+          "user6",
+          "user7",
+          "user8",
+        ]),
+        VotingOption(
+            id: "4",
+            text: "Java",
+            votes: 3,
+            voters: ["user1", "user2", "user3"]),
       ],
       isVotingClosed: false,
       totalVotes: 53,
@@ -61,19 +74,52 @@ class _SpecializedMessagesExampleState
     const quizMessage = QuizMessage(
       question: "What is Flutter?",
       options: [
-        QuizOption(id: "1", text: "A programming language", isCorrect: false),
-        QuizOption(id: "2", text: "A UI framework", isCorrect: true),
-        QuizOption(id: "3", text: "A database", isCorrect: false),
-        QuizOption(id: "4", text: "An operating system", isCorrect: false),
+        QuizOption(
+            id: "1",
+            text: "A programming language",
+            isCorrect: false,
+            voters: ["user1", "user2", "user3"]),
+        QuizOption(
+            id: "2",
+            text: "A UI framework",
+            isCorrect: true,
+            voters: ["user4", "user5", "user6"]),
+        QuizOption(
+            id: "3",
+            text: "A database",
+            isCorrect: false,
+            voters: ["user7", "user8", "user9"]),
+        QuizOption(
+            id: "4",
+            text: "An operating system",
+            isCorrect: false,
+            voters: ["user10"]),
       ],
       explanation:
           "Flutter is Google's UI toolkit for building natively compiled applications.",
     );
 
     // Sample question message
-    const questionMessage = QuestionMessage(
+    final questionMessage = QuestionMessage(
       prompt: "What's your experience with Flutter?",
-      submissions: [],
+      submissions: [
+        QuestionSubmission(
+          userId: "user1",
+          userQuestion: "What's your experience with Flutter?",
+        ),
+        QuestionSubmission(
+          userId: "user2",
+          userQuestion: "What's your experience with Flutter?",
+        ),
+        QuestionSubmission(
+          userId: "user3",
+          userQuestion: "What's your experience with Flutter?",
+        ),
+        QuestionSubmission(
+          userId: "user4",
+          userQuestion: "What's your experience with Flutter?",
+        ),
+      ],
     );
 
     // Add sample messages to the chat
@@ -124,6 +170,41 @@ class _SpecializedMessagesExampleState
         name: "Charlie",
         profilePhoto: "https://via.placeholder.com/150/45B7D1/FFFFFF?text=C",
       ),
+      ChatUser(
+        id: "user4",
+        name: "David",
+        profilePhoto: "https://via.placeholder.com/150/45B7D1/FFFFFF?text=D",
+      ),
+      ChatUser(
+        id: "user5",
+        name: "Eve",
+        profilePhoto: "https://via.placeholder.com/150/45B7D1/FFFFFF?text=E",
+      ),
+      ChatUser(
+        id: "user6",
+        name: "Frank",
+        profilePhoto: "https://via.placeholder.com/150/45B7D1/FFFFFF?text=F",
+      ),
+      ChatUser(
+        id: "user7",
+        name: "George",
+        profilePhoto: "https://via.placeholder.com/150/45B7D1/FFFFFF?text=G",
+      ),
+      ChatUser(
+        id: "user8",
+        name: "Henry",
+        profilePhoto: "https://via.placeholder.com/150/45B7D1/FFFFFF?text=H",
+      ),
+      ChatUser(
+        id: "user9",
+        name: "Ivy",
+        profilePhoto: "https://via.placeholder.com/150/45B7D1/FFFFFF?text=I",
+      ),
+      ChatUser(
+        id: "user10",
+        name: "Jack",
+        profilePhoto: "https://via.placeholder.com/150/45B7D1/FFFFFF?text=J",
+      ),
     ];
 
     chatController = ChatController(
@@ -152,6 +233,7 @@ class _SpecializedMessagesExampleState
             backgroundColor: Colors.blue[50],
             borderRadius: BorderRadius.circular(12),
             padding: const EdgeInsets.all(16),
+            showDetailsButton: true,
             questionTextStyle: const TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.w600,
@@ -180,6 +262,7 @@ class _SpecializedMessagesExampleState
             backgroundColor: Colors.orange[50],
             borderRadius: BorderRadius.circular(12),
             padding: const EdgeInsets.all(16),
+            showDetailsButton: true,
             questionTextStyle: const TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.w600,

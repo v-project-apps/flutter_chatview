@@ -146,6 +146,7 @@ class _QuestionMessageViewState extends State<QuestionMessageView> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
+                  _buildQuestionCount(config),
                   if (_isSubmitted &&
                       _submittedQuestion?.submittedAt != null) ...[
                     Text(
@@ -157,7 +158,6 @@ class _QuestionMessageViewState extends State<QuestionMessageView> {
                           ),
                     ),
                   ],
-                  _buildQuestionCount(config),
                 ],
               ),
             ],
@@ -311,13 +311,31 @@ class _QuestionMessageViewState extends State<QuestionMessageView> {
   }
 
   Widget _buildQuestionCount(QuestionMessageConfiguration? config) {
-    return Text(
-      'Asked ${_questionMessage!.submissions.length} question${_questionMessage!.submissions.length == 1 ? '' : 's'}',
-      style: config?.questionCountTextStyle ??
-          const TextStyle(
-            fontSize: 12,
-            color: Colors.grey,
-          ),
+    List<String> askedBy = [];
+    for (QuestionSubmission submission in _questionMessage!.submissions) {
+      askedBy.add(submission.userId);
+    }
+
+    return Row(
+      children: [
+        HorizontalUserAvatars(
+          users: ChatViewInheritedWidget.of(context)
+                  ?.chatController
+                  .getUsersByIds(askedBy) ??
+              [],
+          maxVisibleUsers: 6,
+          circleRadius: 8,
+        ),
+        const SizedBox(width: 8),
+        Text(
+          'Asked ${_questionMessage!.submissions.length} question${_questionMessage!.submissions.length == 1 ? '' : 's'}',
+          style: config?.questionCountTextStyle ??
+              const TextStyle(
+                fontSize: 12,
+                color: Colors.grey,
+              ),
+        ),
+      ],
     );
   }
 
