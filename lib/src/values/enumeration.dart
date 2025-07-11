@@ -69,7 +69,7 @@ enum MessageType {
     }
   }
 
-  bool get isImage => this == image || this == imageFromUrl;
+  bool get isImage => this == image || this == imageFromUrl || this == gif;
   bool get isVideo => this == video || this == videoFromUrl;
   bool get isText => this == text;
   bool get isFile => this == file;
