@@ -78,7 +78,8 @@ class _SuggestionListState extends State<SuggestionList>
               widthFactor: 1,
               child: suggestionsConfig?.suggestionItemType.isScrollType ?? false
                   ? SingleChildScrollView(
-                      scrollDirection: Axis.horizontal,
+                      scrollDirection: suggestionsListConfig.listDirection ??
+                          Axis.horizontal,
                       child: Row(
                         children: _suggestionListWidget(
                           suggestionsItemConfig,
