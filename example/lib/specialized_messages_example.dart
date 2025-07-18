@@ -365,6 +365,13 @@ class _SpecializedMessagesExampleState
         ),
         sendMessageConfig: const SendMessageConfiguration(
           // Enable attachment picker with specialized message options
+          gifPickerConfiguration: GifPickerConfiguration(
+            apiKey: 'yecm82d7ivn5Mwtnot2TkgkjNRGdeQQ5',
+            lang: "pl",
+            randomID: "123",
+            tabColor: Colors.blue,
+            debounceTimeInMilliseconds: 350,
+          ),
           attachmentPickerBottomSheetConfig:
               AttachmentPickerBottomSheetConfiguration(
             backgroundColor: Colors.white,
@@ -385,6 +392,7 @@ class _SpecializedMessagesExampleState
           ),
         ),
         onSendTap: (message) {
+          debugPrint('message: ${message.toJson()}');
           chatController.addMessage(message);
         },
       ),

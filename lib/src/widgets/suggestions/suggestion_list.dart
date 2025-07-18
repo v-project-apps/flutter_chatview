@@ -78,9 +78,11 @@ class _SuggestionListState extends State<SuggestionList>
               widthFactor: 1,
               child: suggestionsConfig?.suggestionItemType.isScrollType ?? false
                   ? SingleChildScrollView(
-                      scrollDirection: suggestionsListConfig.listDirection ??
+                      scrollDirection: chatViewIW?.chatController
+                              .replySuggestionsDirection.value ??
                           Axis.horizontal,
-                      child: suggestionsListConfig.listDirection ==
+                      child: chatViewIW?.chatController
+                                  .replySuggestionsDirection.value ==
                               Axis.vertical
                           ? LayoutBuilder(
                               builder: (context, constraints) {

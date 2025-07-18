@@ -50,6 +50,9 @@ class ChatController {
   final ValueNotifier<List<SuggestionItemData>> _replySuggestion =
       ValueNotifier([]);
 
+  final ValueNotifier<Axis> _replySuggestionsDirection =
+      ValueNotifier(Axis.horizontal);
+
   /// newSuggestions as [ValueNotifier] for [SuggestionList] widget's [ValueListenableBuilder].
   ///  Use this to listen when suggestion gets added
   ///   ```dart
@@ -58,6 +61,9 @@ class ChatController {
   /// For more functionalities see [ValueNotifier].
   ValueListenable<List<SuggestionItemData>> get newSuggestions =>
       _replySuggestion;
+
+  ValueListenable<Axis> get replySuggestionsDirection =>
+      _replySuggestionsDirection;
 
   /// Getter for typingIndicator value instead of accessing [_showTypingIndicator.value]
   /// for better accessibility.
@@ -110,6 +116,7 @@ class ChatController {
   void dispose() {
     _showTypingIndicator.dispose();
     _replySuggestion.dispose();
+    _replySuggestionsDirection.dispose();
     scrollController.dispose();
     messageStreamController.close();
     pinnedMessageStreamController.close();
@@ -184,6 +191,10 @@ class ChatController {
   /// Used to remove reply suggestions.
   void removeReplySuggestions() {
     _replySuggestion.value = [];
+  }
+
+  void setReplySuggestionsDirection(Axis direction) {
+    _replySuggestionsDirection.value = direction;
   }
 
   /// Function for setting reaction on specific chat bubble
