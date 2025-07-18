@@ -80,12 +80,30 @@ class _SuggestionListState extends State<SuggestionList>
                   ? SingleChildScrollView(
                       scrollDirection: suggestionsListConfig.listDirection ??
                           Axis.horizontal,
-                      child: Row(
-                        children: _suggestionListWidget(
-                          suggestionsItemConfig,
-                        ),
-                      ),
-                    )
+                      child: suggestionsListConfig.listDirection ==
+                              Axis.vertical
+                          ? LayoutBuilder(
+                              builder: (context, constraints) {
+                                final maxItemWidth = _calculateMaxItemWidth();
+                                final constrainedWidth = math.min(
+                                  maxItemWidth,
+                                  constraints.maxWidth * 0.6,
+                                );
+
+                                return Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: _suggestionListWidget(
+                                    suggestionsItemConfig,
+                                    fixedWidth: constrainedWidth,
+                                  ),
+                                );
+                              },
+                            )
+                          : Row(
+                              children: _suggestionListWidget(
+                                suggestionsItemConfig,
+                              ),
+                            ))
                   : Wrap(
                       runSpacing:
                           suggestionsConfig?.spaceBetweenSuggestionItemRow ??
@@ -101,27 +119,70 @@ class _SuggestionListState extends State<SuggestionList>
   }
 
   List<Widget> _suggestionListWidget(
-      SuggestionItemConfig? suggestionsItemConfig) {
+      SuggestionItemConfig? suggestionsItemConfig,
+      {double? fixedWidth}) {
     final suggestionsListConfig =
         suggestionsConfig?.listConfig ?? const SuggestionListConfig();
     return List.generate(
       suggestions.length,
       (index) {
         final suggestion = suggestions[index];
-        return suggestion.config?.customItemBuilder?.call(index, suggestion) ??
+        final suggestionWidget = suggestion.config?.customItemBuilder
+                ?.call(index, suggestion) ??
             suggestionsItemConfig?.customItemBuilder?.call(index, suggestion) ??
-            Padding(
-              padding: EdgeInsets.only(
-                right: index == suggestions.length
-                    ? 0
-                    : suggestionsListConfig.itemSeparatorWidth,
-              ),
-              child: SuggestionItem(
-                suggestionItemData: suggestion,
-              ),
+            SuggestionItem(
+              suggestionItemData: suggestion,
             );
+
+        return Padding(
+          padding: EdgeInsets.only(
+            right: index == suggestions.length
+                ? 0
+                : suggestionsListConfig.itemSeparatorWidth,
+            bottom: index == suggestions.length
+                ? 0
+                : suggestionsListConfig.itemSeparatorWidth,
+          ),
+          child: fixedWidth != null
+              ? SizedBox(
+                  width: fixedWidth,
+                  child: suggestionWidget,
+                )
+              : suggestionWidget,
+        );
       },
     );
+  }
+
+  double _calculateMaxItemWidth() {
+    if (suggestions.isEmpty) return 0;
+
+    double maxWidth = 0;
+    for (final suggestion in suggestions) {
+      final textPainter = TextPainter(
+        text: TextSpan(
+          text: suggestion.text,
+          style: suggestion.config?.textStyle ??
+              suggestionsConfig?.itemConfig?.textStyle,
+        ),
+        textDirection: TextDirection.ltr,
+        maxLines: null, // Allow unlimited lines for width calculation
+      );
+      textPainter.layout();
+
+      // Add padding and border width
+      final padding = suggestion.config?.padding ??
+          suggestionsConfig?.itemConfig?.padding ??
+          const EdgeInsets.all(6);
+      final totalWidth =
+          textPainter.width + padding.horizontal + 2; // +2 for border
+
+      if (totalWidth > maxWidth) {
+        maxWidth = totalWidth;
+      }
+    }
+
+    return maxWidth;
   }
 
   @override

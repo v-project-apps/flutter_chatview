@@ -40,6 +40,8 @@ class SuggestionItem extends StatelessWidget {
           suggestionItemData.text,
           style: suggestionItemData.config?.textStyle ??
               suggestionsListConfig?.textStyle,
+          softWrap: true,
+          overflow: TextOverflow.visible,
         ),
       ),
     );
