@@ -80,26 +80,24 @@ class _SuggestionListState extends State<SuggestionList>
                   ? SingleChildScrollView(
                       scrollDirection: chatViewIW?.chatController
                               .replySuggestionsDirection.value ??
-                          Axis.horizontal,
+                          Axis.vertical,
                       child: chatViewIW?.chatController
                                   .replySuggestionsDirection.value ==
                               Axis.vertical
-                          ? LayoutBuilder(
-                              builder: (context, constraints) {
-                                final maxItemWidth = _calculateMaxItemWidth();
-                                final constrainedWidth = math.min(
-                                  maxItemWidth,
-                                  constraints.maxWidth * 0.6,
-                                );
-
-                                return Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
+                          ? ConstrainedBox(
+                              constraints: BoxConstraints(
+                                maxWidth:
+                                    MediaQuery.of(context).size.width * 0.6,
+                              ),
+                              child: IntrinsicWidth(
+                                child: Column(
+                                  crossAxisAlignment:
+                                      CrossAxisAlignment.stretch,
                                   children: _suggestionListWidget(
                                     suggestionsItemConfig,
-                                    fixedWidth: constrainedWidth,
                                   ),
-                                );
-                              },
+                                ),
+                              ),
                             )
                           : Row(
                               children: _suggestionListWidget(
@@ -121,8 +119,7 @@ class _SuggestionListState extends State<SuggestionList>
   }
 
   List<Widget> _suggestionListWidget(
-      SuggestionItemConfig? suggestionsItemConfig,
-      {double? fixedWidth}) {
+      SuggestionItemConfig? suggestionsItemConfig) {
     final suggestionsListConfig =
         suggestionsConfig?.listConfig ?? const SuggestionListConfig();
     return List.generate(
@@ -145,46 +142,10 @@ class _SuggestionListState extends State<SuggestionList>
                 ? 0
                 : suggestionsListConfig.itemSeparatorWidth,
           ),
-          child: fixedWidth != null
-              ? SizedBox(
-                  width: fixedWidth,
-                  child: suggestionWidget,
-                )
-              : suggestionWidget,
+          child: suggestionWidget,
         );
       },
     );
-  }
-
-  double _calculateMaxItemWidth() {
-    if (suggestions.isEmpty) return 0;
-
-    double maxWidth = 0;
-    for (final suggestion in suggestions) {
-      final textPainter = TextPainter(
-        text: TextSpan(
-          text: suggestion.text,
-          style: suggestion.config?.textStyle ??
-              suggestionsConfig?.itemConfig?.textStyle,
-        ),
-        textDirection: TextDirection.ltr,
-        maxLines: null, // Allow unlimited lines for width calculation
-      );
-      textPainter.layout();
-
-      // Add padding and border width
-      final padding = suggestion.config?.padding ??
-          suggestionsConfig?.itemConfig?.padding ??
-          const EdgeInsets.all(6);
-      final totalWidth =
-          textPainter.width + padding.horizontal + 2; // +2 for border
-
-      if (totalWidth > maxWidth) {
-        maxWidth = totalWidth;
-      }
-    }
-
-    return maxWidth;
   }
 
   @override

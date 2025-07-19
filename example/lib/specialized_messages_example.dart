@@ -223,6 +223,31 @@ class _SpecializedMessagesExampleState
         title: const Text('Specialized Messages Example'),
         backgroundColor: Colors.blue,
         foregroundColor: Colors.white,
+        actions: [
+          IconButton(
+            onPressed: () {
+              chatController.setReplySuggestionsDirection(Axis.vertical);
+              chatController.addReplySuggestions(
+                [
+                  const SuggestionItemData(
+                    id: "1",
+                    text: "Option 1",
+                  ),
+                  const SuggestionItemData(
+                    id: "2",
+                    text:
+                        "Very long text that should be wrapped in the suggestion list and should be aligned to the left and right",
+                  ),
+                  const SuggestionItemData(
+                    id: "3",
+                    text: "Option 3",
+                  )
+                ],
+              );
+            },
+            icon: const Icon(Icons.chair),
+          ),
+        ],
       ),
       body: ChatView(
         chatController: chatController,

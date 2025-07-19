@@ -51,7 +51,7 @@ class ChatController {
       ValueNotifier([]);
 
   final ValueNotifier<Axis> _replySuggestionsDirection =
-      ValueNotifier(Axis.horizontal);
+      ValueNotifier(Axis.vertical);
 
   /// newSuggestions as [ValueNotifier] for [SuggestionList] widget's [ValueListenableBuilder].
   ///  Use this to listen when suggestion gets added
