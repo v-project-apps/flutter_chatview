@@ -11,4 +11,6 @@ enum AttachmentSource {
   poll,
   quiz,
   question,
+  dailyReport,
+  dailyReportStatistics,
 }

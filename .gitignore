@@ -25,3 +25,6 @@ example/android/app/.cxx
 .flutter-plugins
 /.flutter-plugins-dependencies
 chat_ui.iml
+
+# FVM Version Cache
+.fvm/

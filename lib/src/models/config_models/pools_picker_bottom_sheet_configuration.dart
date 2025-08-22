@@ -10,6 +10,8 @@ class PoolsPickerBottomSheetConfiguration {
     this.enablePollCreation = true,
     this.enableQuizCreation = true,
     this.enableQuestionCreation = true,
+    this.enableDailyReportCreation = true,
+    this.enableDailyReportStatisticsCreation = true,
   });
 
   /// Used for giving padding of bottom sheet.
@@ -31,6 +33,12 @@ class PoolsPickerBottomSheetConfiguration {
 
   /// Enable/disable send question. Enabled by default.
   final bool enableQuestionCreation;
+
+  /// Enable/disable send daily report. Enabled by default.
+  final bool enableDailyReportCreation;
+
+  /// Enable/disable send daily report statistics. Enabled by default.
+  final bool enableDailyReportStatisticsCreation;
 
   /// Used for giving background color of bottom sheet.
   final Color? backgroundColor;

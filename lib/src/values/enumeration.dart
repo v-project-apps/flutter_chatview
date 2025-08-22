@@ -26,109 +26,121 @@ import 'package:chatview/src/values/attachment_source.dart';
 import 'package:flutter/material.dart';
 
 enum MessageType {
+  text,
   image,
   imageFromUrl,
   gif,
   video,
   videoFromUrl,
+  audio,
   file,
-  text,
+  custom,
   voice,
   system,
-  custom,
   voting,
   quiz,
-  question;
+  question,
+  dailyReport,
+  dailyReportStatistics;
 
   String get textName {
     switch (this) {
-      case image:
-      case imageFromUrl:
-        return 'image';
-      case gif:
-        return 'gif';
-      case video:
-      case videoFromUrl:
-        return 'video';
-      case file:
-        return 'file';
-      case text:
+      case MessageType.text:
         return 'text';
-      case voice:
+      case MessageType.image:
+        return 'image';
+      case MessageType.imageFromUrl:
+        return 'imageFromUrl';
+      case MessageType.gif:
+        return 'gif';
+      case MessageType.video:
+        return 'video';
+      case MessageType.videoFromUrl:
+        return 'videoFromUrl';
+      case MessageType.audio:
+        return 'audio';
+      case MessageType.file:
+        return 'file';
+      case MessageType.custom:
+        return 'custom';
+      case MessageType.voice:
         return 'voice';
-      case system:
+      case MessageType.system:
         return 'system';
-      case custom:
-        return 'message';
-      case voting:
+      case MessageType.voting:
         return 'voting';
-      case quiz:
+      case MessageType.quiz:
         return 'quiz';
-      case question:
+      case MessageType.question:
         return 'question';
+      case MessageType.dailyReport:
+        return 'dailyReport';
+      case MessageType.dailyReportStatistics:
+        return 'dailyReportStatistics';
     }
   }
 
-  bool get isImage => this == image || this == imageFromUrl || this == gif;
-  bool get isVideo => this == video || this == videoFromUrl;
-  bool get isText => this == text;
-  bool get isFile => this == file;
-  bool get isVoice => this == voice;
-  bool get isSystem => this == system;
-  bool get isCustom => this == custom;
   bool get isVoting => this == voting;
   bool get isQuiz => this == quiz;
   bool get isQuestion => this == question;
+  bool get isDailyReport => this == dailyReport;
+  bool get isDailyReportStatistics => this == dailyReportStatistics;
 
   static MessageType? tryParse(String? value) {
-    final type = value?.trim();
-    if (type?.isEmpty ?? true) return null;
-    if (type == image.name) {
-      return image;
-    } else if (type == imageFromUrl.name) {
-      return imageFromUrl;
-    } else if (type == gif.name) {
-      return gif;
-    } else if (type == text.name) {
-      return text;
-    } else if (type == voice.name) {
-      return voice;
-    } else if (type == video.name) {
-      return video;
-    } else if (type == videoFromUrl.name) {
-      return videoFromUrl;
-    } else if (type == file.name) {
-      return file;
-    } else if (type == system.name) {
-      return system;
-    } else if (type == custom.name) {
-      return custom;
-    } else if (type == voting.name) {
-      return voting;
-    } else if (type == quiz.name) {
-      return quiz;
-    } else if (type == question.name) {
-      return question;
+    if (value == null) return null;
+    switch (value) {
+      case 'text':
+        return MessageType.text;
+      case 'image':
+        return MessageType.image;
+      case 'imageFromUrl':
+        return MessageType.imageFromUrl;
+      case 'gif':
+        return MessageType.gif;
+      case 'video':
+        return MessageType.video;
+      case 'videoFromUrl':
+        return MessageType.videoFromUrl;
+      case 'audio':
+        return MessageType.audio;
+      case 'file':
+        return MessageType.file;
+      case 'custom':
+        return MessageType.custom;
+      case 'voice':
+        return MessageType.voice;
+      case 'system':
+        return MessageType.system;
+      case 'voting':
+        return MessageType.voting;
+      case 'quiz':
+        return MessageType.quiz;
+      case 'question':
+        return MessageType.question;
+      case 'dailyReport':
+        return MessageType.dailyReport;
+      case 'dailyReportStatistics':
+        return MessageType.dailyReportStatistics;
+      default:
+        return null;
     }
-    return null;
   }
 
   static MessageType fromAttachmentSource(AttachmentSource source) {
     switch (source) {
       case AttachmentSource.camera:
-        return MessageType.image;
       case AttachmentSource.gallery:
         return MessageType.image;
       case AttachmentSource.imageFromUrl:
         return MessageType.imageFromUrl;
       case AttachmentSource.gif:
         return MessageType.gif;
-      case AttachmentSource.file:
-        return MessageType.file;
       case AttachmentSource.video:
         return MessageType.video;
       case AttachmentSource.videoFromUrl:
         return MessageType.videoFromUrl;
+      case AttachmentSource.file:
+        return MessageType.file;
       case AttachmentSource.audioFromFile:
       case AttachmentSource.audioFromUrl:
         return MessageType.voice;
@@ -138,6 +150,10 @@ enum MessageType {
         return MessageType.quiz;
       case AttachmentSource.question:
         return MessageType.question;
+      case AttachmentSource.dailyReport:
+        return MessageType.dailyReport;
+      case AttachmentSource.dailyReportStatistics:
+        return MessageType.dailyReportStatistics;
     }
   }
 }

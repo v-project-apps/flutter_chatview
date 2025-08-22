@@ -42,11 +42,33 @@ class PoolsPickerBottomSheet {
                 if (poolsPickerBottomSheetConfig?.enableQuestionCreation ??
                     true)
                   ListTile(
-                    leading: const Icon(Icons.help_outline),
+                    leading: const Icon(Icons.help),
                     title: const Text('Ask a question'),
                     onTap: () {
                       Navigator.pop(context);
                       attachmentSourceCallback(AttachmentSource.question);
+                    },
+                  ),
+                if (poolsPickerBottomSheetConfig?.enableDailyReportCreation ??
+                    true)
+                  ListTile(
+                    leading: const Icon(Icons.checklist),
+                    title: const Text('Daily Report'),
+                    onTap: () {
+                      Navigator.pop(context);
+                      attachmentSourceCallback(AttachmentSource.dailyReport);
+                    },
+                  ),
+                if (poolsPickerBottomSheetConfig
+                        ?.enableDailyReportStatisticsCreation ??
+                    true)
+                  ListTile(
+                    leading: const Icon(Icons.checklist),
+                    title: const Text('Daily Report Statistics'),
+                    onTap: () {
+                      Navigator.pop(context);
+                      attachmentSourceCallback(
+                          AttachmentSource.dailyReportStatistics);
                     },
                   ),
               ],

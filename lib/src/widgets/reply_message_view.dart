@@ -61,6 +61,22 @@ class ReplyMessageView extends StatelessWidget {
               ),
           ],
         ),
+      MessageType.audio => Row(
+          children: [
+            Icon(
+              Icons.audiotrack,
+              color: sendMessageConfig?.replyMessageColor,
+            ),
+            const SizedBox(width: 4),
+            Text(
+              'Audio',
+              style: TextStyle(
+                fontSize: 12,
+                color: sendMessageConfig?.replyMessageColor ?? Colors.black,
+              ),
+            ),
+          ],
+        ),
       MessageType.voting => Row(
           children: [
             Icon(
@@ -82,6 +98,38 @@ class ReplyMessageView extends StatelessWidget {
             Icon(
               Icons.question_answer,
               color: sendMessageConfig?.replyMessageColor,
+            ),
+          ],
+        ),
+      MessageType.dailyReport => Row(
+          children: [
+            Icon(
+              Icons.assessment,
+              color: sendMessageConfig?.replyMessageColor,
+            ),
+            const SizedBox(width: 4),
+            Text(
+              'Daily Report',
+              style: TextStyle(
+                fontSize: 12,
+                color: sendMessageConfig?.replyMessageColor ?? Colors.black,
+              ),
+            ),
+          ],
+        ),
+      MessageType.dailyReportStatistics => Row(
+          children: [
+            Icon(
+              Icons.assessment,
+              color: sendMessageConfig?.replyMessageColor,
+            ),
+            const SizedBox(width: 4),
+            Text(
+              'Daily Report Statistics',
+              style: TextStyle(
+                fontSize: 12,
+                color: sendMessageConfig?.replyMessageColor ?? Colors.black,
+              ),
             ),
           ],
         ),

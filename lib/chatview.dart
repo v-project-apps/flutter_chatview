@@ -56,3 +56,7 @@ export 'src/widgets/image_message_view.dart';
 export 'src/models/config_models/voting_message_configuration.dart';
 export 'src/models/config_models/quiz_message_configuration.dart';
 export 'src/models/config_models/question_message_configuration.dart';
+export 'src/models/config_models/daily_report_message_configuration.dart';
+export 'src/models/config_models/daily_report_statistics_message_configuration.dart';
+export 'src/models/data_models/daily_report_message.dart';
+export 'src/models/data_models/daily_report_statistics_message.dart';

@@ -145,6 +145,213 @@ class _SpecializedMessagesExampleState
         sentBy: "user3",
         createdAt: DateTime.now().subtract(const Duration(minutes: 10)),
       ),
+      Message(
+        id: '4',
+        message: jsonEncode(const QuestionMessage(
+          prompt: 'What is your favorite programming language?',
+          submissions: [],
+        ).toJson()),
+        messageType: MessageType.question,
+        sentBy: 'user1',
+        createdAt: DateTime.now().subtract(const Duration(minutes: 2)),
+      ),
+      Message(
+        id: '5',
+        message: jsonEncode(DailyReportMessage(
+          checkboxes: [
+            const DailyReportCheckbox(text: 'Complete morning tasks', id: '1'),
+            const DailyReportCheckbox(text: 'Send daily report', id: '2'),
+            const DailyReportCheckbox(text: 'Review pending items', id: '3'),
+          ],
+          userData: [
+            UserDailyReportData(
+              userId: 'user1',
+              dailyIncome: '1200',
+              packagesSent: '15',
+              additionalComments: 'Good progress today',
+              selectedCheckboxes: {'1': true, '2': true, '3': false},
+              isSubmitted: true,
+              submittedAt: DateTime.now().subtract(const Duration(hours: 2)),
+            ),
+            UserDailyReportData(
+              userId: 'user2',
+              dailyIncome: '800',
+              packagesSent: '12',
+              additionalComments: 'Standard day',
+              selectedCheckboxes: {'1': true, '2': false, '3': true},
+              isSubmitted: true,
+              submittedAt: DateTime.now().subtract(const Duration(hours: 1)),
+            ),
+            const UserDailyReportData(
+              userId: 'user3',
+              dailyIncome: '',
+              packagesSent: '',
+              additionalComments: null,
+              selectedCheckboxes: {},
+              isSubmitted: false,
+              submittedAt: null,
+            ),
+          ],
+          customTitle: 'Morning Tasks Report',
+          customSectionText: 'Tasks to Complete:',
+          maxCompletionTime: DateTime.now().add(
+              const Duration(hours: 2)), // Set to 2 hours from now for testing
+        ).toJson()),
+        messageType: MessageType.dailyReport,
+        sentBy: 'user1',
+        createdAt: DateTime.now().subtract(const Duration(minutes: 45)),
+      ),
+      Message(
+        id: '6',
+        message: jsonEncode(DailyReportStatisticsMessage(
+          userStatistics: [
+            UserDailyReportStatistics(
+              userId: 'user1',
+              dailyStats: [
+                DailyReportDayStats(
+                  date: DateTime.now().subtract(const Duration(days: 4)),
+                  dailyIncome: '1000',
+                  packagesSent: '10',
+                  completedTasks: 5,
+                  totalTasks: 7,
+                ),
+                DailyReportDayStats(
+                  date: DateTime.now().subtract(const Duration(days: 3)),
+                  dailyIncome: '500',
+                  packagesSent: '7',
+                  completedTasks: 6,
+                  totalTasks: 10,
+                ),
+                DailyReportDayStats(
+                  date: DateTime.now().subtract(const Duration(days: 2)),
+                  dailyIncome: '800',
+                  packagesSent: '12',
+                  completedTasks: 8,
+                  totalTasks: 8,
+                ),
+                DailyReportDayStats(
+                  date: DateTime.now().subtract(const Duration(days: 1)),
+                  dailyIncome: '1200',
+                  packagesSent: '15',
+                  completedTasks: 9,
+                  totalTasks: 10,
+                ),
+                DailyReportDayStats(
+                  date: DateTime.now(),
+                  dailyIncome: '900',
+                  packagesSent: '11',
+                  completedTasks: 7,
+                  totalTasks: 9,
+                ),
+              ],
+              summaryStats: const DailyReportSummaryStats(
+                totalIncome: '4400',
+                totalPackages: '55',
+                totalCompletedTasks: 35,
+                totalTasks: 44,
+              ),
+            ),
+            UserDailyReportStatistics(
+              userId: 'user2',
+              dailyStats: [
+                DailyReportDayStats(
+                  date: DateTime.now().subtract(const Duration(days: 4)),
+                  dailyIncome: '800',
+                  packagesSent: '8',
+                  completedTasks: 4,
+                  totalTasks: 6,
+                ),
+                DailyReportDayStats(
+                  date: DateTime.now().subtract(const Duration(days: 3)),
+                  dailyIncome: '600',
+                  packagesSent: '6',
+                  completedTasks: 5,
+                  totalTasks: 8,
+                ),
+                DailyReportDayStats(
+                  date: DateTime.now().subtract(const Duration(days: 2)),
+                  dailyIncome: '700',
+                  packagesSent: '9',
+                  completedTasks: 6,
+                  totalTasks: 7,
+                ),
+                DailyReportDayStats(
+                  date: DateTime.now().subtract(const Duration(days: 1)),
+                  dailyIncome: '900',
+                  packagesSent: '11',
+                  completedTasks: 7,
+                  totalTasks: 9,
+                ),
+                DailyReportDayStats(
+                  date: DateTime.now(),
+                  dailyIncome: '750',
+                  packagesSent: '8',
+                  completedTasks: 5,
+                  totalTasks: 8,
+                ),
+              ],
+              summaryStats: const DailyReportSummaryStats(
+                totalIncome: '3750',
+                totalPackages: '42',
+                totalCompletedTasks: 27,
+                totalTasks: 38,
+              ),
+            ),
+            UserDailyReportStatistics(
+              userId: 'user3',
+              dailyStats: [
+                DailyReportDayStats(
+                  date: DateTime.now().subtract(const Duration(days: 4)),
+                  dailyIncome: '1200',
+                  packagesSent: '12',
+                  completedTasks: 6,
+                  totalTasks: 8,
+                ),
+                DailyReportDayStats(
+                  date: DateTime.now().subtract(const Duration(days: 3)),
+                  dailyIncome: '1100',
+                  packagesSent: '10',
+                  completedTasks: 7,
+                  totalTasks: 9,
+                ),
+                DailyReportDayStats(
+                  date: DateTime.now().subtract(const Duration(days: 2)),
+                  dailyIncome: '1300',
+                  packagesSent: '14',
+                  completedTasks: 8,
+                  totalTasks: 10,
+                ),
+                DailyReportDayStats(
+                  date: DateTime.now().subtract(const Duration(days: 1)),
+                  dailyIncome: '1400',
+                  packagesSent: '16',
+                  completedTasks: 9,
+                  totalTasks: 11,
+                ),
+                DailyReportDayStats(
+                  date: DateTime.now(),
+                  dailyIncome: '1250',
+                  packagesSent: '13',
+                  completedTasks: 8,
+                  totalTasks: 10,
+                ),
+              ],
+              summaryStats: const DailyReportSummaryStats(
+                totalIncome: '6250',
+                totalPackages: '65',
+                totalCompletedTasks: 38,
+                totalTasks: 48,
+              ),
+            ),
+          ],
+          customTitle: 'Weekly Performance Report',
+          customSubtitle: 'Statistics for all team members',
+          generatedAt: DateTime.now(),
+        ).toJson()),
+        messageType: MessageType.dailyReportStatistics,
+        sentBy: 'user1',
+        createdAt: DateTime.now().subtract(const Duration(minutes: 30)),
+      ),
     ]);
 
     // Set up chat controller
@@ -252,6 +459,10 @@ class _SpecializedMessagesExampleState
       body: ChatView(
         chatController: chatController,
         chatViewState: ChatViewState.hasMessages,
+        pinnedMessageConfiguration: const PinnedMessageConfiguration(
+          allowPinMessage: true,
+          allowRemoveMessage: true,
+        ),
         messageConfig: MessageConfiguration(
           // Configuration for voting messages
           votingMessageConfig: VotingMessageConfiguration(
@@ -341,6 +552,7 @@ class _SpecializedMessagesExampleState
               );
             },
           ),
+
           // Configuration for question messages
           questionMessageConfig: QuestionMessageConfiguration(
             backgroundColor: Colors.purple[50],
@@ -387,6 +599,93 @@ class _SpecializedMessagesExampleState
               );
             },
           ),
+          dailyReportMessageConfig: DailyReportMessageConfiguration(
+            backgroundColor: Colors.teal[50],
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: Colors.teal[200]!, width: 2),
+            maxWidth: 350,
+            iconColor: Colors.teal[800],
+            titleTextStyle: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+              color: Colors.teal[900],
+            ),
+            sectionTitleTextStyle: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.w600,
+              color: Colors.teal[800],
+            ),
+            fieldBackgroundColor: Colors.white,
+            submitButtonText: 'Submit Report',
+            onReportSubmitted: ({
+              required String messageId,
+              required UserDailyReportData userDailyReportData,
+            }) {
+              _handleDailyReport(messageId, userDailyReportData);
+            },
+          ),
+          dailyReportStatisticsMessageConfig:
+              DailyReportStatisticsMessageConfiguration(
+            backgroundColor: Colors.indigo[50],
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: Colors.indigo[200]!, width: 2),
+            maxWidth: 400,
+            headerBackgroundColor: Colors.indigo[100],
+            headerIconColor: Colors.indigo[700],
+            headerTitleTextStyle: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+              color: Colors.indigo[900],
+            ),
+            headerSubtitleTextStyle: TextStyle(
+              fontSize: 14,
+              color: Colors.indigo[700],
+            ),
+            dayStatsBackgroundColor: Colors.white,
+            dayStatsBorderRadius: BorderRadius.circular(12),
+            dayStatsBorder: Border.all(color: Colors.indigo[100]!),
+            dayStatsTitleTextStyle: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.w600,
+              color: Colors.indigo[800],
+            ),
+            dayStatsValueTextStyle: TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w500,
+              color: Colors.indigo[700],
+            ),
+            dayStatsLabelTextStyle: TextStyle(
+              fontSize: 12,
+              color: Colors.indigo[600],
+            ),
+            summaryBackgroundColor: Colors.green[50],
+            summaryBorderRadius: BorderRadius.circular(12),
+            summaryBorder: Border.all(color: Colors.green[200]!),
+            summaryTitleTextStyle: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.w600,
+              color: Colors.green[800],
+            ),
+            summaryValueTextStyle: TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w600,
+              color: Colors.green[700],
+            ),
+            summaryLabelTextStyle: TextStyle(
+              fontSize: 12,
+              color: Colors.green[600],
+            ),
+            taskCompletionColor: Colors.green[600],
+            taskIncompleteColor: Colors.orange[600],
+            taskCompletionTextStyle: const TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.w500,
+            ),
+            onStatsTapped: () {},
+          ),
+          // Current user ID for filtering user-specific data
+          currentUserId: 'user1', // This will show statistics for user1
+          // Change to 'user2' to see user2's statistics, or 'user3' for user3's statistics
         ),
         sendMessageConfig: const SendMessageConfiguration(
           // Enable attachment picker with specialized message options
@@ -527,6 +826,68 @@ class _SpecializedMessagesExampleState
       SnackBar(
         content: Text('Answer submitted: ${submission.userQuestion}'),
         backgroundColor: Colors.orange,
+        duration: const Duration(seconds: 2),
+      ),
+    );
+  }
+
+  void _handleDailyReport(
+    String messageId,
+    UserDailyReportData userDailyReportData,
+  ) {
+    // Parse the daily report message
+    final data = jsonDecode(messages
+        .firstWhere((m) => m.messageType == MessageType.dailyReport)
+        .message);
+    final dailyReportMessage = DailyReportMessage.fromJson(data);
+
+    // Create or update the current user's data
+    final currentUserId = chatController.currentUser.id;
+    final existingUserData = dailyReportMessage.getUserData(currentUserId);
+
+    final newUserData = UserDailyReportData(
+      userId: currentUserId,
+      dailyIncome: userDailyReportData.dailyIncome,
+      packagesSent: userDailyReportData.packagesSent,
+      additionalComments: userDailyReportData.additionalComments,
+      selectedCheckboxes: userDailyReportData.selectedCheckboxes,
+      isSubmitted: true,
+      submittedAt: DateTime.now(),
+    );
+
+    // Update the daily report message with the new user data
+    List<UserDailyReportData> updatedUserData;
+    if (existingUserData != null) {
+      // Update existing user data
+      updatedUserData = dailyReportMessage.userData.map((data) {
+        if (data.userId == currentUserId) {
+          return newUserData;
+        }
+        return data;
+      }).toList();
+    } else {
+      // Add new user data
+      updatedUserData = [...dailyReportMessage.userData, newUserData];
+    }
+
+    final updatedDailyReportMessage = dailyReportMessage.copyWith(
+      userData: updatedUserData,
+    );
+
+    // Update the message
+    final updatedMessage = messages
+        .firstWhere((m) => m.messageType == MessageType.dailyReport)
+        .copyWith(
+          message: jsonEncode(updatedDailyReportMessage.toJson()),
+        );
+
+    chatController.replaceMessage(updatedMessage);
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content:
+            Text('Daily report submitted: ${userDailyReportData.toJson()}'),
+        backgroundColor: Colors.teal,
         duration: const Duration(seconds: 2),
       ),
     );

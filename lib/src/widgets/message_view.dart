@@ -31,6 +31,8 @@ import '../utils/constants/constants.dart';
 import 'text_message_view.dart';
 import 'reaction_widget.dart';
 import 'voice_message_view.dart';
+import 'daily_report_message_view.dart';
+import 'daily_report_statistics_message_view.dart';
 
 class MessageView extends StatefulWidget {
   const MessageView({
@@ -322,6 +324,27 @@ class _MessageViewState extends State<MessageView>
                     messageReactionConfig: messageConfig?.messageReactionConfig,
                     questionMessageConfiguration:
                         messageConfig?.questionMessageConfig,
+                  );
+                } else if (widget.message.messageType.isDailyReport) {
+                  return DailyReportMessageView(
+                    message: widget.message,
+                    isMessageBySender: widget.isMessageBySender,
+                    inComingChatBubbleConfig: widget.inComingChatBubbleConfig,
+                    outgoingChatBubbleConfig: widget.outgoingChatBubbleConfig,
+                    chatBubbleMaxWidth: widget.chatBubbleMaxWidth,
+                    messageReactionConfig: messageConfig?.messageReactionConfig,
+                    dailyReportMessageConfiguration:
+                        messageConfig?.dailyReportMessageConfig,
+                  );
+                } else if (widget.message.messageType.isDailyReportStatistics) {
+                  return DailyReportStatisticsMessageView(
+                    message: widget.message,
+                    isMessageBySender: widget.isMessageBySender,
+                    inComingChatBubbleConfig: widget.inComingChatBubbleConfig,
+                    outgoingChatBubbleConfig: widget.outgoingChatBubbleConfig,
+                    chatBubbleMaxWidth: widget.chatBubbleMaxWidth,
+                    dailyReportStatisticsMessageConfiguration:
+                        messageConfig?.dailyReportStatisticsMessageConfig,
                   );
                 }
               }()) ??

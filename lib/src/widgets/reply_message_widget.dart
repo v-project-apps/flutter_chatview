@@ -193,6 +193,40 @@ class ReplyMessageWidget extends StatelessWidget {
           ],
         );
 
+      case MessageType.dailyReport:
+        return Text(
+          'Daily Report',
+          style: TextStyle(
+            color: Colors.grey[600],
+            fontSize: 12,
+          ),
+        );
+      case MessageType.dailyReportStatistics:
+        return Text(
+          'Daily Report Statistics',
+          style: TextStyle(
+            color: Colors.grey[600],
+            fontSize: 12,
+          ),
+        );
+
+      case MessageType.audio:
+        return Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              Icons.audiotrack,
+              color: repliedMessageConfig?.micIconColor ?? Colors.white,
+            ),
+            const SizedBox(width: 4),
+            Text(
+              "Audio",
+              style: repliedMessageConfig?.textStyle ??
+                  textTheme.bodyMedium!.copyWith(color: Colors.white),
+            ),
+          ],
+        );
+
       case MessageType.voice:
         return Row(
           mainAxisSize: MainAxisSize.min,

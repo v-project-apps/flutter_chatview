@@ -35,6 +35,7 @@ import 'package:chatview/src/widgets/video_url_picker_dialog.dart';
 import 'package:chatview/src/widgets/poll_creation_form.dart';
 import 'package:chatview/src/widgets/quiz_creation_form.dart';
 import 'package:chatview/src/widgets/question_creation_form.dart';
+import 'package:chatview/src/widgets/daily_report_creation_form.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -661,6 +662,12 @@ class _ChatUITextFieldState extends State<ChatUITextField> {
       case AttachmentSource.question:
         _onQuestionCreation();
         break;
+      case AttachmentSource.dailyReport:
+        _onDailyReportCreation();
+        break;
+      case AttachmentSource.dailyReportStatistics:
+        _onDailyReportStatisticsCreation();
+        break;
     }
   }
 
@@ -951,6 +958,44 @@ class _ChatUITextFieldState extends State<ChatUITextField> {
         theme: Theme.of(context),
       ),
     );
+  }
+
+  void _onDailyReportCreation() {
+    showDialog(
+      context: context,
+      builder: (context) => DailyReportCreationForm(
+        onDailyReportCreated: (dailyReportMessage) {
+          // Check if widget is still mounted before accessing context
+          if (mounted) {
+            // Create a message with the daily report data as JSON
+            final message = Message(
+              id: DateTime.now().millisecondsSinceEpoch.toString(),
+              message: jsonEncode(dailyReportMessage.toJson()),
+              messageType: MessageType.dailyReport,
+              sentBy: chatViewIW?.chatController.currentUser.id ?? '',
+              createdAt: DateTime.now(),
+            );
+            widget.onSendMessage(message);
+            Navigator.of(context).pop();
+          }
+        },
+        theme: Theme.of(context),
+      ),
+    );
+  }
+
+  void _onDailyReportStatisticsCreation() {
+    if (mounted) {
+      // Create a message with the daily report statistics data as JSON
+      final message = Message(
+        id: DateTime.now().millisecondsSinceEpoch.toString(),
+        message: "",
+        messageType: MessageType.dailyReportStatistics,
+        sentBy: chatViewIW?.chatController.currentUser.id ?? '',
+        createdAt: DateTime.now(),
+      );
+      widget.onSendMessage(message);
+    }
   }
 
   void _onChanged(String inputText) {

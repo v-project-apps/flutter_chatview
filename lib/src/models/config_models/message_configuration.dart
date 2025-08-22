@@ -19,12 +19,10 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import 'package:chatview/src/models/config_models/file_message_configuration.dart';
-import 'package:chatview/src/models/config_models/video_message_configuration.dart';
-import 'package:chatview/src/models/models.dart';
 import 'package:flutter/material.dart';
 
 import '../../values/typedefs.dart';
+import '../models.dart';
 
 class MessageConfiguration {
   /// Provides configuration of image message appearance.
@@ -48,6 +46,11 @@ class MessageConfiguration {
   /// Provides configuration for question messages.
   final QuestionMessageConfiguration? questionMessageConfig;
 
+  /// Provides configuration for daily report messages.
+  final DailyReportMessageConfiguration? dailyReportMessageConfig;
+  final DailyReportStatisticsMessageConfiguration?
+      dailyReportStatisticsMessageConfig;
+
   /// Configurations for voice message bubble
   final VoiceMessageConfiguration? voiceMessageConfig;
 
@@ -60,6 +63,9 @@ class MessageConfiguration {
   /// To customize reply view for custom message type
   final CustomMessageReplyViewBuilder? customMessageReplyViewBuilder;
 
+  /// Current user ID for filtering user-specific data in statistics messages
+  final String? currentUserId;
+
   const MessageConfiguration({
     this.imageMessageConfig,
     this.messageReactionConfig,
@@ -68,9 +74,12 @@ class MessageConfiguration {
     this.votingMessageConfig,
     this.quizMessageConfig,
     this.questionMessageConfig,
+    this.dailyReportMessageConfig,
+    this.dailyReportStatisticsMessageConfig,
     this.voiceMessageConfig,
     this.customMessageReplyViewBuilder,
     this.videoMessageConfig,
     this.fileMessageConfig,
+    this.currentUserId,
   });
 }

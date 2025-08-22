@@ -21,7 +21,6 @@
  */
 
 import 'package:chatview/src/controller/file_controller.dart';
-import 'package:chatview/src/models/config_models/file_message_configuration.dart';
 import 'package:chatview/src/models/models.dart';
 import 'package:chatview/src/widgets/chat_view_inherited_widget.dart';
 import 'package:chatview/src/widgets/horizontal_user_avatars.dart';
