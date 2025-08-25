@@ -69,11 +69,12 @@ class VideoMessageView extends StatefulWidget {
 
 class _VideoMessageViewState extends State<VideoMessageView> {
   String get videoPath =>
-      widget.message.attachment?.url ??
-      widget.message.attachment?.file?.path ??
+      widget.message.attachments?.first.url ??
+      widget.message.attachments?.first.file?.path ??
       "";
 
-  String get thumbnailUrl => widget.message.attachment?.thumbnailUrl ?? "";
+  String get thumbnailUrl =>
+      widget.message.attachments?.first.thumbnailUrl ?? "";
 
   Widget get iconButton => ShareIcon(
         shareIconConfig: widget.videoMessageConfiguration?.shareIconConfig,

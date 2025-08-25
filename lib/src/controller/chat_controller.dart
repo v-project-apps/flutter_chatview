@@ -223,7 +223,7 @@ class ChatController {
         replyMessage: message.replyMessage,
         reactions: message.reactions,
         messageType: message.messageType,
-        attachment: message.attachment,
+        attachments: message.attachments,
         voiceMessageDuration: message.voiceMessageDuration,
         isPinned: message.isPinned,
         status: message.status,

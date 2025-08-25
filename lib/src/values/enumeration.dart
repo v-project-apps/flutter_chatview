@@ -41,7 +41,9 @@ enum MessageType {
   quiz,
   question,
   dailyReport,
-  dailyReportStatistics;
+  dailyReportStatistics,
+  imageWithText,
+  imageCarousel;
 
   String get textName {
     switch (this) {
@@ -77,6 +79,10 @@ enum MessageType {
         return 'dailyReport';
       case MessageType.dailyReportStatistics:
         return 'dailyReportStatistics';
+      case MessageType.imageWithText:
+        return 'imageWithText';
+      case MessageType.imageCarousel:
+        return 'imageCarousel';
     }
   }
 
@@ -121,6 +127,10 @@ enum MessageType {
         return MessageType.dailyReport;
       case 'dailyReportStatistics':
         return MessageType.dailyReportStatistics;
+      case 'imageWithText':
+        return MessageType.imageWithText;
+      case 'imageCarousel':
+        return MessageType.imageCarousel;
       default:
         return null;
     }
@@ -154,6 +164,10 @@ enum MessageType {
         return MessageType.dailyReport;
       case AttachmentSource.dailyReportStatistics:
         return MessageType.dailyReportStatistics;
+      case AttachmentSource.imageWithText:
+        return MessageType.imageWithText;
+      case AttachmentSource.imageCarousel:
+        return MessageType.imageCarousel;
     }
   }
 }

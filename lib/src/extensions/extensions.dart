@@ -81,7 +81,18 @@ extension ValidateString on String {
     return true;
   }
 
-  bool get isUrl => Uri.tryParse(this)?.isAbsolute ?? false;
+  bool get isUrl {
+    final uri = Uri.tryParse(this);
+
+    if (uri != null &&
+        (uri.scheme == 'http' || uri.scheme == 'https') &&
+        uri.hasAuthority) {
+      return true;
+    }
+
+    final regex = RegExp(r'^[\w-]+(\.[\w-]+)+$');
+    return regex.hasMatch(this);
+  }
 
   Widget getUserProfilePicture({
     required ChatUser? Function(String) getChatUser,

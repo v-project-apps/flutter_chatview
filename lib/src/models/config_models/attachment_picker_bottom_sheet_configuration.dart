@@ -15,6 +15,8 @@ class AttachmentPickerBottomSheetConfiguration {
     this.enableImageFromUrlPicker = true,
     this.enableAudioFromFilePicker = true,
     this.enableAudioFromUrlPicker = true,
+    this.enableImageWithTextPicker = true,
+    this.enableImageCarouselPicker = true,
   });
 
   /// Used for giving padding of bottom sheet.
@@ -54,4 +56,10 @@ class AttachmentPickerBottomSheetConfiguration {
 
   /// Used for giving background color of bottom sheet.
   final Color? backgroundColor;
+
+  /// Enable/disable image with text picker. Enabled by default.
+  final bool enableImageWithTextPicker;
+
+  /// Enable/disable image carousel picker. Enabled by default.
+  final bool enableImageCarouselPicker;
 }

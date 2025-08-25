@@ -61,3 +61,5 @@ export 'config_models/quiz_message_configuration.dart';
 export 'config_models/question_message_configuration.dart';
 export 'config_models/video_message_configuration.dart';
 export 'config_models/file_message_configuration.dart';
+export 'config_models/image_with_text_message_configuration.dart';
+export 'config_models/image_carousel_message_configuration.dart';

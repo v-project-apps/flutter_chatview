@@ -35,7 +35,7 @@ class ReplyMessage {
   final MessageType messageType;
 
   /// Provides attachment of message.
-  final Attachment? attachment;
+  final List<Attachment>? attachments;
 
   /// Provides list of mentions in message.
   final List<dynamic>? mentions;
@@ -53,7 +53,7 @@ class ReplyMessage {
     this.replyBy = '',
     this.messageType = MessageType.text,
     this.voiceMessageDuration,
-    this.attachment,
+    this.attachments,
     this.mentions,
   });
 
@@ -68,9 +68,10 @@ class ReplyMessage {
           microseconds:
               int.tryParse(json['voice_message_duration'].toString()) ?? 0,
         ),
-        attachment: json['attachment'] != null &&
-                json['attachment'] is Map<String, dynamic>
-            ? Attachment.fromJson(json['attachment'])
+        attachments: json['attachments'] != null &&
+                json['attachments'] is List<dynamic>
+            ? List<Attachment>.from(json['attachments']
+                .map((attachment) => Attachment.fromJson(attachment)))
             : null,
         mentions: json['mentions'] is List<dynamic>
             ? List<Map<String, String>>.from((json['mentions'] as List).map(
@@ -87,7 +88,7 @@ class ReplyMessage {
         'message_type': messageType.name,
         'id': messageId,
         'voice_message_duration': voiceMessageDuration?.inMicroseconds,
-        'attachment': attachment?.toJson(),
+        'attachments': attachments?.map((attachment) => attachment.toJson()).toList(),
         'mentions': mentions,
       };
 
@@ -99,7 +100,7 @@ class ReplyMessage {
     MessageType? messageType,
     Duration? voiceMessageDuration,
     bool forceNullValue = false,
-    Attachment? attachment,
+    List<Attachment>? attachments,
     List<dynamic>? mentions,
   }) {
     return ReplyMessage(
@@ -111,7 +112,7 @@ class ReplyMessage {
       voiceMessageDuration: forceNullValue
           ? voiceMessageDuration
           : voiceMessageDuration ?? this.voiceMessageDuration,
-      attachment: attachment ?? this.attachment,
+      attachments: attachments ?? this.attachments,
       mentions: mentions ?? this.mentions,
     );
   }

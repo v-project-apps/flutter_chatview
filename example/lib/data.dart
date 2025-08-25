@@ -127,10 +127,12 @@ class Data {
       createdAt: DateTime.now(),
       messageType: MessageType.image,
       sentBy: '1',
-      attachment: Attachment(
-          name: "image",
-          url: "https://miro.medium.com/max/1000/0*s7of7kWnf9fDg4XM.jpeg",
-          size: 0),
+      attachments: [
+        Attachment(
+            name: "image",
+            url: "https://miro.medium.com/max/1000/0*s7of7kWnf9fDg4XM.jpeg",
+            size: 0),
+      ],
       reactions: [Reaction(emoji: '\u{2764}', reactedUserId: '2')],
       status: MessageStatus.read,
       seenBy: ['2', '3', '4', '5', '6'],
@@ -189,11 +191,13 @@ class Data {
       createdAt: DateTime.now(),
       messageType: MessageType.image,
       sentBy: '1',
-      attachment: Attachment(
-          name: "image",
-          url:
-              "https://as2.ftcdn.net/v2/jpg/09/10/93/65/1000_F_910936564_QYSuokwKpGfd5U84U3JdlpwBj2dG1Pek.jpg",
-          size: 0),
+      attachments: [
+        Attachment(
+            name: "image",
+            url:
+                "https://as2.ftcdn.net/v2/jpg/09/10/93/65/1000_F_910936564_QYSuokwKpGfd5U84U3JdlpwBj2dG1Pek.jpg",
+            size: 0),
+      ],
       reactions: [Reaction(emoji: '\u{2764}', reactedUserId: '2')],
       status: MessageStatus.read,
       seenBy: ['2', '3', '4', '5', '6'],
@@ -205,11 +209,13 @@ class Data {
       createdAt: DateTime.now(),
       messageType: MessageType.image,
       sentBy: '1',
-      attachment: Attachment(
-          name: "image",
-          url:
-              "https://as2.ftcdn.net/v2/jpg/01/77/45/71/1000_F_177457140_LymBSZj98h3QRdl8ETxXM6Zq3QWbVc4g.jpg",
-          size: 0),
+      attachments: [
+        Attachment(
+            name: "image",
+            url:
+                "https://as2.ftcdn.net/v2/jpg/01/77/45/71/1000_F_177457140_LymBSZj98h3QRdl8ETxXM6Zq3QWbVc4g.jpg",
+            size: 0),
+      ],
       reactions: [Reaction(emoji: '\u{2764}', reactedUserId: '2')],
       status: MessageStatus.read,
       seenBy: ['2', '3', '4', '5', '6'],

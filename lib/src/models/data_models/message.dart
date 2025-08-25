@@ -49,7 +49,7 @@ class Message {
   final MessageType messageType;
 
   /// Provides attachment of message.
-  final Attachment? attachment;
+  final List<Attachment>? attachments;
 
   /// Status of the message.
   final ValueNotifier<MessageStatus> _status;
@@ -74,7 +74,7 @@ class Message {
     this.replyMessage = const ReplyMessage(),
     List<Reaction>? reactions,
     this.messageType = MessageType.text,
-    this.attachment,
+    this.attachments,
     this.voiceMessageDuration,
     this.seenBy,
     MessageStatus status = MessageStatus.pending,
@@ -113,10 +113,14 @@ class Message {
             : [],
         messageType: MessageType.tryParse(json['message_type']?.toString()) ??
             MessageType.text,
-        attachment: json['attachment'] != null &&
-                json['attachment'] is Map<String, dynamic>
-            ? Attachment.fromJson(json['attachment'])
-            : null,
+        attachments:
+            json['attachments'] != null && json['attachments'] is List<dynamic>
+                ? List<Attachment>.from(json['attachments']
+                    .map((attachment) => Attachment.fromJson(attachment)))
+                : json['attachment'] != null &&
+                        json['attachment'] is Map<String, dynamic>
+                    ? [Attachment.fromJson(json['attachment'])]
+                    : null,
         voiceMessageDuration: Duration(
           microseconds:
               int.tryParse(json['voice_message_duration'].toString()) ?? 0,
@@ -143,7 +147,8 @@ class Message {
         'reply_message': replyMessage.toJson(),
         'reactions': reactions.map((reaction) => reaction.toJson()).toList(),
         'message_type': messageType.name,
-        'attachment': attachment?.toJson(),
+        'attachments':
+            attachments?.map((attachment) => attachment.toJson()).toList(),
         'voice_message_duration': voiceMessageDuration?.inMicroseconds,
         'seen_by': seenBy,
         'status': status.name,
@@ -160,7 +165,7 @@ class Message {
     ReplyMessage? replyMessage,
     List<Reaction>? reactions,
     MessageType? messageType,
-    Attachment? attachment,
+    List<Attachment>? attachments,
     Duration? voiceMessageDuration,
     List<String>? seenBy,
     MessageStatus? status,
@@ -174,7 +179,7 @@ class Message {
       createdAt: createdAt ?? this.createdAt,
       sentBy: sentBy ?? this.sentBy,
       messageType: messageType ?? this.messageType,
-      attachment: attachment ?? this.attachment,
+      attachments: attachments ?? this.attachments,
       voiceMessageDuration: forceNullValue
           ? voiceMessageDuration
           : voiceMessageDuration ?? this.voiceMessageDuration,

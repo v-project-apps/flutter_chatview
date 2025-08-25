@@ -43,6 +43,7 @@ import 'package:flutter/services.dart';
 import 'package:giphy_get/giphy_get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:waveform_recorder/waveform_recorder.dart'; // new import for web recording
+import 'package:path/path.dart' as path;
 
 import '../../chatview.dart';
 import '../utils/debounce.dart';
@@ -668,7 +669,68 @@ class _ChatUITextFieldState extends State<ChatUITextField> {
       case AttachmentSource.dailyReportStatistics:
         _onDailyReportStatisticsCreation();
         break;
+      case AttachmentSource.imageWithText:
+        _onImageWithTextCreation();
+        break;
+      case AttachmentSource.imageCarousel:
+        _onImageCarouselCreation();
+        break;
     }
+  }
+
+  void _onImageWithTextCreation() {
+    showDialog(
+      context: context,
+      builder: (context) => ImageWithTextCreationDialog(
+        onSend: (imageFile, text) async {
+          // Check if widget is still mounted before accessing context
+          if (mounted) {
+            // Create a message with the image with text data
+            final message = Message(
+                id: DateTime.now().millisecondsSinceEpoch.toString(),
+                message: text,
+                messageType: MessageType.imageWithText,
+                sentBy: chatViewIW?.chatController.currentUser.id ?? '',
+                createdAt: DateTime.now(),
+                attachments: [
+                  Attachment(
+                    name: imageFile.name,
+                    url: "",
+                    fileBytes: await imageFile.readAsBytes(),
+                    size: (await imageFile.readAsBytes()).length.toDouble(),
+                    file: File(imageFile.path),
+                  ),
+                ]);
+            widget.onSendMessage(message);
+          }
+        },
+      ),
+    );
+  }
+
+  void _onImageCarouselCreation() {
+    showDialog(
+      context: context,
+      builder: (context) => ImageCarouselCreationDialog(
+        onSend: (images) async {
+          // Check if widget is still mounted before accessing context
+          if (mounted) {
+            List<Attachment> attachments = [];
+            for (var image in images) {
+              attachments.add(Attachment(
+                name: image.name,
+                url: "",
+                size: (await image.readAsBytes()).length.toDouble(),
+                file: File(image.path),
+                fileBytes: await image.readAsBytes(),
+              ));
+            }
+            widget.onAttachmentSelected(
+                attachments, AttachmentSource.imageCarousel, '');
+          }
+        },
+      ),
+    );
   }
 
   void _onGifPicked() async {
@@ -686,15 +748,14 @@ class _ChatUITextFieldState extends State<ChatUITextField> {
             350,
       );
       if (gif != null) {
-        widget.onAttachmentSelected(
-            Attachment(
-                name: gif.title ?? "",
-                url: gif.images?.original?.url ?? "",
-                size: 0,
-                file: null,
-                fileBytes: null),
-            AttachmentSource.gif,
-            "");
+        widget.onAttachmentSelected([
+          Attachment(
+              name: gif.title ?? "",
+              url: gif.images?.original?.url ?? "",
+              size: 0,
+              file: null,
+              fileBytes: null)
+        ], AttachmentSource.gif, "");
       }
     } catch (e) {
       debugPrint(e.toString());
@@ -734,11 +795,13 @@ class _ChatUITextFieldState extends State<ChatUITextField> {
       context: context,
       builder: (context) => AudioUrlPickerDialog(onPicked: (audioUrl) {
         widget.onAttachmentSelected(
-          Attachment(
-            name: audioUrl,
-            url: audioUrl,
-            size: 0,
-          ),
+          [
+            Attachment(
+              name: audioUrl,
+              url: audioUrl,
+              size: 0,
+            )
+          ],
           AttachmentSource.audioFromUrl,
           '',
         );
@@ -751,11 +814,13 @@ class _ChatUITextFieldState extends State<ChatUITextField> {
         context: context,
         builder: (context) => ImageUrlPickerDialog(onPicked: (imageUrl) {
               widget.onAttachmentSelected(
-                Attachment(
-                  name: imageUrl,
-                  url: imageUrl,
-                  size: 0,
-                ),
+                [
+                  Attachment(
+                    name: imageUrl,
+                    url: imageUrl,
+                    size: 0,
+                  )
+                ],
                 AttachmentSource.imageFromUrl,
                 '',
               );
@@ -768,13 +833,15 @@ class _ChatUITextFieldState extends State<ChatUITextField> {
         builder: (context) =>
             VideoUrlPickerDialog(onPicked: (videoUrl, thumbnailUrl) {
               widget.onAttachmentSelected(
-                Attachment(
-                  name: videoUrl,
-                  url: videoUrl,
-                  size: 0,
-                  thumbnailUrl:
-                      thumbnailUrl?.isNotEmpty ?? false ? thumbnailUrl : null,
-                ),
+                [
+                  Attachment(
+                    name: videoUrl,
+                    url: videoUrl,
+                    size: 0,
+                    thumbnailUrl:
+                        thumbnailUrl?.isNotEmpty ?? false ? thumbnailUrl : null,
+                  )
+                ],
                 AttachmentSource.videoFromUrl,
                 '',
               );
@@ -802,12 +869,14 @@ class _ChatUITextFieldState extends State<ChatUITextField> {
         }
 
         widget.onAttachmentSelected(
-            Attachment(
-                name: image.name,
-                url: imagePath,
-                size: (await image.length()).toDouble(),
-                file: File(imagePath),
-                fileBytes: await image.readAsBytes()),
+            [
+              Attachment(
+                  name: image.name,
+                  url: imagePath,
+                  size: (await image.length()).toDouble(),
+                  file: File(imagePath),
+                  fileBytes: await image.readAsBytes()),
+            ],
             imageSource == ImageSource.camera
                 ? AttachmentSource.camera
                 : AttachmentSource.gallery,
@@ -842,15 +911,14 @@ class _ChatUITextFieldState extends State<ChatUITextField> {
           String? updatedVideoPath = await config?.onVideoPicked!(videoPath);
           if (updatedVideoPath != null) videoPath = updatedVideoPath;
         }
-        widget.onAttachmentSelected(
-            Attachment(
-                name: video.name,
-                url: videoPath,
-                size: (await video.length()).toDouble(),
-                file: File(videoPath),
-                fileBytes: await video.readAsBytes()),
-            AttachmentSource.video,
-            '');
+        widget.onAttachmentSelected([
+          Attachment(
+              name: video.name,
+              url: videoPath,
+              size: (await video.length()).toDouble(),
+              file: File(videoPath),
+              fileBytes: await video.readAsBytes())
+        ], AttachmentSource.video, '');
       } else {
         throw Exception('Failed to select video');
       }
@@ -874,15 +942,14 @@ class _ChatUITextFieldState extends State<ChatUITextField> {
           String? updatedFilePath = await config?.onFilePicked!(filePath);
           if (updatedFilePath != null) filePath = updatedFilePath;
         }
-        widget.onAttachmentSelected(
-            Attachment(
-                name: file.name,
-                url: filePath,
-                size: (await file.readAsBytes()).length.toDouble(),
-                file: File(filePath),
-                fileBytes: await file.readAsBytes()),
-            AttachmentSource.file,
-            '');
+        widget.onAttachmentSelected([
+          Attachment(
+              name: file.name,
+              url: filePath,
+              size: (await file.readAsBytes()).length.toDouble(),
+              file: File(filePath),
+              fileBytes: await file.readAsBytes())
+        ], AttachmentSource.file, '');
       }
     } catch (e) {
       debugPrint(e.toString());

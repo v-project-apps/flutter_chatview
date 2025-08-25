@@ -63,7 +63,7 @@ class FileMessageView extends StatefulWidget {
   /// Allow user to set color of highlighted message.
   final Color? highlightColor;
 
-  String get fileUrl => message.attachment?.url ?? "";
+  String get fileUrl => message.attachments?.first.url ?? "";
 
   Widget get iconButton => ShareIcon(
         shareIconConfig: fileMessageConfiguration?.shareIconConfig,
@@ -144,12 +144,13 @@ class _FileMessageViewState extends State<FileMessageView> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                widget.message.attachment?.name ??
+                                widget.message.attachments?.first.name ??
                                     widget.message.message,
                                 overflow: TextOverflow.ellipsis,
                               ),
                               Text(
-                                widget.message.attachment?.sizeString ?? "",
+                                widget.message.attachments?.first.sizeString ??
+                                    "",
                                 style: const TextStyle(
                                   color: Colors.grey,
                                   fontSize: 12,
@@ -196,7 +197,8 @@ class _FileMessageViewState extends State<FileMessageView> {
 
   void _downloadAndOpenFile() async {
     if (kIsWeb) {
-      FileController.openFileForWeb(widget.message.attachment?.url ?? "");
+      FileController.openFileForWeb(
+          widget.message.attachments?.first.url ?? "");
       return;
     }
     setState(() {
@@ -204,7 +206,7 @@ class _FileMessageViewState extends State<FileMessageView> {
     });
 
     String filePath = await FileController.getLocalFilePath(
-      widget.message.attachment?.name ?? '',
+      widget.message.attachments?.first.name ?? '',
     );
 
     if (await FileController.isFileDownloaded(filePath)) {
@@ -212,7 +214,7 @@ class _FileMessageViewState extends State<FileMessageView> {
     } else {
       await FileController.downloadAndOpenFile(
         widget.fileUrl,
-        widget.message.attachment?.name ?? "",
+        widget.message.attachments?.first.name ?? "",
       );
     }
 

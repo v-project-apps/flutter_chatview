@@ -151,6 +151,10 @@ class _PinnedMessageWidgetState extends State<PinnedMessageWidget> {
         return 'Question - przejdź do odpowiedzi';
       case MessageType.dailyReportStatistics:
         return 'Statistics - przejdź do statystyk';
+      case MessageType.imageWithText:
+        return 'Image - ${widget.message.message}';
+      case MessageType.imageCarousel:
+        return 'Image Carousel';
       default:
         return 'Message';
     }
@@ -175,8 +179,8 @@ class _PinnedMessageWidgetState extends State<PinnedMessageWidget> {
             const SizedBox(width: 8.0),
             if (widget.message.messageType.isImage) ...[
               CachedNetworkImage(
-                imageUrl:
-                    widget.message.attachment?.url ?? widget.message.message,
+                imageUrl: widget.message.attachments?.first.url ??
+                    widget.message.message,
                 width: 42,
                 height: 42,
                 fit: BoxFit.cover,

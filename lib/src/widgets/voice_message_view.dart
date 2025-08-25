@@ -72,17 +72,17 @@ class _VoiceMessageViewState extends State<VoiceMessageView> {
 
   Future<void> _initializePlayer() async {
     String filePath = await FileController.getLocalFilePath(
-      widget.message.attachment?.name ?? '',
+      widget.message.attachments?.first.name ?? '',
     );
 
     if (!await FileController.isFileDownloaded(filePath) &&
-        widget.message.attachment != null) {
+        widget.message.attachments?.first.url != null) {
       setState(() {
         isDownloading = true;
       });
       filePath = await FileController.downloadFile(
-        widget.message.attachment!.url,
-        widget.message.attachment!.name,
+        widget.message.attachments?.first.url ?? '',
+        widget.message.attachments?.first.name ?? '',
       );
       setState(() {
         isDownloading = false;

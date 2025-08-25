@@ -19,12 +19,8 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import 'dart:convert';
-import 'dart:io';
-import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:chatview/src/widgets/image_container.dart';
 
-import 'package:cached_network_image/cached_network_image.dart';
-import 'package:chatview/src/extensions/extensions.dart';
 import 'package:chatview/src/models/models.dart';
 import 'package:chatview/src/widgets/chat_view_inherited_widget.dart';
 import 'package:chatview/src/widgets/horizontal_user_avatars.dart';
@@ -63,7 +59,9 @@ class ImageMessageView extends StatelessWidget {
   final double highlightScale;
 
   String get imageUrl =>
-      message.attachment?.url ?? message.attachment?.file?.path ?? "";
+      message.attachments?.first.url ??
+      message.attachments?.first.file?.path ??
+      "";
 
   Widget get iconButton => ShareIcon(
         shareIconConfig: imageMessageConfig?.shareIconConfig,
@@ -92,7 +90,10 @@ class ImageMessageView extends StatelessWidget {
                           body: Center(
                             child: Hero(
                               tag: imageUrl,
-                              child: _imageWidget(),
+                              child: ImageContainer(
+                                imageUrl: imageUrl,
+                                fileBytes: message.attachments?.first.fileBytes,
+                              ),
                             ),
                           ),
                         ),
@@ -126,7 +127,10 @@ class ImageMessageView extends StatelessWidget {
                         BorderRadius.circular(14),
                     child: Hero(
                       tag: imageUrl,
-                      child: _imageWidget(),
+                      child: ImageContainer(
+                        imageUrl: imageUrl,
+                        fileBytes: message.attachments?.first.fileBytes,
+                      ),
                     ),
                   ),
                 ),
@@ -161,48 +165,5 @@ class ImageMessageView extends StatelessWidget {
           iconButton,
       ],
     );
-  }
-
-  Widget _imageWidget() {
-    if (imageUrl.isUrl) {
-      // Handle GIFs differently on web
-      if (kIsWeb && imageUrl.toLowerCase().endsWith('.gif')) {
-        return Image.network(
-          imageUrl,
-          fit: BoxFit.cover,
-          filterQuality: FilterQuality.medium,
-        );
-      }
-
-      return CachedNetworkImage(
-        imageUrl: imageUrl,
-        fit: BoxFit.cover,
-        imageBuilder: (context, imageProvider) => Image(
-          image: ResizeImage(imageProvider, height: 720),
-          fit: BoxFit.cover,
-        ),
-        progressIndicatorBuilder: (context, child, downloadProgress) {
-          return Center(
-            child: CircularProgressIndicator(
-              value: downloadProgress.progress,
-            ),
-          );
-        },
-      );
-    } else if (imageUrl.fromMemory) {
-      return Image.memory(
-        base64Decode(imageUrl.substring(imageUrl.indexOf('base64') + 7)),
-        height: 720,
-        fit: BoxFit.cover,
-        filterQuality: FilterQuality.medium,
-      );
-    } else {
-      return Image.file(
-        File(imageUrl),
-        height: 720,
-        fit: BoxFit.cover,
-        filterQuality: FilterQuality.medium,
-      );
-    }
   }
 }

@@ -60,6 +60,12 @@ class MessageConfiguration {
   /// Configurations for file message bubble
   final FileMessageConfiguration? fileMessageConfig;
 
+  /// Configurations for image with text message bubble
+  final ImageWithTextMessageConfiguration? imageWithTextMessageConfig;
+
+  /// Configurations for image carousel message bubble
+  final ImageCarouselMessageConfiguration? imageCarouselMessageConfig;
+
   /// To customize reply view for custom message type
   final CustomMessageReplyViewBuilder? customMessageReplyViewBuilder;
 
@@ -80,6 +86,8 @@ class MessageConfiguration {
     this.customMessageReplyViewBuilder,
     this.videoMessageConfig,
     this.fileMessageConfig,
+    this.imageWithTextMessageConfig,
+    this.imageCarouselMessageConfig,
     this.currentUserId,
   });
 }

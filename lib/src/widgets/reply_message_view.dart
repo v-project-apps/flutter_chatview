@@ -133,7 +133,11 @@ class ReplyMessageView extends StatelessWidget {
             ),
           ],
         ),
-      MessageType.imageFromUrl || MessageType.image => Row(
+      MessageType.imageFromUrl ||
+      MessageType.image ||
+      MessageType.imageWithText ||
+      MessageType.imageCarousel =>
+        Row(
           children: [
             Icon(
               Icons.photo,

@@ -37,7 +37,7 @@ class _VoiceMessageWebViewState extends State<VoiceMessageWebView> {
   Duration _position = Duration.zero;
   bool isPlaying = false;
 
-  late final audioUrl = widget.message.attachment?.url ?? '';
+  late final audioUrl = widget.message.attachments?.first.url ?? '';
 
   @override
   void initState() {

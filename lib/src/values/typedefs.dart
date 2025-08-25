@@ -37,7 +37,7 @@ typedef MessageCallBack = void Function(Message message);
 typedef VoidCallBackWithFuture = Future<void> Function();
 typedef StringsCallBack = void Function(String emoji, String messageId);
 typedef AttchmentCallBack = void Function(
-    Attachment? attachment, AttachmentSource source, String message);
+    List<Attachment>? attachments, AttachmentSource source, String message);
 typedef StringWithReturnWidget = Widget Function(String separator);
 typedef DragUpdateDetailsCallback = void Function(DragUpdateDetails);
 typedef PinTapCallBack = void Function(Message message);

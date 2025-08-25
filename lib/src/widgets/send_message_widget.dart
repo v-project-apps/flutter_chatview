@@ -283,7 +283,7 @@ class SendMessageWidgetState extends State<SendMessageWidget> {
         id: DateTime.now().millisecondsSinceEpoch.toString(),
         message: attachment.file?.path ?? "",
         messageType: MessageType.voice,
-        attachment: attachment,
+        attachments: [attachment],
         createdAt: DateTime.now(),
         sentBy: currentUser?.id ?? "",
       ),
@@ -292,19 +292,39 @@ class SendMessageWidgetState extends State<SendMessageWidget> {
   }
 
   void _onAttachmentSelected(
-      Attachment? attachment, AttachmentSource source, String error) {
-    debugPrint('Call onAttachmentSelected');
-    if (attachment != null) {
-      widget.onSendTap.call(Message(
-        id: DateTime.now().millisecondsSinceEpoch.toString(),
-        message: attachment.name,
-        messageType: MessageType.fromAttachmentSource(source),
-        attachment: attachment,
-        createdAt: DateTime.now(),
-        sentBy: currentUser?.id ?? "",
-      ));
+      List<Attachment>? attachments, AttachmentSource source, String error) {
+    try {
+      debugPrint('Call onAttachmentSelected');
+      debugPrint('Source: $source');
+      debugPrint('Attachments: ${attachments?.length ?? 0}');
+      if (attachments != null) {
+        final messageType = MessageType.fromAttachmentSource(source);
+        debugPrint('Message type: $messageType');
+        final message = Message(
+          id: DateTime.now().millisecondsSinceEpoch.toString(),
+          message: attachments.map((e) => e.name).join('\n'),
+          messageType: messageType,
+          attachments: attachments,
+          createdAt: DateTime.now(),
+          sentBy: currentUser?.id ?? "",
+        );
+        debugPrint(
+            'Created message: ${message.id} with type ${message.messageType}');
+        debugPrint('Message attachments: ${message.attachments?.length ?? 0}');
+        widget.onSendTap.call(message);
+      }
+      _assignRepliedMessage();
+    } catch (e, stackTrace) {
+      debugPrint('Error in _onAttachmentSelected: $e');
+      debugPrint('Stack trace: $stackTrace');
+      // Show error to user
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Error sending message: $e'),
+          backgroundColor: Colors.red,
+        ),
+      );
     }
-    _assignRepliedMessage();
   }
 
   void _assignRepliedMessage() {
@@ -326,7 +346,7 @@ class SendMessageWidgetState extends State<SendMessageWidget> {
         replyTo: message.sentBy,
         messageType: message.messageType,
         messageId: message.id,
-        attachment: message.attachment,
+        attachments: message.attachments,
         mentions: message.mentions,
         voiceMessageDuration: message.voiceMessageDuration,
       );

@@ -233,6 +233,34 @@ class _MessageViewState extends State<MessageView>
                     highlightImage: widget.shouldHighlight,
                     highlightScale: widget.highlightScale,
                   );
+                } else if (widget.message.messageType ==
+                    MessageType.imageWithText) {
+                  return ImageWithTextMessageView(
+                    message: widget.message,
+                    isMessageBySender: widget.isMessageBySender,
+                    imageWithTextMessageConfig:
+                        messageConfig?.imageWithTextMessageConfig,
+                    messageReactionConfig: messageConfig?.messageReactionConfig,
+                    highlightImage: widget.shouldHighlight,
+                    highlightScale: widget.highlightScale,
+                    highlightColor: widget.isMessageBySender
+                        ? widget.outgoingChatBubbleConfig?.color
+                        : widget.inComingChatBubbleConfig?.color,
+                  );
+                } else if (widget.message.messageType ==
+                    MessageType.imageCarousel) {
+                  return ImageCarouselMessageView(
+                    message: widget.message,
+                    isMessageBySender: widget.isMessageBySender,
+                    imageCarouselMessageConfig:
+                        messageConfig?.imageCarouselMessageConfig,
+                    messageReactionConfig: messageConfig?.messageReactionConfig,
+                    highlightImage: widget.shouldHighlight,
+                    highlightScale: widget.highlightScale,
+                    highlightColor: widget.isMessageBySender
+                        ? widget.outgoingChatBubbleConfig?.color
+                        : widget.inComingChatBubbleConfig?.color,
+                  );
                 } else if (widget.message.messageType.isFile) {
                   return FileMessageView(
                     message: widget.message,

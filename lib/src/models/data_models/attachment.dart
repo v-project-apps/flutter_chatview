@@ -49,10 +49,12 @@ class Attachment {
 
   factory Attachment.fromJson(Map<String, dynamic> json) {
     return Attachment(
-      name: json['name'],
-      url: json['url'],
-      size: double.parse(json['size'].toString()),
-      thumbnailUrl: json['thumbnailUrl'],
+      name: json['name']?.toString() ?? '',
+      url: json['url']?.toString() ?? '',
+      size: (json['size'] is int)
+          ? json['size'].toDouble()
+          : double.tryParse(json['size']?.toString() ?? '0') ?? 0.0,
+      thumbnailUrl: json['thumbnailUrl']?.toString(),
     );
   }
 

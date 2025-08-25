@@ -146,13 +146,15 @@ class ReplyMessageWidget extends StatelessWidget {
     switch (replyMessage.messageType) {
       case MessageType.image:
       case MessageType.imageFromUrl:
+      case MessageType.imageWithText:
+      case MessageType.imageCarousel:
       case MessageType.gif:
         return Container(
           height: repliedMessageConfig?.repliedImageMessageHeight ?? 100,
           width: repliedMessageConfig?.repliedImageMessageWidth ?? 80,
           decoration: BoxDecoration(
             image: DecorationImage(
-              image: NetworkImage(replyMessage.attachment?.url ?? ''),
+              image: NetworkImage(replyMessage.attachments?.first.url ?? ''),
               fit: BoxFit.fill,
             ),
             borderRadius:
@@ -272,12 +274,12 @@ class ReplyMessageWidget extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             FileMessageViewUtils.getFileIcon(
-              replyMessage.attachment?.name ?? '',
+              replyMessage.attachments?.first.name ?? '',
               iconColor: repliedMessageConfig?.micIconColor ?? Colors.white,
             ),
             const SizedBox(width: 4),
             Text(
-              replyMessage.attachment?.name ?? '',
+              replyMessage.attachments?.first.name ?? '',
               style: repliedMessageConfig?.textStyle ??
                   textTheme.bodyMedium!.copyWith(color: Colors.white),
             ),

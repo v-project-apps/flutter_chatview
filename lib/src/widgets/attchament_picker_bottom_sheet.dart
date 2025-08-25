@@ -106,6 +106,28 @@ class AttchamentPickerBottomSheet {
                       attachmentSourceCallback(AttachmentSource.audioFromUrl);
                     },
                   ),
+                if (attchamentPickerBottomSheetConfig
+                        ?.enableImageWithTextPicker ??
+                    true)
+                  ListTile(
+                    leading: const Icon(Icons.image_aspect_ratio),
+                    title: const Text('Image with Text'),
+                    onTap: () {
+                      Navigator.pop(context);
+                      attachmentSourceCallback(AttachmentSource.imageWithText);
+                    },
+                  ),
+                if (attchamentPickerBottomSheetConfig
+                        ?.enableImageCarouselPicker ??
+                    true)
+                  ListTile(
+                    leading: const Icon(Icons.photo_library),
+                    title: const Text('Image Carousel'),
+                    onTap: () {
+                      Navigator.pop(context);
+                      attachmentSourceCallback(AttachmentSource.imageCarousel);
+                    },
+                  ),
               ],
             ),
           ),

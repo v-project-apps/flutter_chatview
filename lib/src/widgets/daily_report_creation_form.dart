@@ -6,10 +6,12 @@ class DailyReportCreationForm extends StatefulWidget {
   const DailyReportCreationForm({
     Key? key,
     required this.onDailyReportCreated,
+    this.dailyReportMessage,
     this.theme,
   }) : super(key: key);
 
   final Function(DailyReportMessage) onDailyReportCreated;
+  final DailyReportMessage? dailyReportMessage;
   final ThemeData? theme;
 
   @override
@@ -30,30 +32,43 @@ class _DailyReportCreationFormState extends State<DailyReportCreationForm>
   @override
   void initState() {
     super.initState();
-    // Start with 2 default checkboxes
-    _addCheckbox();
-    _addCheckbox();
+    if (widget.dailyReportMessage != null) {
+      _titleController.text = widget.dailyReportMessage!.customTitle ?? '';
+      _sectionTextController.text =
+          widget.dailyReportMessage!.customSectionText ?? '';
+      _maxCompletionTime = widget.dailyReportMessage!.maxCompletionTime;
+      if (widget.dailyReportMessage!.checkboxes.isNotEmpty) {
+        for (var checkbox in widget.dailyReportMessage!.checkboxes) {
+          _addCheckbox(checkbox.text);
+        }
+      }
+    } else {
+      // Start with 2 default checkboxes
+      _addCheckbox(null);
+      _addCheckbox(null);
 
-    // Set default values
-    _titleController.text = 'Daily Report';
-    _sectionTextController.text = 'Tasks to Complete:';
+      // Set default values
+      _titleController.text = 'Daily Report';
+      _sectionTextController.text = 'Tasks to Complete:';
 
-    // Set default max completion time to end of current day
-    _maxCompletionTime = DateTime.now().copyWith(
-      hour: 23,
-      minute: 59,
-      second: 59,
-      millisecond: 0,
-      microsecond: 0,
-    );
+      // Set default max completion time to end of current day
+      _maxCompletionTime = DateTime.now().copyWith(
+        hour: 23,
+        minute: 59,
+        second: 59,
+        millisecond: 0,
+        microsecond: 0,
+      );
+    }
   }
+
+  bool get isEditing => widget.dailyReportMessage != null;
 
   @override
   Widget build(BuildContext context) {
-    return Dialog(
+    return Material(
       child: Container(
         width: MediaQuery.of(context).size.width * 0.9,
-        constraints: const BoxConstraints(maxWidth: 500),
         padding: const EdgeInsets.all(24),
         child: Form(
           key: _formKey,
@@ -91,7 +106,7 @@ class _DailyReportCreationFormState extends State<DailyReportCreationForm>
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'Create Daily Report',
+                isEditing ? 'Edit Daily Report' : 'Create Daily Report',
                 style: widget.theme?.textTheme.headlineSmall?.copyWith(
                       fontWeight: FontWeight.bold,
                     ) ??
@@ -113,10 +128,12 @@ class _DailyReportCreationFormState extends State<DailyReportCreationForm>
             ],
           ),
         ),
-        IconButton(
-          onPressed: () => Navigator.of(context).pop(),
-          icon: const Icon(Icons.close),
-        ),
+        !isEditing
+            ? IconButton(
+                onPressed: () => Navigator.of(context).pop(),
+                icon: const Icon(Icons.close),
+              )
+            : const SizedBox.shrink(),
       ],
     );
   }
@@ -252,7 +269,7 @@ class _DailyReportCreationFormState extends State<DailyReportCreationForm>
                   ),
             ),
             TextButton.icon(
-              onPressed: _addCheckbox,
+              onPressed: () => _addCheckbox(null),
               icon: const Icon(Icons.add),
               label: const Text('Add Checkbox'),
             ),
@@ -305,11 +322,13 @@ class _DailyReportCreationFormState extends State<DailyReportCreationForm>
                     ),
                   ),
                   if (_checkboxControllers.length > 2)
-                    IconButton(
-                      onPressed: () => _removeCheckbox(index),
-                      icon: const Icon(Icons.remove_circle_outline),
-                      color: Colors.red[400],
-                      iconSize: 20,
+                    Material(
+                      child: IconButton(
+                        onPressed: () => _removeCheckbox(index),
+                        icon: const Icon(Icons.remove_circle_outline),
+                        color: Colors.red[400],
+                        iconSize: 20,
+                      ),
                     ),
                 ],
               ),
@@ -333,9 +352,9 @@ class _DailyReportCreationFormState extends State<DailyReportCreationForm>
             borderRadius: BorderRadius.circular(8),
           ),
         ),
-        child: const Text(
-          'Create Daily Report',
-          style: TextStyle(
+        child: Text(
+          isEditing ? 'Update Daily Report' : 'Create Daily Report',
+          style: const TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.w600,
           ),
@@ -344,9 +363,9 @@ class _DailyReportCreationFormState extends State<DailyReportCreationForm>
     );
   }
 
-  void _addCheckbox() {
+  void _addCheckbox(String? text) {
     setState(() {
-      _checkboxControllers.add(TextEditingController());
+      _checkboxControllers.add(TextEditingController(text: text));
       _animationControllers.add(AnimationController(
         duration: const Duration(milliseconds: 300),
         vsync: this,

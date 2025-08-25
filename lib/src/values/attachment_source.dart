@@ -13,4 +13,6 @@ enum AttachmentSource {
   question,
   dailyReport,
   dailyReportStatistics,
+  imageWithText,
+  imageCarousel,
 }
