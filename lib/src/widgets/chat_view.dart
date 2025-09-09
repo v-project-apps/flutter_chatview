@@ -66,6 +66,7 @@ class ChatView extends StatefulWidget {
     this.pinnedMessageConfiguration = const PinnedMessageConfiguration(),
     this.onPinTap,
     this.onUnPinTap,
+    this.paginationConfig = const PaginationConfig(),
   })  : chatBackgroundConfig =
             chatBackgroundConfig ?? const ChatBackgroundConfiguration(),
         chatViewStateConfig =
@@ -108,6 +109,9 @@ class ChatView extends StatefulWidget {
 
   /// Provides callback when user tap on unpin message.
   final PinTapCallBack? onUnPinTap;
+
+  /// Configuration for pagination behavior
+  final PaginationConfig paginationConfig;
 
   /// Provides callback when user actions reaches to top and needs to load more
   /// chat
@@ -278,20 +282,26 @@ class _ChatViewState extends State<ChatView>
                               ValueListenableBuilder<ReplyMessage>(
                                 valueListenable: replyMessage,
                                 builder: (_, state, child) {
-                                  return ChatListWidget(
-                                    replyMessage: state,
-                                    chatController: widget.chatController,
-                                    loadMoreData: widget.loadMoreData,
-                                    isLastPage: widget.isLastPage,
-                                    loadingWidget: widget.loadingWidget,
-                                    onChatListTap: widget.onChatListTap,
-                                    onUnpinTap: widget.onUnPinTap,
-                                    onPinTap: widget.onPinTap,
-                                    pinnedMessageConfiguration:
-                                        widget.pinnedMessageConfiguration,
-                                    assignReplyMessage: (message) =>
-                                        _sendMessageKey.currentState
-                                            ?.assignReplyMessage(message),
+                                  return Padding(
+                                    padding:
+                                        const EdgeInsets.only(bottom: 50.0),
+                                    child: ChatListWidget(
+                                      replyMessage: state,
+                                      chatController: widget.chatController,
+                                      loadMoreData: widget.loadMoreData,
+                                      isLastPage: widget.isLastPage,
+                                      loadingWidget: widget.loadingWidget,
+                                      onChatListTap: widget.onChatListTap,
+                                      onUnpinTap: widget.onUnPinTap,
+                                      onPinTap: widget.onPinTap,
+                                      pinnedMessageConfiguration:
+                                          widget.pinnedMessageConfiguration,
+                                      featureActiveConfig:
+                                          widget.featureActiveConfig,
+                                      assignReplyMessage: (message) =>
+                                          _sendMessageKey.currentState
+                                              ?.assignReplyMessage(message),
+                                    ),
                                   );
                                 },
                               ),

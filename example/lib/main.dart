@@ -1,4 +1,5 @@
 import 'package:chatview/chatview.dart';
+import 'package:example/cursor_pagination_example.dart';
 import 'package:example/data.dart';
 import 'package:example/models/theme.dart';
 import 'package:example/specialized_messages_example.dart';
@@ -21,7 +22,63 @@ class Example extends StatelessWidget {
         colorScheme:
             ColorScheme.fromSwatch(accentColor: const Color(0xffEE5366)),
       ),
-      home: const SpecializedMessagesExample(),
+      home: const ExampleHome(),
+    );
+  }
+}
+
+class ExampleHome extends StatelessWidget {
+  const ExampleHome({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Flutter ChatView Examples'),
+        backgroundColor: const Color(0xffEE5366),
+      ),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            ElevatedButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const SpecializedMessagesExample(),
+                  ),
+                );
+              },
+              child: const Text('Specialized Messages Example'),
+            ),
+            const SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const CursorPaginationExample(),
+                  ),
+                );
+              },
+              child: const Text('Cursor Pagination Example'),
+            ),
+            const SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const ChatScreen(),
+                  ),
+                );
+              },
+              child: const Text('Basic Chat Example'),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
@@ -112,6 +169,7 @@ class _ChatScreenState extends State<ChatScreen> {
           lastSeenAgoBuilderVisibility: true,
           receiptsBuilderVisibility: true,
           enablePagination: true,
+          enableJumpToMessage: true,
           enableScrollToBottomButton: true,
         ),
         scrollToBottomButtonConfig: ScrollToBottomButtonConfig(
@@ -126,10 +184,6 @@ class _ChatScreenState extends State<ChatScreen> {
             size: 30,
           ),
         ),
-        loadMoreData: () async {
-          await Future.delayed(const Duration(seconds: 3));
-          _chatController.loadMoreData(Data.oldMessages);
-        },
         isLastPage: false,
         chatViewState: ChatViewState.hasMessages,
         chatViewStateConfig: ChatViewStateConfiguration(
@@ -321,6 +375,7 @@ class _ChatScreenState extends State<ChatScreen> {
           verticalBarColor: theme.verticalBarColor,
           repliedMsgAutoScrollConfig: RepliedMsgAutoScrollConfig(
             enableHighlightRepliedMsg: true,
+            enableScrollToRepliedMsg: true,
             highlightColor: Colors.pinkAccent.shade100,
             highlightScale: 1.1,
           ),

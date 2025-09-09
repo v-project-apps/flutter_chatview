@@ -7,11 +7,16 @@ import 'package:flutter/material.dart';
 
 class ImageContainer extends StatelessWidget {
   const ImageContainer(
-      {super.key, required this.imageUrl, this.height = 720, this.fileBytes});
+      {super.key,
+      required this.imageUrl,
+      this.height = 720,
+      this.fileBytes,
+      this.fit = BoxFit.fitHeight});
 
   final String imageUrl;
   final Uint8List? fileBytes;
   final int height;
+  final BoxFit? fit;
 
   @override
   Widget build(BuildContext context) {
@@ -20,17 +25,17 @@ class ImageContainer extends StatelessWidget {
       if (kIsWeb && imageUrl.toLowerCase().endsWith('.gif')) {
         return Image.network(
           imageUrl,
-          fit: BoxFit.cover,
+          fit: fit,
           filterQuality: FilterQuality.medium,
         );
       }
 
       return CachedNetworkImage(
         imageUrl: imageUrl,
-        fit: BoxFit.cover,
+        fit: fit,
         imageBuilder: (context, imageProvider) => Image(
           image: ResizeImage(imageProvider, height: height),
-          fit: BoxFit.cover,
+          fit: fit,
         ),
         progressIndicatorBuilder: (context, child, downloadProgress) {
           return Center(
@@ -44,14 +49,14 @@ class ImageContainer extends StatelessWidget {
       return Image.memory(
         fileBytes!,
         height: height.toDouble(),
-        fit: BoxFit.cover,
+        fit: fit,
         filterQuality: FilterQuality.medium,
       );
     } else {
       return Image.file(
         File(imageUrl),
         height: height.toDouble(),
-        fit: BoxFit.cover,
+        fit: fit,
         filterQuality: FilterQuality.medium,
       );
     }

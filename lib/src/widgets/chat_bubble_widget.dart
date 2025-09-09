@@ -54,7 +54,7 @@ class ChatBubbleWidget extends StatefulWidget {
   final Animation<Offset>? slideAnimation;
 
   /// Provides callback when user tap on replied message upon chat bubble.
-  final Function(String)? onReplyTap;
+  final Function(Message)? onReplyTap;
 
   /// Flag for when user tap on replied message and highlight actual message.
   final bool shouldHighlight;
@@ -70,7 +70,7 @@ class _ChatBubbleWidgetState extends State<ChatBubbleWidget>
   bool get isMessageBySender => widget.message.sentBy == currentUser?.id;
 
   bool get isLastMessage =>
-      chatController?.initialMessageList.last.id == widget.message.id;
+      chatController?.initialMessageList.lastOrNull?.id == widget.message.id;
 
   FeatureActiveConfig? featureActiveConfig;
   ChatController? chatController;
@@ -271,8 +271,13 @@ class _ChatBubbleWidgetState extends State<ChatBubbleWidget>
               : ReplyMessageWidget(
                   message: widget.message,
                   repliedMessageConfig: chatListConfig.repliedMessageConfig,
-                  onTap: () => widget.onReplyTap
-                      ?.call(widget.message.replyMessage.messageId),
+                  onTap: () {
+                    widget.onReplyTap?.call(Message(
+                        id: widget.message.replyMessage.messageId,
+                        message: "",
+                        createdAt: widget.message.createdAt,
+                        sentBy: widget.message.replyMessage.replyTo));
+                  },
                 ),
         SwipeToReply(
           isMessageByCurrentUser: isMessageBySender,

@@ -44,6 +44,7 @@ class ChatListWidget extends StatefulWidget {
     this.pinnedMessageConfiguration = const PinnedMessageConfiguration(),
     this.onUnpinTap,
     this.onPinTap,
+    this.featureActiveConfig,
   }) : super(key: key);
 
   /// Provides controller for accessing few function for running chat.
@@ -78,12 +79,17 @@ class ChatListWidget extends StatefulWidget {
   /// Provides callback when user tap on pin message.
   final PinTapCallBack? onPinTap;
 
+  /// Feature active configuration
+  final FeatureActiveConfig? featureActiveConfig;
+
   @override
   State<ChatListWidget> createState() => _ChatListWidgetState();
 }
 
 class _ChatListWidgetState extends State<ChatListWidget> {
   final ValueNotifier<bool> _isNextPageLoading = ValueNotifier<bool>(false);
+  final ValueNotifier<Message?> _pinnedMessageToHighlight =
+      ValueNotifier<Message?>(null);
 
   ChatController get chatController => widget.chatController;
 
@@ -104,7 +110,8 @@ class _ChatListWidgetState extends State<ChatListWidget> {
   void didChangeDependencies() {
     super.didChangeDependencies();
     if (chatViewIW != null) {
-      featureActiveConfig = chatViewIW!.featureActiveConfig;
+      featureActiveConfig =
+          widget.featureActiveConfig ?? chatViewIW!.featureActiveConfig;
       currentUser = chatViewIW!.chatController.currentUser;
     }
     if (featureActiveConfig?.enablePagination ?? false) {
@@ -141,8 +148,9 @@ class _ChatListWidgetState extends State<ChatListWidget> {
                       .take(3)
                       .map((message) => PinnedMessageWidget(
                             message: message,
-                            onTap: () =>
-                                chatController.scrollToMessage(message),
+                            onTap: () async {
+                              await _onPinnedMessageTap(message);
+                            },
                             pinnedMessageConfiguration:
                                 widget.pinnedMessageConfiguration,
                             onRemove: () => _removePinnedMessage(message),
@@ -175,7 +183,7 @@ class _ChatListWidgetState extends State<ChatListWidget> {
             builder: (_, showPopupValue, child) {
               return ChatGroupedListWidget(
                 showPopUp: showPopupValue,
-                scrollController: scrollController,
+                chatController: widget.chatController,
                 isEnableSwipeToSeeTime:
                     featureActiveConfig?.enableSwipeToSeeTime ?? true,
                 assignReplyMessage: widget.assignReplyMessage,
@@ -197,6 +205,12 @@ class _ChatListWidgetState extends State<ChatListWidget> {
                   }
                 },
                 onChatListTap: _onChatListTap,
+                useScrollablePositionedList:
+                    featureActiveConfig?.useScrollablePositionedList ?? false,
+                onPinnedTap: (message) async {
+                  await _onPinnedMessageTap(message);
+                },
+                pinnedMessageToHighlight: _pinnedMessageToHighlight,
               );
             },
           ),
@@ -283,12 +297,29 @@ class _ChatListWidgetState extends State<ChatListWidget> {
     ScaffoldMessenger.of(context).hideCurrentSnackBar();
   }
 
+  Future<void> _onPinnedMessageTap(Message message) async {
+    // First scroll to the message
+    await chatController.scrollToMessage(message);
+
+    // Wait a bit more to ensure scroll animation is completely finished
+    await Future.delayed(const Duration(milliseconds: 200));
+
+    // Now trigger highlighting by setting the pinned message
+    _pinnedMessageToHighlight.value = message;
+
+    // Clear the highlighting after a delay
+    await Future.delayed(const Duration(milliseconds: 1000), () {
+      _pinnedMessageToHighlight.value = null;
+    });
+  }
+
   @override
   void dispose() {
     chatController.messageStreamController.close();
     chatController.pinnedMessageStreamController.close();
     scrollController.dispose();
     _isNextPageLoading.dispose();
+    _pinnedMessageToHighlight.dispose();
     super.dispose();
   }
 }

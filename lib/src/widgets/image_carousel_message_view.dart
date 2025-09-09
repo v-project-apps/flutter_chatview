@@ -24,6 +24,7 @@ import 'package:chatview/src/widgets/image_container.dart';
 import 'package:chatview/src/models/models.dart';
 import 'package:chatview/src/widgets/chat_view_inherited_widget.dart';
 import 'package:chatview/src/widgets/horizontal_user_avatars.dart';
+import 'package:chatview/src/widgets/image_preview.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
@@ -128,29 +129,9 @@ class _ImageCarouselMessageViewState extends State<ImageCarouselMessageView> {
               GestureDetector(
                 onTap: () => widget.imageCarouselMessageConfig?.onTap != null
                     ? widget.imageCarouselMessageConfig?.onTap!(widget.message)
-                    : Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => Scaffold(
-                            backgroundColor: Colors.black,
-                            body: Center(
-                              child: PageView.builder(
-                                itemCount: images.length,
-                                allowImplicitScrolling: true,
-                                itemBuilder: (context, index) {
-                                  return Hero(
-                                    tag: '${images[index]}_carousel',
-                                    child: ImageContainer(
-                                      imageUrl: images[index],
-                                      fileBytes: widget.message
-                                          .attachments?[index].fileBytes,
-                                    ),
-                                  );
-                                },
-                              ),
-                            ),
-                          ),
-                        ),
+                    : showDialog(
+                        context: context,
+                        builder: (context) => ImagePreview(imagesUrls: images),
                       ),
                 child: Transform.scale(
                   scale: widget.highlightImage ? widget.highlightScale : 1.0,

@@ -286,6 +286,7 @@ class SendMessageWidgetState extends State<SendMessageWidget> {
         attachments: [attachment],
         createdAt: DateTime.now(),
         sentBy: currentUser?.id ?? "",
+        replyMessage: replyMessage,
       ),
     );
     _assignRepliedMessage();
@@ -307,6 +308,7 @@ class SendMessageWidgetState extends State<SendMessageWidget> {
           attachments: attachments,
           createdAt: DateTime.now(),
           sentBy: currentUser?.id ?? "",
+          replyMessage: replyMessage,
         );
         debugPrint(
             'Created message: ${message.id} with type ${message.messageType}');
@@ -334,7 +336,7 @@ class SendMessageWidgetState extends State<SendMessageWidget> {
   }
 
   void _onSendMessage(Message message) {
-    widget.onSendTap.call(message);
+    widget.onSendTap.call(message.copyWith(replyMessage: replyMessage));
     _assignRepliedMessage();
   }
 

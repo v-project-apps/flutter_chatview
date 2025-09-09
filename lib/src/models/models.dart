@@ -54,6 +54,7 @@ export 'config_models/reply_suggestions_config.dart';
 export 'config_models/suggestion_list_config.dart';
 export 'config_models/suggestion_item_config.dart';
 export 'config_models/scroll_to_bottom_button_config.dart';
+export 'config_models/pagination_config.dart';
 export 'config_models/voice_message_configuration.dart';
 export 'config_models/voice_message_web_configuration.dart';
 export 'config_models/voting_message_configuration.dart';

@@ -35,7 +35,6 @@ import 'package:chatview/src/widgets/video_url_picker_dialog.dart';
 import 'package:chatview/src/widgets/poll_creation_form.dart';
 import 'package:chatview/src/widgets/quiz_creation_form.dart';
 import 'package:chatview/src/widgets/question_creation_form.dart';
-import 'package:chatview/src/widgets/daily_report_creation_form.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -43,8 +42,6 @@ import 'package:flutter/services.dart';
 import 'package:giphy_get/giphy_get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:waveform_recorder/waveform_recorder.dart'; // new import for web recording
-import 'package:path/path.dart' as path;
-
 import '../../chatview.dart';
 import '../utils/debounce.dart';
 import '../utils/package_strings.dart';

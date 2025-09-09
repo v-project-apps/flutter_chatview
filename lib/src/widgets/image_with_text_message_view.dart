@@ -24,6 +24,7 @@ import 'package:chatview/src/widgets/image_container.dart';
 import 'package:chatview/src/models/models.dart';
 import 'package:chatview/src/widgets/chat_view_inherited_widget.dart';
 import 'package:chatview/src/widgets/horizontal_user_avatars.dart';
+import 'package:chatview/src/widgets/image_preview.dart';
 import 'package:flutter/material.dart';
 
 import 'reaction_widget.dart';
@@ -88,22 +89,10 @@ class ImageWithTextMessageView extends StatelessWidget {
             GestureDetector(
               onTap: () => imageWithTextMessageConfig?.onTap != null
                   ? imageWithTextMessageConfig?.onTap!(message)
-                  : Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) => Scaffold(
-                          backgroundColor: Colors.black,
-                          body: Center(
-                            child: Hero(
-                              tag: imageUrl,
-                              child: ImageContainer(
-                                imageUrl: imageUrl,
-                                fileBytes: message.attachments?.first.fileBytes,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
+                  : showDialog(
+                      context: context,
+                      builder: (context) =>
+                          ImagePreview(imagesUrls: [imageUrl]),
                     ),
               child: Transform.scale(
                 scale: highlightImage ? highlightScale : 1.0,
@@ -143,14 +132,11 @@ class ImageWithTextMessageView extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
                           Flexible(
-                            child: Hero(
-                              tag: imageUrl,
-                              child: ImageContainer(
-                                imageUrl: imageUrl,
-                                fileBytes: message.attachments?.first.fileBytes,
-                                height:
-                                    280, // Reduced height to leave room for text
-                              ),
+                            child: ImageContainer(
+                              imageUrl: imageUrl,
+                              fileBytes: message.attachments?.first.fileBytes,
+                              height:
+                                  280, // Reduced height to leave room for text
                             ),
                           ),
                           if (messageText.isNotEmpty) ...[

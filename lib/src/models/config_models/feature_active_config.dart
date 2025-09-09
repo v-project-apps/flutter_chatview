@@ -14,6 +14,9 @@ class FeatureActiveConfig {
     this.receiptsBuilderVisibility = true,
     this.enableOtherUserName = true,
     this.enableScrollToBottomButton = false,
+    this.enableCursorPagination = false,
+    this.enableJumpToMessage = false,
+    this.useScrollablePositionedList = false,
   });
 
   /// Used for enable/disable swipe to reply.
@@ -57,4 +60,13 @@ class FeatureActiveConfig {
 
   /// Used for enable/disable Scroll To Bottom Button.
   final bool enableScrollToBottomButton;
+
+  /// Enable/disable cursor-based pagination system
+  final bool enableCursorPagination;
+
+  /// Enable/disable jump-to message functionality
+  final bool enableJumpToMessage;
+
+  /// Use ScrollablePositionedList instead of CustomScrollView
+  final bool useScrollablePositionedList;
 }
